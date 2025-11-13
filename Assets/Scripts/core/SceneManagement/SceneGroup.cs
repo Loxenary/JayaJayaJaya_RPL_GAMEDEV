@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(menuName = "SceneManagement/SceneGroup")]
+[CreateAssetMenu(menuName = "Scene Management/SceneGroup")]
 public class SceneGroup : ScriptableObject
 {
     [SerializeField] private SceneReference activeScene;
