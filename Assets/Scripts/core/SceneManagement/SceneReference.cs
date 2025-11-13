@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 
 
-[CreateAssetMenu(menuName = "SceneManagement/SceneReference")]
+[CreateAssetMenu(menuName = "Scene Management/SceneReference")]
 public class SceneReference : ScriptableObject
 {
     [SerializeField] private string sceneName;
