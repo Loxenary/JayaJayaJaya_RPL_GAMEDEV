@@ -892,7 +892,7 @@ MonoBehaviour:
     Value: 0
     Center: 0
     Range: {x: -180, y: 180}
-    Wrap: 0
+    Wrap: 1
     Recentering:
       Enabled: 1
       Wait: 1
