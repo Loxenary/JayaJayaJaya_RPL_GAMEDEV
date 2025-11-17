@@ -504,20 +504,9 @@ MonoBehaviour:
   characterController: {fileID: 1015135160}
   playerCamera: {fileID: 1501889263}
   movementHandler:
-    walkSpeed: 5
-    sprintSpeed: 8
-    crouchSpeed: 2.5
-    acceleration: 10
-    deceleration: 10
-    jumpHeight: 2
-    gravity: -9.81
-    rotationSpeed: 10
-  cameraHandler:
-    cameraTarget: {fileID: 0}
-    mouseSensitivity: 2
-    gamepadSensitivity: 100
-    minVerticalAngle: -80
-    maxVerticalAngle: 80
+    movementConfig: {fileID: 0}
+    jumpConfig: {fileID: 0}
+    rotationConfig: {fileID: 0}
 --- !u!114 &1015135162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,7 +905,7 @@ MonoBehaviour:
     Value: 0
     Center: 0
     Range: {x: -90, y: 90}
-    Wrap: 1
+    Wrap: 0
     Recentering:
       Enabled: 1
       Wait: 1
