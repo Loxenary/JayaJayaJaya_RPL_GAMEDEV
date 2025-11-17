@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Config/Player/MovementConfig", fileName = "NewMovementConfig")]
+[CreateAssetMenu(menuName = "Config/Player/Movement Config", fileName = "NewMovementConfig")]
 public class MovementConfig : ScriptableObject
 {
     [Header("Movement Settings")]

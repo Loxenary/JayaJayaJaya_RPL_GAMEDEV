@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class RotationConfig : MonoBehaviour
+[CreateAssetMenu(menuName = "Config/Player/Rotation Config", fileName = "NewRotationConfig")]
+public class RotationConfig : ScriptableObject
 {
     [SerializeField] private float rotationSpeed = 10f;
 
