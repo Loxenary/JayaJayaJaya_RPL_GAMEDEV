@@ -1,5 +1,9 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -70,6 +74,9 @@ namespace CustomLogger
             string formattedMessage = FormatMessage(message.ToString(), category, "LOG");
             Debug.Log(formattedMessage, context);
         }
+
+
+        
 
         /// <summary>
         /// Log a warning message with optional category
@@ -153,6 +160,113 @@ namespace CustomLogger
 
         #endregion
 
+        #region Collection Logging
+
+        /// <summary>
+        /// Log a collection (List, Queue, Array, etc.) with formatted output
+        /// </summary>
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        public static void LogCollection<T>(IEnumerable<T> collection, string collectionName = "Collection", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled || !Settings.IsCategoryEnabled(category)) return;
+
+            string formattedCollection = FormatCollection(collection, collectionName);
+            string formattedMessage = FormatMessage(formattedCollection, category, "LOG");
+            Debug.Log(formattedMessage, context);
+        }
+
+        /// <summary>
+        /// Log a collection as a warning
+        /// </summary>
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        public static void LogCollectionWarning<T>(IEnumerable<T> collection, string collectionName = "Collection", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled || !Settings.IsCategoryEnabled(category)) return;
+
+            string formattedCollection = FormatCollection(collection, collectionName);
+            string formattedMessage = FormatMessage(formattedCollection, category, "WARNING");
+            Debug.LogWarning(formattedMessage, context);
+        }
+
+        /// <summary>
+        /// Log a collection as an error
+        /// </summary>
+        public static void LogCollectionError<T>(IEnumerable<T> collection, string collectionName = "Collection", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled) return;
+
+            string formattedCollection = FormatCollection(collection, collectionName);
+            string formattedMessage = FormatMessage(formattedCollection, category, "ERROR");
+            Debug.LogError(formattedMessage, context);
+        }
+
+        /// <summary>
+        /// Log a list with automatic type detection
+        /// </summary>
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        public static void LogList<T>(List<T> list, string listName = "List", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled || !Settings.IsCategoryEnabled(category)) return;
+
+            string formattedList = FormatCollection(list, listName, "List");
+            string formattedMessage = FormatMessage(formattedList, category, "LOG");
+            Debug.Log(formattedMessage, context);
+        }
+
+        /// <summary>
+        /// Log a queue with automatic type detection
+        /// </summary>
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        public static void LogQueue<T>(Queue<T> queue, string queueName = "Queue", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled || !Settings.IsCategoryEnabled(category)) return;
+
+            string formattedQueue = FormatCollection(queue, queueName, "Queue");
+            string formattedMessage = FormatMessage(formattedQueue, category, "LOG");
+            Debug.Log(formattedMessage, context);
+        }
+
+        /// <summary>
+        /// Log a stack with automatic type detection
+        /// </summary>
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        public static void LogStack<T>(Stack<T> stack, string stackName = "Stack", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled || !Settings.IsCategoryEnabled(category)) return;
+
+            string formattedStack = FormatCollection(stack, stackName, "Stack");
+            string formattedMessage = FormatMessage(formattedStack, category, "LOG");
+            Debug.Log(formattedMessage, context);
+        }
+
+        /// <summary>
+        /// Log an array with automatic type detection
+        /// </summary>
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        public static void LogArray<T>(T[] array, string arrayName = "Array", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled || !Settings.IsCategoryEnabled(category)) return;
+
+            string formattedArray = FormatCollection(array, arrayName, "Array");
+            string formattedMessage = FormatMessage(formattedArray, category, "LOG");
+            Debug.Log(formattedMessage, context);
+        }
+
+        /// <summary>
+        /// Log a dictionary with key-value pairs
+        /// </summary>
+        [Conditional("UNITY_EDITOR"), Conditional("DEVELOPMENT_BUILD")]
+        public static void LogDictionary<TKey, TValue>(Dictionary<TKey, TValue> dictionary, string dictionaryName = "Dictionary", LogCategory category = LogCategory.General, UnityEngine.Object context = null)
+        {
+            if (!Settings.IsEnabled || !Settings.IsCategoryEnabled(category)) return;
+
+            string formattedDictionary = FormatDictionary(dictionary, dictionaryName);
+            string formattedMessage = FormatMessage(formattedDictionary, category, "LOG");
+            Debug.Log(formattedMessage, context);
+        }
+
+        #endregion
+
         #region Formatting
 
         private static string FormatMessage(string message, LogCategory category, string logType, string customColor = null)
@@ -174,6 +288,91 @@ namespace CustomLogger
         private static string ColorizeText(string text, string hexColor)
         {
             return $"<color={hexColor}>{text}</color>";
+        }
+
+        /// <summary>
+        /// Format a collection into a readable string
+        /// </summary>
+        private static string FormatCollection<T>(IEnumerable<T> collection, string collectionName, string collectionType = null)
+        {
+            if (collection == null)
+            {
+                return $"{collectionName}: null";
+            }
+
+            var items = collection.ToList();
+            int count = items.Count;
+
+            string typeInfo = collectionType != null ? $"<{collectionType}>" : "";
+            var sb = new StringBuilder();
+            sb.AppendLine($"{collectionName}{typeInfo} (Count: {count})");
+
+            if (count == 0)
+            {
+                sb.Append("  [Empty]");
+                return sb.ToString();
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                string prefix = i == items.Count - 1 ? "  └─" : "  ├─";
+                sb.AppendLine($"{prefix} [{i}]: {FormatItem(items[i])}");
+            }
+
+            return sb.ToString().TrimEnd('\n', '\r');
+        }
+
+        /// <summary>
+        /// Format a dictionary into a readable string
+        /// </summary>
+        private static string FormatDictionary<TKey, TValue>(Dictionary<TKey, TValue> dictionary, string dictionaryName)
+        {
+            if (dictionary == null)
+            {
+                return $"{dictionaryName}: null";
+            }
+
+            int count = dictionary.Count;
+            var sb = new StringBuilder();
+            sb.AppendLine($"{dictionaryName} (Count: {count})");
+
+            if (count == 0)
+            {
+                sb.Append("  [Empty]");
+                return sb.ToString();
+            }
+
+            int index = 0;
+            foreach (var kvp in dictionary)
+            {
+                string prefix = index == count - 1 ? "  └─" : "  ├─";
+                sb.AppendLine($"{prefix} {FormatItem(kvp.Key)} => {FormatItem(kvp.Value)}");
+                index++;
+            }
+
+            return sb.ToString().TrimEnd('\n', '\r');
+        }
+
+        /// <summary>
+        /// Format an individual item for display
+        /// </summary>
+        private static string FormatItem(object item)
+        {
+            if (item == null) return "null";
+
+            // Handle Unity objects specially
+            if (item is UnityEngine.Object unityObj)
+            {
+                return unityObj != null ? $"{unityObj.GetType().Name}({unityObj.name})" : "null";
+            }
+
+            // Handle strings with quotes
+            if (item is string str)
+            {
+                return $"\"{str}\"";
+            }
+
+            return item.ToString();
         }
 
         #endregion
@@ -223,6 +422,37 @@ namespace CustomLogger
         public static void LogError(this MonoBehaviour mb, object message, BetterLogger.LogCategory category = BetterLogger.LogCategory.General)
         {
             BetterLogger.LogError($"[{mb.GetType().Name}] {message}", category, mb);
+        }
+
+        // Collection logging extension methods
+        public static void LogCollection<T>(this MonoBehaviour mb, IEnumerable<T> collection, string collectionName = "Collection", BetterLogger.LogCategory category = BetterLogger.LogCategory.General)
+        {
+            BetterLogger.LogCollection(collection, $"[{mb.GetType().Name}] {collectionName}", category, mb);
+        }
+
+        public static void LogList<T>(this MonoBehaviour mb, List<T> list, string listName = "List", BetterLogger.LogCategory category = BetterLogger.LogCategory.General)
+        {
+            BetterLogger.LogList(list, $"[{mb.GetType().Name}] {listName}", category, mb);
+        }
+
+        public static void LogQueue<T>(this MonoBehaviour mb, Queue<T> queue, string queueName = "Queue", BetterLogger.LogCategory category = BetterLogger.LogCategory.General)
+        {
+            BetterLogger.LogQueue(queue, $"[{mb.GetType().Name}] {queueName}", category, mb);
+        }
+
+        public static void LogStack<T>(this MonoBehaviour mb, Stack<T> stack, string stackName = "Stack", BetterLogger.LogCategory category = BetterLogger.LogCategory.General)
+        {
+            BetterLogger.LogStack(stack, $"[{mb.GetType().Name}] {stackName}", category, mb);
+        }
+
+        public static void LogArray<T>(this MonoBehaviour mb, T[] array, string arrayName = "Array", BetterLogger.LogCategory category = BetterLogger.LogCategory.General)
+        {
+            BetterLogger.LogArray(array, $"[{mb.GetType().Name}] {arrayName}", category, mb);
+        }
+
+        public static void LogDictionary<TKey, TValue>(this MonoBehaviour mb, Dictionary<TKey, TValue> dictionary, string dictionaryName = "Dictionary", BetterLogger.LogCategory category = BetterLogger.LogCategory.General)
+        {
+            BetterLogger.LogDictionary(dictionary, $"[{mb.GetType().Name}] {dictionaryName}", category, mb);
         }
     }
 
