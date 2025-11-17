@@ -1,12 +1,58 @@
 using UnityEngine;
 
 /// <summary>
+/// Generic event to open a specific UI panel
+/// </summary>
+public struct OpenUI<T> where T : ShowHideBase
+{
+    public T Data;
+
+    public OpenUI(T data = null)
+    {
+        Data = data;
+    }
+}
+
+/// <summary>
+/// Generic event to close a specific UI panel
+/// </summary>
+public struct CloseUI<T> where T : ShowHideBase
+{
+    public T Data;
+
+    public CloseUI(T data = null)
+    {
+        Data = data;
+    }
+}
+
+/// <summary>
+/// Generic event to toggle a specific UI panel
+/// </summary>
+public struct ToggleUI<T> where T : ShowHideBase
+{
+    public T Data;
+
+    public ToggleUI(T data = null)
+    {
+        Data = data;
+    }
+}
+
+/// <summary>
 /// Base class for UI elements that can be shown and hidden.
 /// Provides hooks for start/complete callbacks and manages visibility state.
 /// Derived classes should implement specific show/hide behaviors (animation, procedural, etc.).
+/// Also supports automatic EventBus subscription for OpenUI/CloseUI/ToggleUI events.
 /// </summary>
 public abstract class ShowHideBase : MonoBehaviour
 {
+    /// <summary>
+    /// Set to true to automatically subscribe to EventBus for OpenUI/CloseUI/ToggleUI events
+    /// </summary>
+    [Header("EventBus Settings")]
+    [SerializeField] protected bool autoSubscribeToEventBus = true;
+
     /// <summary>
     /// True if the UI is currently visible or transitioning to visible.
     /// </summary>
@@ -46,6 +92,69 @@ public abstract class ShowHideBase : MonoBehaviour
         IsTransitioning = true;
         HideUIStart();
         HideInternal();
+    }
+
+    /// <summary>
+    /// Toggles the UI element between shown and hidden states.
+    /// </summary>
+    public void ToggleUI()
+    {
+        if (IsVisible)
+        {
+            HideUI();
+        }
+        else
+        {
+            ShowUI();
+        }
+    }
+
+    /// <summary>
+    /// Called when the component is enabled. Subscribes to EventBus if autoSubscribeToEventBus is true.
+    /// </summary>
+    protected virtual void OnEnable()
+    {
+        if (autoSubscribeToEventBus)
+        {
+            SubscribeToEventBus();
+        }
+    }
+
+    /// <summary>
+    /// Called when the component is disabled. Unsubscribes from EventBus if autoSubscribeToEventBus is true.
+    /// </summary>
+    protected virtual void OnDisable()
+    {
+        if (autoSubscribeToEventBus)
+        {
+            UnsubscribeFromEventBus();
+        }
+    }
+
+    /// <summary>
+    /// Subscribe to EventBus for this specific UI type.
+    /// Override this in derived classes to implement type-specific subscriptions.
+    /// </summary>
+    protected virtual void SubscribeToEventBus()
+    {
+        // Derived classes should implement this using their specific type
+        // Example in derived class:
+        // EventBus.Subscribe<OpenUI<MyUIClass>>(OnOpenUI);
+        // EventBus.Subscribe<CloseUI<MyUIClass>>(OnCloseUI);
+        // EventBus.Subscribe<ToggleUI<MyUIClass>>(OnToggleUI);
+    }
+
+    /// <summary>
+    /// Unsubscribe from EventBus for this specific UI type.
+    /// Override this in derived classes to implement type-specific unsubscriptions.
+    /// </summary>
+    protected virtual void UnsubscribeFromEventBus()
+    {
+        // Derived classes should implement this using their specific type
+        // Example in derived class:
+        // EventBus.Unsubscribe<OpenUI<MyUIClass>>(OnOpenUI);
+        // EventBus.Unsubscribe<CloseUI<MyUIClass>>(OnCloseUI);
+        // EventBus.Unsubscribe<ToggleUI<MyUIClass>>(OnToggleUI);
     }
 
     /// <summary>
