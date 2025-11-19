@@ -1,4 +1,3 @@
-using DependencyInjection;
 using UnityEngine;
 
 
@@ -6,7 +5,7 @@ using UnityEngine;
 /// This Class is a glue code class to handle Player with its input, then integrate witht the movement
 
 [RequireComponent(typeof(PlayerInputHandler))]
-public class PlayerController : MonoBehaviour, IDependencyProvider
+public class PlayerController : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] private CharacterController characterController;
