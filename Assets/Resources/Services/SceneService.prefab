@@ -47,4 +47,6 @@ MonoBehaviour:
   SceneRecords:
   - SceneId: 0
     SceneGroupAsset: {fileID: 11400000, guid: eadf75d5c917e204e9a137a4cbed0554, type: 2}
+  - SceneId: 3
+    SceneGroupAsset: {fileID: 11400000, guid: eadf75d5c917e204e9a137a4cbed0554, type: 2}
   transitionSettings: {fileID: 11400000, guid: 12705be73d98c6942a612f642229cf92, type: 2}
