@@ -1,3 +1,4 @@
+using CustomLogger;
 using UnityEngine;
 
 
@@ -14,8 +15,12 @@ public class PlayerController : MonoBehaviour
     [Header("Handlers")]
     [SerializeField] private PlayerMovementHandler movementHandler;
 
+    [Header("Camera-Relative Movement")]
+    [Tooltip("If enabled, movement will be relative to camera direction")]
+    [SerializeField] private bool useCameraRelativeMovement = true;
 
     private PlayerInputHandler inputHandler;
+    private CameraRelativeDirectionProvider directionProvider;
 
     private void Awake()
     {
@@ -33,6 +38,24 @@ public class PlayerController : MonoBehaviour
             if (characterController == null)
             {
                 Debug.LogError($"CharacterController is missing on {name}");
+            }
+        }
+
+        // Setup camera-relative direction provider if enabled
+        if (useCameraRelativeMovement)
+        {
+            directionProvider = GetComponent<CameraRelativeDirectionProvider>();
+            if (directionProvider == null)
+            {
+                directionProvider = gameObject.AddComponent<CameraRelativeDirectionProvider>();
+
+                BetterLogger.Log("Addding Camera Relative direction for Player Controlller");
+
+                // Set camera reference
+                if (playerCamera != null)
+                {
+                    directionProvider.SetCamera(playerCamera);
+                }
             }
         }
 
@@ -74,7 +97,17 @@ public class PlayerController : MonoBehaviour
         bool sprint = inputHandler.IsSprintHeld;
         bool crouch = inputHandler.IsCrouchHeld;
 
-        movementHandler.Move(moveInput, sprint, crouch);
+        // Convert input to world-space direction if camera-relative movement is enabled
+        if (useCameraRelativeMovement && directionProvider != null)
+        {
+            Vector3 worldDirection = directionProvider.GetCameraRelativeDirection(moveInput);
+            movementHandler.Move(moveInput, sprint, crouch, worldDirection);
+        }
+        else
+        {
+            // Use default world-space movement
+            movementHandler.Move(moveInput, sprint, crouch);
+        }
     }
 
     private void HandleJump()
