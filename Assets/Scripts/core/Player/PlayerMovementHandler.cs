@@ -40,13 +40,23 @@ internal class PlayerMovementHandler
         characterController = controller;
     }
 
-    public void Move(Vector2 inputDirection, bool sprint, bool crouch)
+    /// <summary>
+    /// Move the character with optional world-space direction override.
+    /// </summary>
+    /// <param name="inputDirection">Raw input direction (WASD as Vector2)</param>
+    /// <param name="sprint">Is sprint button held</param>
+    /// <param name="crouch">Is crouch button held</param>
+    /// <param name="worldDirection">Optional: pre-converted world-space direction. If provided, ignores inputDirection</param>
+    public void Move(Vector2 inputDirection, bool sprint, bool crouch, Vector3? worldDirection = null)
     {
         isSprinting = sprint;
         isCrouching = crouch;
 
         float targetSpeed = GetTargetSpeed();
-        Vector3 targetVelocity = new Vector3(inputDirection.x, 0f, inputDirection.y) * targetSpeed;
+
+        // Use provided world direction or convert input to world-space
+        Vector3 moveDirection = worldDirection ?? new Vector3(inputDirection.x, 0f, inputDirection.y);
+        Vector3 targetVelocity = moveDirection.normalized * targetSpeed;
 
         // Smooth movement using interpolation
         currentVelocity = Vector3.Lerp(
