@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ResetService : MonoBehaviour, IInitializableService
+public class ResetService : ServiceBase<ResetService>
 {
 
     private static List<IResetable> _s_resetables = new();
 
-    public ServicePriority InitializationPriority => ServicePriority.PRIMARY;
 
     private static List<Action> _resetActions = new();
     private static Action OnCompleteResetAction;
@@ -45,10 +44,5 @@ public class ResetService : MonoBehaviour, IInitializableService
         {
             OnCompleteResetAction -= action;
         }
-    }
-
-    public Task Initialize()
-    {
-        return Task.CompletedTask;
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Generic event to open a specific UI panel
@@ -52,6 +53,11 @@ public abstract class ShowHideBase : MonoBehaviour
     /// </summary>
     [Header("EventBus Settings")]
     [SerializeField] protected bool autoSubscribeToEventBus = true;
+
+    [SerializeField] protected UnityEvent onShowStarted;
+    [SerializeField] protected UnityEvent onShowCompleted;
+    [SerializeField] protected UnityEvent onHideStarted;
+    [SerializeField] protected UnityEvent onHideCompleted;
 
     /// <summary>
     /// True if the UI is currently visible or transitioning to visible.
@@ -184,6 +190,7 @@ public abstract class ShowHideBase : MonoBehaviour
     protected virtual void HideUIStart()
     {
         // Override in derived classes if needed
+        onShowStarted?.Invoke();
     }
 
     /// <summary>
@@ -192,6 +199,7 @@ public abstract class ShowHideBase : MonoBehaviour
     protected virtual void HideUIComplete()
     {
         // Override in derived classes if needed
+        onHideCompleted?.Invoke();
     }
 
     /// <summary>
@@ -200,6 +208,7 @@ public abstract class ShowHideBase : MonoBehaviour
     protected virtual void ShowUIStart()
     {
         // Override in derived classes if needed
+        onShowStarted?.Invoke();
     }
 
     /// <summary>
@@ -208,6 +217,7 @@ public abstract class ShowHideBase : MonoBehaviour
     protected virtual void ShowUIComplete()
     {
         // Override in derived classes if needed
+        onShowCompleted?.Invoke();
     }
 
     /// <summary>
