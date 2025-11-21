@@ -92,10 +92,8 @@ public class SceneService : MonoBehaviour, IInitializableService
             }
             SceneGroup groupToLoad = record.SceneGroupAsset;
 
-            // 2. Unload any currently loaded scenes that are not in the new group
-            await UnloadUnusedScenes(groupToLoad);
 
-            // 3. Load all scenes in the new group
+            await UnloadUnusedScenes(groupToLoad);
             await LoadSceneGroup(groupToLoad);
 
             _currentSceneGroup = groupToLoad;

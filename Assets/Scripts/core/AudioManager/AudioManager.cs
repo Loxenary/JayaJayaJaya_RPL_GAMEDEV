@@ -1,6 +1,7 @@
 // File: AudioManager.cs
 using System;
 using System.Threading.Tasks;
+using CustomLogger;
 using UnityEngine;
 
 /// <summary>
@@ -8,7 +9,7 @@ using UnityEngine;
 /// Provides a clean facade for audio playback while delegating to specialized services.
 /// Supports both 2D (global) and 3D (spatial) audio.
 /// </summary>
-public class AudioManager : MonoBehaviour, IInitializableService
+public class AudioManager : InitializableServiceBase<AudioManager>
 {
     [Header("Audio Sources - 2D/Global")]
     [SerializeField] private AudioSource musicSource;
@@ -26,7 +27,7 @@ public class AudioManager : MonoBehaviour, IInitializableService
     private SpatialAudioPlayback _spatialPlayback;
     private AudioSource _musicOneShotSource;
 
-    // Public events (renamed for clarity, but kept old name for compatibility)
+    // Public events 
     public event Action OnVolumeChangeEvent;
     public event Action OnVolumeChanged
     {
@@ -34,13 +35,13 @@ public class AudioManager : MonoBehaviour, IInitializableService
         remove => OnVolumeChangeEvent -= value;
     }
 
-    public ServicePriority InitializationPriority => ServicePriority.PRIMARY;
+    public override ServicePriority InitializationPriority => ServicePriority.PRIMARY;
 
     #region Unity Lifecycle
 
-    private void Awake()
+    protected override void Awake()
     {
-        ServiceLocator.Register(this);
+        base.Awake();
 
         // Ensure required audio sources exist
         EnsureAudioSources();
@@ -90,19 +91,19 @@ public class AudioManager : MonoBehaviour, IInitializableService
 
     private void InitializeSystems()
     {
-        // 1. Initialize volume controller
+        //  Initialize volume controller
         _volumeController = new AudioVolumeController();
         _volumeController.OnVolumeChanged += HandleVolumeChanged;
 
-        // 2. Initialize data registry and load audio data
+        //  Initialize data registry and load audio data
         _dataRegistry = new AudioDataRegistry();
         _dataRegistry.LoadAllAudioData();
 
-        // 3. Initialize settings manager
+        //  Initialize settings manager
         _settingsManager = new AudioSettingsManager(_volumeController, saveDebounceTime);
         _settingsManager.SetCoroutineRunner(this);
 
-        // 4. Initialize playback services (dependency injection)
+        //  Initialize playback services (dependency injection)
         _globalPlayback = new GlobalAudioPlayback(
             musicSource,
             introSource,
@@ -116,17 +117,17 @@ public class AudioManager : MonoBehaviour, IInitializableService
         _spatialPlayback = new SpatialAudioPlayback(_volumeController, _dataRegistry);
     }
 
-    public async Task Initialize()
+    public override async Task Initialize()
     {
         try
         {
             // Load saved audio settings
             await _settingsManager.LoadSettingsAsync();
-            Debug.Log("[AudioManager] Initialization complete");
+            BetterLogger.Log("[AudioManager] Initialization complete", BetterLogger.LogCategory.System);
         }
         catch (Exception e)
         {
-            Debug.LogError($"[AudioManager] Initialization failed: {e.Message}");
+            BetterLogger.LogError($"[AudioManager] Initialization failed: {e.Message}", BetterLogger.LogCategory.System);
         }
     }
 
@@ -262,6 +263,8 @@ public class AudioManager : MonoBehaviour, IInitializableService
         _dataRegistry = dataRegistry;
         _settingsManager = settingsManager;
     }
+
+
 
     #endregion
 }
