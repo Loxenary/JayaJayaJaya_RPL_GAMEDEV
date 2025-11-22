@@ -570,6 +570,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Random Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 4006319967860243235, guid: 9aa621f3edec5264f955e208987ffa64, type: 3}
+      propertyPath: objectCount
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -36,7 +36,7 @@ public class InteractableUI : MonoBehaviour
     }
     void Interact()
     {
-        OnInteractEnter.Invoke();
+        OnInteract.Invoke();
         //Write Your Code
     }
     void Enter()
