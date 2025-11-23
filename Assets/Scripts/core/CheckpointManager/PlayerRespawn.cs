@@ -10,8 +10,13 @@ public class PlayerRespawn : MonoBehaviour
     [SerializeField] private bool respawnOnStart = false;
     [SerializeField] private float healthThreshold = 0f;
 
+    [Header("Death Detection")]
+    [SerializeField] private bool enableFallDeath = true;
+    [SerializeField] private float deathHeight = -50f;
+
     private CheckpointManager checkpointManager;
     private IPlayerHealth playerHealth;
+    private bool isDead = false;
 
     private void Start()
     {
@@ -58,10 +63,18 @@ public class PlayerRespawn : MonoBehaviour
 
     private void Update()
     {
-        // Example: Respawn jika health <= 0
+        if (isDead) return;
+
+        // Check 1: Fall death detection
+        if (enableFallDeath && transform.position.y < deathHeight)
+        {
+            Die("Fell out of world");
+        }
+
+        // Check 2: Respawn jika health <= 0
         if (playerHealth != null && playerHealth.GetCurrentHealth() <= healthThreshold)
         {
-            Die();
+            Die("Health depleted");
         }
 
         // Example: Press R to respawn (for testing)
@@ -75,9 +88,12 @@ public class PlayerRespawn : MonoBehaviour
     /// <summary>
     /// Panggil method ini ketika player mati
     /// </summary>
-    public void Die()
+    public void Die(string reason = "Unknown")
     {
-        Debug.Log("[PlayerRespawn] Player died! Respawning...");
+        if (isDead) return;
+
+        isDead = true;
+        Debug.Log($"[PlayerRespawn] Player died: {reason}");
         RespawnAtLastCheckpoint();
     }
 
@@ -122,6 +138,7 @@ public class PlayerRespawn : MonoBehaviour
 
     private void OnRespawned(CheckpointData data)
     {
+        isDead = false; // Reset death flag
         Debug.Log($"[PlayerRespawn] Respawned at: {data.checkpointID}");
 
         // TODO: Add post-respawn actions

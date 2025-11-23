@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9168540339667144527}
   - component: {fileID: 6049554916998118861}
   m_Layer: 0
-  m_Name: CheckPointManager
+  m_Name: CheckpointManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,6 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96c6569adf4f4164993bbe00ce6b71ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoSaveOnCheckpoint: 1
-  respawnDelay: 1
+  autoSaveOnCheckpoint: 0
+  respawnDelay: 0.1
   debugMode: 0
