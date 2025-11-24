@@ -3,14 +3,11 @@ using CustomLogger;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class TimeService : MonoBehaviour, IInitializableService
+public class TimeService : ServiceBase<TimeService>
 {
     private static int _t_stop_counter = 0;
 
     private static Queue<object> _stopperQueue = new();
-
-    public ServicePriority InitializationPriority => ServicePriority.PRIMARY;
-
 
     public void RequestStopTime(object requesterObject)
     {
@@ -53,8 +50,4 @@ public class TimeService : MonoBehaviour, IInitializableService
         BetterLogger.LogQueue(_stopperQueue, "Time Service Stop Queue", BetterLogger.LogCategory.System);
     }
 
-    public Task Initialize()
-    {
-        return Task.CompletedTask;
-    }
 }
