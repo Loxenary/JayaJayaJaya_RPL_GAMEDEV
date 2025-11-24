@@ -34,10 +34,12 @@ public class InteractableSelector : MonoBehaviour
 
     private void OnPressInteract(InputAction.CallbackContext context)
     {
+
         if (currentObject)
         {
             currentObject.InteractObject();
             EventBus.Publish(InteractEventState.OnInteract);
+
         }
     }
 
