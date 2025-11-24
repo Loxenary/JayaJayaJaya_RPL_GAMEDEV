@@ -5,6 +5,7 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
 ## 📋 Fitur
 
 ### 1. **Player Sanity System** (`PlayerSanity.cs`)
+
 - Sistem sanity yang dapat menurun seiring waktu atau karena event tertentu
 - 4 level sanity: High, Medium, Low, Critical
 - Passive decay (opsional)
@@ -12,6 +13,7 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
 - Events untuk tracking perubahan sanity
 
 ### 2. **Ghost AI** (`GhostAI.cs`)
+
 - State machine dengan 5 state: Idle, Patrol, Chase, Attack, Stunned
 - Detection system dengan line of sight check
 - Patrol system dengan waypoints
@@ -22,6 +24,7 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
   - Critical Sanity: 2x speed (sangat cepat!)
 
 ### 3. **Ghost Attack System** (`GhostAttack.cs`)
+
 - Attack cooldown system
 - **Damage scaling berdasarkan sanity:**
   - High Sanity: 1x damage
@@ -32,6 +35,7 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
 - Events untuk attack lifecycle
 
 ### 4. **Health System**
+
 - `IHealth` interface untuk damage system
 - `PlayerHealth.cs` implementasi untuk player
 - Auto regeneration (opsional)
@@ -44,6 +48,7 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
 ### Setup Player
 
 1. **Attach Components ke Player GameObject:**
+
    ```
    - PlayerController (existing)
    - PlayerSanity (NEW)
@@ -52,6 +57,7 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
    ```
 
 2. **Configure PlayerSanity:**
+
    - Max Sanity: 100
    - Passive Decay Rate: 0.5 (optional, bisa di-disable)
    - Enable Passive Decay: False (aktifkan jika ingin sanity menurun otomatis)
@@ -66,30 +72,36 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
 ### Setup Ghost
 
 1. **Buat GameObject baru untuk Ghost:**
+
    - Buat Empty GameObject, nama: "Ghost"
    - Posisikan di scene
 
 2. **Attach Components:**
+
    ```
    - GhostAI (NEW)
    - GhostAttack (NEW)
    ```
 
 3. **Configure GhostAI:**
+
    - **References:**
+
      - Player: Drag player GameObject (auto-detect jika player tagged "Player")
      - Player Sanity: Auto-detect dari player
-   
+
    - **Detection:**
+
      - Detection Range: 15
      - Attack Range: 2
      - Lose Target Range: 25
-   
+
    - **Movement Base Speed:**
+
      - Idle Speed: 1
      - Patrol Speed: 2
      - Chase Speed: 4
-   
+
    - **Sanity Speed Multipliers:**
      - High Sanity: 1.0x
      - Medium Sanity: 1.3x
@@ -107,6 +119,7 @@ Implementasi sistem ghost sederhana dengan AI yang responsif terhadap kondisi sa
 ### Optional: Setup Patrol
 
 1. Buat Empty GameObjects untuk patrol waypoints:
+
    ```
    - PatrolPoint_1
    - PatrolPoint_2
@@ -141,6 +154,7 @@ IDLE → PATROL → (Player Detected) → CHASE → ATTACK
 ### Sanity Impact
 
 #### Pada Speed:
+
 ```
 Player Sanity → Ghost Speed
 High (70-100%)   → 1.0x (Normal)
@@ -150,6 +164,7 @@ Critical (0-20%) → 2.0x (Sangat cepat!)
 ```
 
 #### Pada Damage:
+
 ```
 Player Sanity → Ghost Damage
 High (70-100%)   → 1.0x (15 damage)
@@ -163,24 +178,29 @@ Critical (0-20%) → 2.0x (30 damage!)
 ## 🧪 Testing
 
 ### Test Sanity System
+
 1. Tekan Play di Unity
 2. Buka Inspector untuk melihat PlayerSanity component
 3. Untuk testing manual:
+
    ```csharp
    // Reduce sanity
    playerSanity.DecreaseSanity(20);
-   
+
    // Observe ghost speed increase
    ```
 
 ### Test Ghost AI
+
 1. Pastikan player tagged sebagai "Player"
 2. Ghost akan otomatis detect dan chase player
 3. Observe perubahan speed saat sanity menurun
 4. Check Gizmos di Scene view untuk visualisasi range
 
 ### Debug Mode
+
 Enable Gizmos di Scene view untuk melihat:
+
 - Yellow sphere: Detection range
 - Red sphere: Attack range
 - Blue sphere: Lose target range
@@ -192,6 +212,7 @@ Enable Gizmos di Scene view untuk melihat:
 ## 📝 Customization
 
 ### Membuat Ghost Lebih Agresif
+
 ```csharp
 // Di Inspector GhostAI:
 - Detection Range: 20 (lebih jauh)
@@ -204,6 +225,7 @@ Enable Gizmos di Scene view untuk melihat:
 ```
 
 ### Membuat Sanity Decay Lebih Intens
+
 ```csharp
 // Di Inspector PlayerSanity:
 - Enable Passive Decay: True
@@ -211,6 +233,7 @@ Enable Gizmos di Scene view untuk melihat:
 ```
 
 ### Menambah Events Custom
+
 ```csharp
 // Subscribe ke events
 ghostAI.OnPlayerDetected += () => {
@@ -229,6 +252,7 @@ playerSanity.OnSanityLevelChanged += (level) => {
 ## 🔧 API Reference
 
 ### PlayerSanity
+
 ```csharp
 // Properties
 float CurrentSanity { get; }
@@ -248,6 +272,7 @@ event Action OnSanityDepleted
 ```
 
 ### GhostAI
+
 ```csharp
 // Properties
 GhostState CurrentState { get; }
@@ -266,6 +291,7 @@ event Action OnPlayerLost
 ```
 
 ### GhostAttack
+
 ```csharp
 // Properties
 bool IsAttacking { get; }
@@ -291,6 +317,7 @@ Ketika sudah ada model 3D dan animasi:
 
 1. **Tambahkan Animator component ke Ghost**
 2. **Hook animations ke state changes:**
+
    ```csharp
    ghostAI.OnStateChanged += (state) => {
        switch(state) {
@@ -321,21 +348,25 @@ Ketika sudah ada model 3D dan animasi:
 ## 🐛 Troubleshooting
 
 **Ghost tidak bergerak:**
+
 - Pastikan `Start Active` = true di GhostAI
 - Check apakah ada patrol points (atau akan idle)
 - Pastikan player ada dan tagged "Player"
 
 **Ghost tidak mengejar player:**
+
 - Check Detection Range (apakah cukup jauh?)
 - Check Obstruction Mask (apakah ada wall yang menghalangi?)
 - Check apakah player di dalam detection range
 
 **Damage tidak berubah dengan sanity:**
+
 - Pastikan `Scale Damage With Sanity` = true
 - Check apakah PlayerSanity component attached ke player
 - Verify GhostAttack dapat access PlayerSanity
 
 **Player tidak mati:**
+
 - Pastikan PlayerHealth attached ke player
 - Check apakah damage > 0
 - Verify IHealth interface implemented correctly
@@ -345,17 +376,20 @@ Ketika sudah ada model 3D dan animasi:
 ## 📚 Next Steps
 
 1. **Tambah Visual:**
+
    - 3D model untuk ghost
    - Animasi (idle, walk, run, attack)
    - Particle effects
 
 2. **Tambah Audio:**
+
    - Ambient sound untuk ghost
    - Attack sound
    - Footsteps
    - Scare sound saat detection
 
 3. **Expand Mechanics:**
+
    - Multiple ghost types dengan behavior berbeda
    - Hiding system untuk player
    - Light sources mempengaruhi ghost behavior

@@ -9,6 +9,7 @@ Sistem ghost sederhana dengan AI yang responsif terhadap sanity player telah ber
 ## 📦 Files Created
 
 ### Core Systems (Player)
+
 ```
 Assets/Scripts/core/Player/
 ├── PlayerSanity.cs          ✓ Sistem sanity dengan level-based thresholds
@@ -17,6 +18,7 @@ Assets/Scripts/core/Player/
 ```
 
 ### Ghost System
+
 ```
 Assets/Scripts/core/Ghost/
 ├── GhostAI.cs                      ✓ State machine AI dengan sanity-based speed
@@ -33,6 +35,7 @@ Assets/Scripts/core/Ghost/
 ## 🎯 Core Features Implemented
 
 ### 1. Player Sanity System ✓
+
 - **4 Sanity Levels:** High, Medium, Low, Critical
 - **Passive Decay:** Optional auto-decrease over time
 - **Recovery System:** Gradual sanity restoration
@@ -40,6 +43,7 @@ Assets/Scripts/core/Ghost/
 - **Utility Methods:** OnGhostSeen(), OnScareEvent(), OnDarkArea()
 
 ### 2. Ghost AI System ✓
+
 - **State Machine:** Idle → Patrol → Chase → Attack → Stunned
 - **Detection System:** Range-based with line of sight check
 - **Patrol System:** Waypoint-based patrol routes
@@ -50,6 +54,7 @@ Assets/Scripts/core/Ghost/
   - Critical Sanity: 2.0x (EXTREMELY FAST!)
 
 ### 3. Ghost Attack System ✓
+
 - **Cooldown Management:** Configurable attack intervals
 - **Sanity-Based Damage:**
   - High Sanity: 15 damage (1.0x)
@@ -60,12 +65,14 @@ Assets/Scripts/core/Ghost/
 - **Events:** Track attack lifecycle
 
 ### 4. Health System ✓
+
 - **IHealth Interface:** Universal damage handling
 - **PlayerHealth Implementation:** Player-specific health
 - **Auto Regeneration:** Optional health recovery
 - **Death Handling:** Integration with checkpoint system
 
 ### 5. Visual Placeholder ✓
+
 - **Procedural Capsule:** Ghost body representation
 - **State-Based Colors:** Different colors per state
 - **Sanity Glow:** Glow effect based on player sanity
@@ -73,12 +80,14 @@ Assets/Scripts/core/Ghost/
 - **Red Eyes:** Creepy eye markers
 
 ### 6. Debug Tools ✓
+
 - **Keyboard Controls:** Quick testing shortcuts
 - **On-Screen GUI:** Real-time state display
 - **State Manipulation:** Toggle, stun, teleport ghost
 - **Sanity Control:** Increase/decrease for testing
 
 ### 7. Auto Setup ✓
+
 - **One-Click Setup:** Automated ghost system creation
 - **Player Configuration:** Auto-add required components
 - **Patrol Generation:** Circular patrol path creation
@@ -89,6 +98,7 @@ Assets/Scripts/core/Ghost/
 ## 🎮 How It Works
 
 ### The Core Loop
+
 ```
 1. Player spawns with full sanity (100)
 2. Ghost starts patrolling waypoints
@@ -101,6 +111,7 @@ Assets/Scripts/core/Ghost/
 ```
 
 ### Sanity Impact Visualization
+
 ```
 Player Sanity:  100%     70%      40%      20%      0%
                  |        |        |        |        |
@@ -115,11 +126,13 @@ Ghost Damage:   15      18       22.5     30
 ## 🚀 Quick Start
 
 ### Option 1: Auto Setup (FASTEST)
+
 1. Create Empty GameObject → Add `GhostSystemSetup` component
 2. Right click component → "Setup Ghost System"
 3. Done! Press Play to test
 
 ### Option 2: Manual Setup
+
 1. Add to Player: `PlayerSanity` + `PlayerHealth`
 2. Create Ghost GameObject
 3. Add to Ghost: `GhostAttack` → `GhostAI` → `GhostVisualPlaceholder`
@@ -133,6 +146,7 @@ Ghost Damage:   15      18       22.5     30
 ## 🎯 Testing
 
 ### Basic Test
+
 ```
 1. Press Play
 2. Walk near ghost
@@ -141,6 +155,7 @@ Ghost Damage:   15      18       22.5     30
 ```
 
 ### Debug Controls
+
 ```
 G - Toggle ghost active/inactive
 H - Stun ghost for 3 seconds
@@ -150,6 +165,7 @@ L - Hold to increase sanity
 ```
 
 ### Expected Behavior
+
 - ✓ Ghost patrols when player not detected
 - ✓ Ghost chases when player in range
 - ✓ Ghost attacks at close range
@@ -164,6 +180,7 @@ L - Hold to increase sanity
 ### Recommended Settings
 
 **PlayerSanity:**
+
 ```
 Max Sanity: 100
 Passive Decay Rate: 0.5 (or disable)
@@ -173,6 +190,7 @@ Low Threshold: 0.2
 ```
 
 **GhostAI:**
+
 ```
 Detection Range: 15
 Attack Range: 2
@@ -183,6 +201,7 @@ Critical Sanity Multiplier: 2.0
 ```
 
 **GhostAttack:**
+
 ```
 Base Damage: 15
 Attack Cooldown: 1.5
@@ -197,10 +216,12 @@ Sanity Drain Per Attack: 5
 Sistem ini siap untuk integrasi dengan model 3D:
 
 1. **Replace Visual:**
+
    - Disable/Remove `GhostVisualPlaceholder`
    - Add 3D model as child of Ghost GameObject
 
 2. **Add Animations:**
+
    - Add Animator component
    - Hook state changes to animations:
      ```csharp
@@ -221,6 +242,7 @@ Sistem ini siap untuk integrasi dengan model 3D:
 Sistem ini dirancang modular dan mudah di-extend:
 
 ### Add New Ghost Types
+
 ```csharp
 // Buat class turunan GhostAI
 public class FastGhost : GhostAI {
@@ -229,6 +251,7 @@ public class FastGhost : GhostAI {
 ```
 
 ### Add Environmental Effects
+
 ```csharp
 // Trigger sanity drain di area gelap
 public class DarkArea : MonoBehaviour {
@@ -240,6 +263,7 @@ public class DarkArea : MonoBehaviour {
 ```
 
 ### Add Ghost Abilities
+
 ```csharp
 // Extend GhostAttack untuk special abilities
 public class GhostSpecialAbility : MonoBehaviour {
@@ -254,6 +278,7 @@ public class GhostSpecialAbility : MonoBehaviour {
 ## 📚 Documentation
 
 Baca dokumentasi lengkap:
+
 - **README_GHOST_SYSTEM.md** - Full documentation
 - **QUICK_SETUP.md** - Quick setup guide
 - **Code Comments** - Inline documentation dalam setiap script
@@ -263,18 +288,21 @@ Baca dokumentasi lengkap:
 ## ✨ Next Steps
 
 ### Immediate (Testing)
+
 - [x] Test ghost detection
 - [x] Test sanity system
 - [x] Test speed scaling
 - [x] Test damage scaling
 
 ### Short Term (Visual)
+
 - [ ] Add 3D ghost model
 - [ ] Add animations (idle, walk, run, attack)
 - [ ] Add particle effects
 - [ ] Add sound effects
 
 ### Long Term (Features)
+
 - [ ] Multiple ghost types
 - [ ] Hiding mechanics
 - [ ] Light-based ghost behavior
@@ -287,7 +315,7 @@ Baca dokumentasi lengkap:
 ## 🎉 Summary
 
 ✅ **Ghost AI** dengan state machine lengkap
-✅ **Sanity System** yang mempengaruhi ghost behavior  
+✅ **Sanity System** yang mempengaruhi ghost behavior
 ✅ **Speed & Damage Scaling** berdasarkan sanity
 ✅ **Health System** dengan interface modular
 ✅ **Visual Placeholder** untuk testing tanpa model 3D

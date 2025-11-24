@@ -9,31 +9,31 @@ public class GhostSystemIntegration : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerSanity playerSanity;
     [SerializeField] private GhostAI ghostAI;
-    
+
     [Header("UI Integration (Optional)")]
     [SerializeField] private UnityEngine.UI.Slider sanityBar;
     [SerializeField] private UnityEngine.UI.Text sanityText;
     [SerializeField] private UnityEngine.UI.Text ghostStateText;
-    
+
     [Header("Audio Integration (Optional)")]
     [SerializeField] private AudioSource ghostAmbientSound;
     [SerializeField] private AudioSource chaseMusic;
     [SerializeField] private AudioClip detectSound;
     [SerializeField] private AudioClip attackSound;
-    
+
     [Header("Visual Effects (Optional)")]
     [SerializeField] private Light environmentLight;
     [SerializeField] private float highSanityLightIntensity = 1f;
     [SerializeField] private float lowSanityLightIntensity = 0.3f;
     [SerializeField] private ParticleSystem sanityLowEffect;
-    
+
     [Header("Camera Effects")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private bool enableScreenDistortion = true;
-    
+
     private Material screenDistortionMaterial;
     private float currentVignetteIntensity = 0f;
-    
+
     private void Start()
     {
         // Auto-find references jika tidak diset
@@ -45,17 +45,17 @@ public class GhostSystemIntegration : MonoBehaviour
                 playerSanity = player.GetComponent<PlayerSanity>();
             }
         }
-        
+
         if (ghostAI == null)
         {
             ghostAI = FindObjectOfType<GhostAI>();
         }
-        
+
         if (playerCamera == null)
         {
             playerCamera = Camera.main;
         }
-        
+
         // Subscribe to events
         if (playerSanity != null)
         {
@@ -63,7 +63,7 @@ public class GhostSystemIntegration : MonoBehaviour
             playerSanity.OnSanityLevelChanged += OnSanityLevelChanged;
             playerSanity.OnSanityDepleted += OnSanityDepleted;
         }
-        
+
         if (ghostAI != null)
         {
             ghostAI.OnStateChanged += OnGhostStateChanged;
@@ -71,16 +71,16 @@ public class GhostSystemIntegration : MonoBehaviour
             ghostAI.OnPlayerLost += OnGhostLostPlayer;
         }
     }
-    
+
     private void Update()
     {
         UpdateVisualEffects();
     }
-    
+
     // ============================================
     // SANITY EVENT HANDLERS
     // ============================================
-    
+
     private void OnSanityChanged(float newSanity)
     {
         // Update UI
@@ -88,27 +88,27 @@ public class GhostSystemIntegration : MonoBehaviour
         {
             sanityBar.value = newSanity / playerSanity.MaxSanity;
         }
-        
+
         if (sanityText != null)
         {
             sanityText.text = $"Sanity: {newSanity:F0}/{playerSanity.MaxSanity}";
         }
     }
-    
+
     private void OnSanityLevelChanged(PlayerSanity.SanityLevel newLevel)
     {
         Debug.Log($"[Integration] Sanity level changed to: {newLevel}");
-        
+
         // Update lighting based on sanity level
         UpdateEnvironmentLighting(newLevel);
-        
+
         // Play audio feedback
         PlaySanityLevelAudio(newLevel);
-        
+
         // Show/hide effects
         if (sanityLowEffect != null)
         {
-            if (newLevel == PlayerSanity.SanityLevel.Low || 
+            if (newLevel == PlayerSanity.SanityLevel.Low ||
                 newLevel == PlayerSanity.SanityLevel.Critical)
             {
                 if (!sanityLowEffect.isPlaying)
@@ -121,36 +121,36 @@ public class GhostSystemIntegration : MonoBehaviour
             }
         }
     }
-    
+
     private void OnSanityDepleted()
     {
         Debug.Log("[Integration] Sanity depleted! Player in extreme danger!");
-        
+
         // Trigger extreme visual effects
         if (playerCamera != null)
         {
             // Heavy screen shake, distortion, etc
             StartCoroutine(ScreenShakeCoroutine(0.5f, 0.3f));
         }
-        
+
         // Play audio cue
         // ... play sound
     }
-    
+
     // ============================================
     // GHOST EVENT HANDLERS
     // ============================================
-    
+
     private void OnGhostStateChanged(GhostAI.GhostState newState)
     {
         Debug.Log($"[Integration] Ghost state: {newState}");
-        
+
         // Update UI
         if (ghostStateText != null)
         {
             ghostStateText.text = $"Ghost: {newState}";
         }
-        
+
         // Handle audio based on state
         switch (newState)
         {
@@ -167,7 +167,7 @@ public class GhostSystemIntegration : MonoBehaviour
                     chaseMusic.Stop();
                 }
                 break;
-                
+
             case GhostAI.GhostState.Chase:
                 // Play chase music
                 if (chaseMusic != null && !chaseMusic.isPlaying)
@@ -175,7 +175,7 @@ public class GhostSystemIntegration : MonoBehaviour
                     chaseMusic.Play();
                 }
                 break;
-                
+
             case GhostAI.GhostState.Attack:
                 // Play attack sound
                 if (ghostAmbientSound != null && attackSound != null)
@@ -185,70 +185,70 @@ public class GhostSystemIntegration : MonoBehaviour
                 break;
         }
     }
-    
+
     private void OnGhostDetectedPlayer()
     {
         Debug.Log("[Integration] Ghost detected player!");
-        
+
         // Play detection sound
         if (ghostAmbientSound != null && detectSound != null)
         {
             ghostAmbientSound.PlayOneShot(detectSound);
         }
-        
+
         // Decrease sanity (scare effect)
         if (playerSanity != null)
         {
             playerSanity.OnGhostSeen(10f);
         }
-        
+
         // Camera shake
         if (playerCamera != null)
         {
             StartCoroutine(ScreenShakeCoroutine(0.2f, 0.1f));
         }
     }
-    
+
     private void OnGhostLostPlayer()
     {
         Debug.Log("[Integration] Ghost lost player");
-        
+
         // Fade out chase music
         if (chaseMusic != null)
         {
             StartCoroutine(FadeOutAudioCoroutine(chaseMusic, 2f));
         }
     }
-    
+
     // ============================================
     // VISUAL EFFECTS
     // ============================================
-    
+
     private void UpdateVisualEffects()
     {
         if (playerSanity == null) return;
-        
+
         // Update vignette/screen distortion based on sanity
         if (enableScreenDistortion)
         {
             float targetVignette = 1f - playerSanity.SanityPercentage;
             currentVignetteIntensity = Mathf.Lerp(
-                currentVignetteIntensity, 
-                targetVignette, 
+                currentVignetteIntensity,
+                targetVignette,
                 Time.deltaTime
             );
-            
+
             // Apply post-processing effects here if available
             // Example: PostProcessVolume.weight = currentVignetteIntensity;
         }
     }
-    
+
     private void UpdateEnvironmentLighting(PlayerSanity.SanityLevel level)
     {
         if (environmentLight == null) return;
-        
+
         float targetIntensity = highSanityLightIntensity;
-        
+
         switch (level)
         {
             case PlayerSanity.SanityLevel.High:
@@ -264,72 +264,72 @@ public class GhostSystemIntegration : MonoBehaviour
                 targetIntensity = lowSanityLightIntensity;
                 break;
         }
-        
+
         StartCoroutine(LerpLightIntensity(environmentLight, targetIntensity, 1f));
     }
-    
+
     private void PlaySanityLevelAudio(PlayerSanity.SanityLevel level)
     {
         // Play audio cues based on sanity level
         // Implementation depends on your audio system
     }
-    
+
     // ============================================
     // UTILITY COROUTINES
     // ============================================
-    
+
     private System.Collections.IEnumerator ScreenShakeCoroutine(float duration, float magnitude)
     {
         if (playerCamera == null) yield break;
-        
+
         Vector3 originalPos = playerCamera.transform.localPosition;
         float elapsed = 0f;
-        
+
         while (elapsed < duration)
         {
             float x = Random.Range(-1f, 1f) * magnitude;
             float y = Random.Range(-1f, 1f) * magnitude;
-            
+
             playerCamera.transform.localPosition = originalPos + new Vector3(x, y, 0);
-            
+
             elapsed += Time.deltaTime;
             yield return null;
         }
-        
+
         playerCamera.transform.localPosition = originalPos;
     }
-    
+
     private System.Collections.IEnumerator LerpLightIntensity(Light light, float target, float duration)
     {
         float startIntensity = light.intensity;
         float elapsed = 0f;
-        
+
         while (elapsed < duration)
         {
             light.intensity = Mathf.Lerp(startIntensity, target, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
-        
+
         light.intensity = target;
     }
-    
+
     private System.Collections.IEnumerator FadeOutAudioCoroutine(AudioSource source, float duration)
     {
         float startVolume = source.volume;
         float elapsed = 0f;
-        
+
         while (elapsed < duration)
         {
             source.volume = Mathf.Lerp(startVolume, 0, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
-        
+
         source.Stop();
         source.volume = startVolume;
     }
-    
+
     private void OnDestroy()
     {
         // Unsubscribe from events
@@ -339,7 +339,7 @@ public class GhostSystemIntegration : MonoBehaviour
             playerSanity.OnSanityLevelChanged -= OnSanityLevelChanged;
             playerSanity.OnSanityDepleted -= OnSanityDepleted;
         }
-        
+
         if (ghostAI != null)
         {
             ghostAI.OnStateChanged -= OnGhostStateChanged;
