@@ -50,7 +50,7 @@ public class SaveLoadManager
         try
         {
             await File.WriteAllTextAsync(filePath, json);
-            
+
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public class SaveLoadManager
 
                     data = JsonUtility.FromJson<T>(json);
                 }
-                
+
             }
             else
             {
@@ -124,10 +124,10 @@ public class SaveLoadManager
                 var dataInstance = Activator.CreateInstance(type) as BaseSaveData;
                 if (dataInstance == null)
                 {
-                     Debug.LogError($"[SaveLoadManager] Failed to create an instance of {type.Name}. Skipping.");
-                     continue;
+                    Debug.LogError($"[SaveLoadManager] Failed to create an instance of {type.Name}. Skipping.");
+                    continue;
                 }
-                
+
                 Debug.Log($"[SaveLoadManager] Checking '{type.Name}'. IsResetable = {dataInstance.IsResetable}.");
 
                 if (dataInstance.IsResetable)
@@ -161,9 +161,9 @@ public class SaveLoadManager
 
         if (filesThatExist == 0)
         {
-             Debug.LogWarning("[SaveLoadManager] No existing save files were found for the resettable data types.");
+            Debug.LogWarning("[SaveLoadManager] No existing save files were found for the resettable data types.");
         }
-        
+
         await Task.Run(() =>
         {
             lock (_fileLock)
@@ -234,10 +234,9 @@ public class SaveLoadManager
 
         return (true, $"Success! {deletedCount} selected data file(s) have been deleted.");
     }
-    // Delete saved file
-    public static bool Delete<T>() where T : BaseSaveData, new()
+
+    public static bool Delete(BaseSaveData data)
     {
-        T data = new();
         string filePath = GetFilePath(data.FileName);
 
         lock (_fileLock)
@@ -247,7 +246,6 @@ public class SaveLoadManager
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
-
                     return true;
                 }
                 else
@@ -262,6 +260,13 @@ public class SaveLoadManager
                 return false;
             }
         }
+    }
+
+    // Delete saved file
+    public static bool Delete<T>() where T : BaseSaveData, new()
+    {
+        T data = new();
+        return Delete(data);
     }
 
     // Check if the save file exists
