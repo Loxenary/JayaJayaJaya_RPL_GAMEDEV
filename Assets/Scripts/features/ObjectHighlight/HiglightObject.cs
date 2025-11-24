@@ -1,14 +1,14 @@
 using CustomLogger;
 using UnityEngine;
 
-[RequireComponent(typeof(Outline))]
+[RequireComponent(typeof(OutlineObj))]
 public class HiglightObject : MonoBehaviour, IHighlight
 {
-    private Outline _outline;
+    private OutlineObj _outline;
 
     private void Awake()
     {
-        _outline = GetComponent<Outline>();
+        _outline = GetComponent<OutlineObj>();
     }
     public void Highlight()
     {

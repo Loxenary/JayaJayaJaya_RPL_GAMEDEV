@@ -148,11 +148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5d69e97ba32c4748a67de0769578789, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useAutoServiceDiscovery: 1
   servicePrefabs:
   - {fileID: 8289597152984568854, guid: 7ce8dc6f2dc9b504b952559b69e7f192, type: 3}
   - {fileID: 582948092488412116, guid: 95631a702fcf27b49a6868797f6660c9, type: 3}
-  persistentSceneReferences: []
-  initialScene: 0
+  - {fileID: 4167566336382903413, guid: 3f21198dc120c924c9be93ea2c5b836b, type: 3}
+  _config: {fileID: 11400000, guid: 223dbd4adb1876d4cbe5d842a98ad6d6, type: 2}
   isTestingEnabled: 0
   testSceneToLoad: {fileID: 0}
   saveDataScriptsToReset: []

@@ -13,14 +13,18 @@ using UnityEngine.SceneManagement;
 public class GameBootstrap : MonoBehaviour
 {
     [Header("Service Configuration")]
-    [Tooltip("A list of service prefabs to instantiate at startup. These services should register themselves with the ServiceLocator in their Awake() method.")]
+    [Tooltip("Enable to automatically load all services from Resources/Services folder. If disabled, uses the manual servicePrefabs list.")]
+    [SerializeField] private bool useAutoServiceDiscovery = true;
+
+    [Tooltip("A list of service prefabs to instantiate at startup. Only used if useAutoServiceDiscovery is false. Services should register themselves with the ServiceLocator in their Awake() method.")]
     [SerializeField] private List<GameObject> servicePrefabs;
 
+    [Header("Game Configuration")]
+    [SerializeField] private BootstrapConfig _config;
+
     [Header("Scene Configuration")]
-    [Tooltip("A list of scene references that should be loaded additively at startup.")]
-    [SerializeField] private List<SceneReference> persistentSceneReferences;
-    [Tooltip("The first scene to load after all services are initialized.")]
-    [SerializeField] private SceneEnum initialScene;
+    private List<SceneReference> persistentSceneReferences => _config.PersistanceSceneReferences ?? new();
+    private SceneEnum initialScene;
 
     [Header("Testing Overrides")]
     [Tooltip("Enable this to load a specific test scene instead of the default initial scene.")]
@@ -33,12 +37,15 @@ public class GameBootstrap : MonoBehaviour
     [SerializeField] private List<MonoScript> saveDataScriptsToReset;
 #endif
 
+    public static bool FLAG_STARTUP_BOOTSTRAP = false;
+
 
     // Using async void Start is discouraged. This approach ensures exceptions are caught.
     private async void Start()
     {
         try
         {
+            FLAG_STARTUP_BOOTSTRAP = true;
             await BootstrapApplication();
         }
         catch (Exception e)
@@ -87,18 +94,28 @@ public class GameBootstrap : MonoBehaviour
 
     /// <summary>
     /// Instantiates all service prefabs. Services are responsible for self-registration.
+    /// Uses auto-discovery if enabled, otherwise uses the manual servicePrefabs list.
     /// </summary>
     private void InstantiateServices()
     {
-        foreach (var prefab in servicePrefabs)
+        if (useAutoServiceDiscovery)
         {
-            if (prefab != null)
+            Debug.Log("[GameBootstrap] Using auto-discovery to load services from Resources/Services folder.");
+            ServiceAutoLoader.LoadAllServices(transform);
+        }
+        else
+        {
+            Debug.Log("[GameBootstrap] Using manual service list.");
+            foreach (var prefab in servicePrefabs)
             {
-                Instantiate(prefab, transform);
-            }
-            else
-            {
-                Debug.LogWarning("[GameBootstrap] A null prefab was found in the servicePrefabs list.");
+                if (prefab != null)
+                {
+                    Instantiate(prefab, transform);
+                }
+                else
+                {
+                    Debug.LogWarning("[GameBootstrap] A null prefab was found in the servicePrefabs list.");
+                }
             }
         }
     }
@@ -203,17 +220,12 @@ public class GameBootstrap : MonoBehaviour
             }
 
 
-
-            // We assume the SceneService can also handle loading by a string scene name.
-            // Using .name on a SceneAsset provides the correct scene name to load.
             SceneManager.LoadScene(testSceneToLoad.name, LoadSceneMode.Additive);
 
-            // IMPORTANT: Exit the method here so we don't proceed to load the default initial scene.
+
             return;
         }
 #endif
-
-        // If we are in a build or if testing is disabled, load the default initial scene.
         await sceneService.LoadScene(initialScene, false);
     }
 }
