@@ -4,14 +4,16 @@ using UnityEngine.Events;
 [RequireComponent(typeof(BoxCollider))]
 public class Interactable : MonoBehaviour
 {
-    BoxCollider collider;
+    [Header("Event")]
+    public UnityEvent onInteract;
+
 
     [Header("Debugging Section")]
     [ReadOnly]
-    [SerializeField] bool isInteract;
+    [SerializeField] protected bool isInteract;
+    [ReadOnly]
+    [SerializeField] protected BoxCollider collider;
 
-    [Header("Event")]
-    [SerializeField] UnityEvent onInteract;
     private void OnDrawGizmos()
     {
         if (collider == null || collider.isTrigger == false)
@@ -23,8 +25,12 @@ public class Interactable : MonoBehaviour
         }
     }
 
-    public void InteractObject()
+    public virtual void InteractObject()
     {
+        if (isInteract)
+            return;
+
+        isInteract = true;
         Debug.Log(gameObject.name + " Interact By Player");
         onInteract?.Invoke();
     }    

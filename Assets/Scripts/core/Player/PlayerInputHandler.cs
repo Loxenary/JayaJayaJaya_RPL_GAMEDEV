@@ -19,6 +19,7 @@ public class PlayerInputHandler : MonoBehaviour
     public event Action OnJumpPerformed;
     public event Action OnAttackPerformed;
     public event Action OnInteractPerformed;
+    public event Action OnFlashlightPerformed;
 
     // Properties to access input values
     public Vector2 MoveInput => moveInput;
@@ -54,6 +55,7 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions.Player.Attack.performed += OnAttack;
 
         inputActions.Player.Interact.performed += OnInteract;
+        inputActions.Player.Flashlight.performed += OnFlashlight;
     }
 
     private void OnDisable()
@@ -76,6 +78,8 @@ public class PlayerInputHandler : MonoBehaviour
         inputActions.Player.Attack.performed -= OnAttack;
 
         inputActions.Player.Interact.performed -= OnInteract;
+        inputActions.Player.Flashlight.performed -= OnFlashlight;
+
 
         // Disable the Player action map
         inputActions.Player.Disable();
@@ -123,6 +127,10 @@ public class PlayerInputHandler : MonoBehaviour
     {
         interactInput = true;
         OnInteractPerformed?.Invoke();
+    }
+    private void OnFlashlight(InputAction.CallbackContext context)
+    {
+        OnFlashlightPerformed?.Invoke();
     }
 
     // Methods to consume one-time inputs (for jump, attack, etc.)
