@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DisallowMultipleComponent]
 public class InteractableSelector : MonoBehaviour
 {
     [Header("Basic Components")]
@@ -28,6 +29,8 @@ public class InteractableSelector : MonoBehaviour
     private void Awake()
     {
         input = new InputSystem_Actions();
+        input.Enable();
+
 
         input.Player.Interact.performed += OnPressInteract;
     }
@@ -52,6 +55,8 @@ public class InteractableSelector : MonoBehaviour
             Debug.Log("Trigger With Interactable Name : "+other.gameObject.name);
 
             EventBus.Publish(InteractEventState.OnEnter);
+
+            other.gameObject.GetComponent<IHighlight>().Highlight();
         }
 
     }
@@ -60,6 +65,8 @@ public class InteractableSelector : MonoBehaviour
         if (other.gameObject.GetComponent<Interactable>() == currentObject) { 
             currentObject = null;
             EventBus.Publish(InteractEventState.OnExit);
+
+            other.gameObject.GetComponent<IHighlight>().UnHighlight();
         }
     }
 }
