@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SceneBootstrapper : MonoBehaviour
 {
+    
+
     private async void Awake()
     {
         if (GameBootstrap.FLAG_STARTUP_BOOTSTRAP)

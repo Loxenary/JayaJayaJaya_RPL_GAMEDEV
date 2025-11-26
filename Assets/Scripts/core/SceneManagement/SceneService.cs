@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CustomLogger;
 
 
 public class SceneService : MonoBehaviour, IInitializableService
@@ -28,11 +29,31 @@ public class SceneService : MonoBehaviour, IInitializableService
 
     private readonly List<Scene> _loadedScenes = new List<Scene>();
     private SceneTransitionCoordinator _transitionCoordinator;
+    private Scene _bootstrapScene;
 
 
     private void Awake()
     {
         ServiceLocator.Register(this);
+        // Find the bootstrap scene by looking for GameBootstrap or SceneBootstrapper
+        _bootstrapScene = FindBootstrapScene();
+    }
+
+    private Scene FindBootstrapScene()
+    {
+        // Only protect the GameBootstrap scene, not SceneBootstrapper scenes
+        // SceneBootstrapper is used for testing individual scenes and shouldn't be protected
+        var gameBootstrap = FindFirstObjectByType<GameBootstrap>();
+        if (gameBootstrap != null)
+        {
+            Debug.Log($"[SceneService] Found GameBootstrap in scene: {gameBootstrap.gameObject.scene.name}");
+            return gameBootstrap.gameObject.scene;
+        }
+
+        // If no GameBootstrap exists (only SceneBootstrapper), return an invalid scene
+        // This allows test scenes to be unloaded when switching to other scenes
+        Debug.Log("[SceneService] No GameBootstrap found - test mode, no scene will be protected");
+        return default;
     }
 
     public Task Initialize()
@@ -92,9 +113,10 @@ public class SceneService : MonoBehaviour, IInitializableService
             }
             SceneGroup groupToLoad = record.SceneGroupAsset;
 
-
-            await UnloadUnusedScenes(groupToLoad);
+            // Load new scenes first, then unload old ones
+            // This prevents Unity from refusing to unload the last scene
             await LoadSceneGroup(groupToLoad);
+            await UnloadUnusedScenes(groupToLoad);
 
             _currentSceneGroup = groupToLoad;
             CurrentScene = sceneId;
@@ -148,17 +170,31 @@ public class SceneService : MonoBehaviour, IInitializableService
             }
         }
 
+        Debug.Log($"[SceneService] UnloadUnusedScenes - Bootstrap scene: {(_bootstrapScene.IsValid() ? _bootstrapScene.name : "NONE")}");
+        Debug.Log($"[SceneService] Scenes to keep: {string.Join(", ", scenesToKeep)}");
+        Debug.Log($"[SceneService] Persistent scenes: {string.Join(", ", _persistentSceneNames)}");
+        Debug.Log($"[SceneService] Total loaded scenes: {SceneManager.sceneCount}");
 
         List<Task> unloadTasks = new List<Task>();
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
             Scene scene = SceneManager.GetSceneAt(i);
-            // Don't unload the "manager" scene (where this service lives) or scenes we want to keep
-            if (scene.buildIndex == 0 || scenesToKeep.Contains(scene.name) || _persistentSceneNames.Contains(scene.name))
+
+            Debug.Log($"[SceneService] Checking scene '{scene.name}': isBootstrap={scene == _bootstrapScene}, inKeepList={scenesToKeep.Contains(scene.name)}, isPersistent={_persistentSceneNames.Contains(scene.name)}");
+
+            // Don't unload the bootstrap scene (where this service lives) or scenes we want to keep
+            if (scene == _bootstrapScene || scenesToKeep.Contains(scene.name) || _persistentSceneNames.Contains(scene.name))
             {
+                Debug.Log($"[SceneService] KEEPING scene: {scene.name}");
                 continue;
             }
-            unloadTasks.Add(SceneManager.UnloadSceneAsync(scene).AsTask());
+
+            if (scene.isLoaded)
+            {
+                BetterLogger.Log($"Scene To Unload:  {scene.name}", BetterLogger.LogCategory.System);
+                Debug.Log($"[SceneService] UNLOADING scene: {scene.name}");
+                unloadTasks.Add(SceneManager.UnloadSceneAsync(scene).AsTask());
+            }
         }
         if (unloadTasks.Any())
         {
@@ -235,6 +271,11 @@ public static class AsyncOperationExtensions
 {
     public static Task AsTask(this AsyncOperation operation)
     {
+        if (operation == null)
+        {
+            return Task.CompletedTask;
+        }
+
         var tcs = new TaskCompletionSource<object>();
         operation.completed += _ => tcs.SetResult(null);
         return tcs.Task;
