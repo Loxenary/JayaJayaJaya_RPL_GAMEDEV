@@ -35,14 +35,13 @@ public class SceneService : MonoBehaviour, IInitializableService
     private void Awake()
     {
         ServiceLocator.Register(this);
-        // Find the bootstrap scene by looking for GameBootstrap or SceneBootstrapper
+        
         _bootstrapScene = FindBootstrapScene();
     }
 
     private Scene FindBootstrapScene()
     {
-        // Only protect the GameBootstrap scene, not SceneBootstrapper scenes
-        // SceneBootstrapper is used for testing individual scenes and shouldn't be protected
+        
         var gameBootstrap = FindFirstObjectByType<GameBootstrap>();
         if (gameBootstrap != null)
         {
@@ -50,8 +49,7 @@ public class SceneService : MonoBehaviour, IInitializableService
             return gameBootstrap.gameObject.scene;
         }
 
-        // If no GameBootstrap exists (only SceneBootstrapper), return an invalid scene
-        // This allows test scenes to be unloaded when switching to other scenes
+        
         Debug.Log("[SceneService] No GameBootstrap found - test mode, no scene will be protected");
         return default;
     }
@@ -114,7 +112,6 @@ public class SceneService : MonoBehaviour, IInitializableService
             SceneGroup groupToLoad = record.SceneGroupAsset;
 
             // Load new scenes first, then unload old ones
-            // This prevents Unity from refusing to unload the last scene
             await LoadSceneGroup(groupToLoad);
             await UnloadUnusedScenes(groupToLoad);
 
@@ -230,15 +227,8 @@ public class SceneService : MonoBehaviour, IInitializableService
 
         await _transitionCoordinator.ExecuteWithTransition(async () =>
         {
-            // 1. Unload all scenes by passing `null`.
-            // The UnloadUnusedScenes method will treat this as "keep nothing"
-            // (except the persistent manager scene at build index 0).
             await UnloadUnusedScenes(null);
-
-            // 2. Now load the same scene group again from scratch.
             await LoadSceneGroup(_currentSceneGroup);
-
-            // 3. Notify other systems that the scene has been reloaded.
             OnSceneChanging?.Invoke(CurrentScene);
         }, addTransition);
     }
