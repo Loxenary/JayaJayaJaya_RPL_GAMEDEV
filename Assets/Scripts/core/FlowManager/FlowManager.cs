@@ -10,6 +10,6 @@ public class FlowManager : ServiceBase<FlowManager>
 
     public async void PlayGame()
     {
-        await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.IN_GAME);
+        await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.IN_GAME, true);
     }
 }
