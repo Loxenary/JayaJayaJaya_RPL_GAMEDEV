@@ -101,7 +101,10 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     }
     void AddFear(int value)
     {
+        float previousFear = currentFear;
         currentFear = Mathf.Clamp(currentFear+value,0,maxFear);
+
+        Debug.Log($"[PlayerAttributes] Fear changed: {previousFear} → {currentFear} (Added: {value})");
 
         if(currentFear == maxFear)
         {
@@ -116,8 +119,6 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
 
         onFearUpdate?.Invoke(currentFear);
         OnValueFearUpdate?.Invoke();
-
-        Debug.Log("Fear Player added by = " + value);
 
     }
     void SubstractFear(int value)

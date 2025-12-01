@@ -75,7 +75,13 @@ public class GhostSpawner : MonoBehaviour
         }
         else
         {
-            ghost = GhostSetupHelper.CreateGhostFromScratch(position);
+            ghost = GhostSetupHelper.CreateGhostFromScratch(position, gameObject.scene);
+        }
+
+        // IMPORTANT: Move ghost to same scene as GhostSpawner (for prefab spawn)
+        if (ghostPrefab != null)
+        {
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(ghost, gameObject.scene);
         }
 
         // Configure ghost
@@ -86,12 +92,9 @@ public class GhostSpawner : MonoBehaviour
         currentGhostCount = activeGhosts.Count;
 
         OnGhostSpawned?.Invoke(ghost);
-        Debug.Log($"Ghost spawned at {position}. Total ghosts: {currentGhostCount}");
 
         return ghost;
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// Spawn ghost di spawn point random
     /// </summary>
     public GameObject SpawnGhostAtRandomPoint()

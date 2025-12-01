@@ -44,20 +44,24 @@ public class GhostSetupHelper : MonoBehaviour
             ghost = CreateGhostFromScratch(spawnPosition);
         }
 
+        // Move ghost to same scene as this helper
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(ghost, gameObject.scene);
+
         currentGhost = ghost;
-        Debug.Log($"Ghost created at position: {spawnPosition}");
         return ghost;
     }
 
     /// <summary>
     /// Create a ghost GameObject from scratch with all necessary components
     /// </summary>
-    public static GameObject CreateGhostFromScratch(Vector3 position)
+    /// <param name="position">Position to spawn the ghost</param>
+    /// <param name="targetScene">Optional: Scene to place the ghost in. If null, uses active scene</param>
+    public static GameObject CreateGhostFromScratch(Vector3 position, UnityEngine.SceneManagement.Scene? targetScene = null)
     {
         // Create main ghost object
         GameObject ghost = new GameObject("Ghost");
         ghost.transform.position = position;
-        ghost.tag = "Enemy"; // Set appropriate tag
+        // Don't set tag - Ghost should be untagged (only Player needs "Player" tag)
 
         // Add visual representation (simple cube for now)
         GameObject visualObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -104,7 +108,12 @@ public class GhostSetupHelper : MonoBehaviour
         // Add Ghost component
         Ghost ghostScript = ghost.AddComponent<Ghost>();
 
-        Debug.Log("Ghost created from scratch with all components");
+        // Move to target scene if specified
+        if (targetScene.HasValue && targetScene.Value.IsValid())
+        {
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(ghost, targetScene.Value);
+        }
+
         return ghost;
     }
 
@@ -129,7 +138,6 @@ public class GhostSetupHelper : MonoBehaviour
         if (currentGhost != null)
         {
             Destroy(currentGhost);
-            Debug.Log("Ghost destroyed");
         }
     }
 }
