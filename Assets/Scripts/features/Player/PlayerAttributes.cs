@@ -63,6 +63,8 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
 
 
         InteractableAddAttributes.onInteractAddAttribute += UpdateAttributes;
+        InteractableDamager.onInteractDamager += ListenDamageFromInteractable;
+        //EventBus.Subscribe<int>(ListenDamageFromInteractable);
     }
 
     private void OnDisable()
@@ -70,6 +72,11 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         input.OnFlashlightPerformed -= ToggleFlashlight;
 
         InteractableAddAttributes.onInteractAddAttribute -= UpdateAttributes;
+        InteractableDamager.onInteractDamager -= ListenDamageFromInteractable;
+    }
+    void ListenDamageFromInteractable(int val)
+    {
+        AddFear(val);
     }
     private void UpdateAttributes(AttributesType type, int value)
     {

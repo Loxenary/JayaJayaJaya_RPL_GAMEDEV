@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 1965480944263719780}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.6490607, y: 0, z: 15.975895}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -79,6 +79,9 @@ MonoBehaviour:
   timeRotate: 1.5
   rootObject: {fileID: 2031302712429714237}
   targetRotation: {x: 0, y: 95, z: 0}
+  OnDoneRotate:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &3720982525135780837
 BoxCollider:
   m_ObjectHideFlags: 0
