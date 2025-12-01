@@ -141,25 +141,28 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     }
     void TweeningBattery()
     {
-        DOTween.Sequence().SetDelay(decrementInterval).OnStepComplete(() =>
-        {
-            if (toggleFlashlight)
+        DOTween.Sequence()
+            .AppendInterval(decrementInterval)
+            .AppendCallback(() =>
             {
-                if (currentBattery - decrementBatteryaValue > 0) {
-                    currentBattery-= decrementBatteryaValue;
-                }
-                else
+                if (toggleFlashlight)
                 {
-                    toggleFlashlight = false;
-                    flashlight.enabled = toggleFlashlight;
-                    currentBattery = 0;
-                }
+                    if (currentBattery - decrementBatteryaValue > 0) {
+                        currentBattery -= decrementBatteryaValue;
+                    }
+                    else
+                    {
+                        toggleFlashlight = false;
+                        flashlight.enabled = toggleFlashlight;
+                        currentBattery = 0;
+                    }
 
-                // Trigger events for UI update
-                onBatteryUpdate?.Invoke(currentBattery);
-                OnValueBatteryUpdate?.Invoke();
-            }
-        }).SetLoops(-1);
+                    // Trigger events for UI update
+                    onBatteryUpdate?.Invoke(currentBattery);
+                    OnValueBatteryUpdate?.Invoke();
+                }
+            })
+            .SetLoops(-1);
     }
     public void Add(AttributesType type, int value)
     {
