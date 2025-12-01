@@ -9,14 +9,15 @@ public class SimpleButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPoint
     [Header("Preset")]
     [SerializeField] private ButtonAnimationPreset preset;
 
-    [Header("References")]
-    [Tooltip("If not defined, the button will be used as the target object")]
+    [Header("References (Optional)")]
+    [Space(3)]
+    [Tooltip("If not defined, the script will try to use this component as the target object")]
     [SerializeField] private GameObject targetObject;
 
-    [Tooltip("If not defined, the button will be used as the canvas group")]
+    [Tooltip("If not defined, the script will get the canvas group from this object using GetComponent<CanvasGroup>")]
     [SerializeField] private CanvasGroup canvasGroup;
 
-    [Tooltip("If not defined, the button will be used as the image")]
+    [Tooltip("If not defined, the script will get the image from this object using GetComponent<Image>")]
     [SerializeField] private Image targetImage;
 
     private Button _button;
