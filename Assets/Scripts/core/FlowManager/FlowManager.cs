@@ -7,8 +7,9 @@ using UnityEngine;
 
 public class FlowManager : ServiceBase<FlowManager>
 {
-    public void PlayGame()
+
+    public async void PlayGame()
     {
-        
+        await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.IN_GAME, true);
     }
 }
