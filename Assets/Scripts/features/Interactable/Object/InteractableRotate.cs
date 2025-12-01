@@ -14,7 +14,7 @@ public class InteractableRotate : Interactable
     {
         base.InteractObject();
 
-        rootObject.DORotate(targetRotation, timeRotate).OnComplete(() => {
+        rootObject.DOLocalRotate(targetRotation, timeRotate).OnComplete(() => {
             OnDoneRotate?.Invoke();
         });
     }
