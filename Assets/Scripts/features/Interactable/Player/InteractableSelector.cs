@@ -62,11 +62,15 @@ public class InteractableSelector : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.GetComponent<Interactable>() == currentObject) { 
+        if (other.gameObject.GetComponent<Interactable>() == currentObject) {
             currentObject = null;
             EventBus.Publish(InteractEventState.OnExit);
 
-            other.gameObject.GetComponent<IHighlight>().UnHighlight();
+            IHighlight highlight = other.gameObject.GetComponent<IHighlight>();
+            if (highlight != null)
+            {
+                highlight.UnHighlight();
+            }
         }
     }
 }
