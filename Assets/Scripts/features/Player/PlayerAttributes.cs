@@ -45,6 +45,8 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
 
 
     PlayerInputHandler input;
+    private Sequence batteryDrainSequence;
+
     private void Awake()
     {
         input = GetComponent<PlayerInputHandler>();
@@ -60,6 +62,12 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         // Trigger initial events for HUD update
         onFearUpdate?.Invoke(currentFear);
         onBatteryUpdate?.Invoke(currentBattery);
+    }
+
+    private void OnDestroy()
+    {
+        // Kill DOTween sequence when object is destroyed
+        batteryDrainSequence?.Kill();
     }
     private void OnEnable()
     {
@@ -83,10 +91,10 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
                 SubstractFear(value);
                 break;
             case AttributesType.Battery:
+                int previousBattery = currentBattery;
                 currentBattery = Mathf.Clamp(currentBattery + value,0,100);
                 onBatteryUpdate?.Invoke(currentBattery);
                 OnValueBatteryUpdate?.Invoke();
-                Debug.Log("Add Battery By Interactable");
                 break;
         }
     }
@@ -134,6 +142,7 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     }
     void AddBattery(int value)
     {
+        int previousBattery = currentBattery;
         currentBattery = Mathf.Clamp(currentBattery + value, 0, 100);
 
         // Trigger events for UI update
@@ -142,12 +151,17 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     }
     void TweeningBattery()
     {
-        DOTween.Sequence()
+        // Kill existing sequence to prevent multiple sequences running
+        batteryDrainSequence?.Kill();
+
+        batteryDrainSequence = DOTween.Sequence()
             .AppendInterval(decrementInterval)
             .AppendCallback(() =>
             {
-                if (toggleFlashlight)
+                if (toggleFlashlight && currentBattery > 0)
                 {
+                    int previousBattery = currentBattery;
+
                     if (currentBattery - decrementBatteryValue > 0) {
                         currentBattery -= decrementBatteryValue;
                     }
@@ -163,7 +177,9 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
                     OnValueBatteryUpdate?.Invoke();
                 }
             })
-            .SetLoops(-1);
+            .SetLoops(-1)
+            .SetUpdate(UpdateType.Normal, false)
+            .SetAutoKill(false);
     }
     public void Add(AttributesType type, int value)
     {
