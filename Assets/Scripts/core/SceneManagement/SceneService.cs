@@ -81,6 +81,8 @@ public class SceneService : MonoBehaviour, IInitializableService
     /// </summary>
     public async Task LoadScene(SceneEnum sceneId, bool addTransition = true)
     {
+        Debug.Log($"[SceneService] LoadScene called for: {sceneId}");
+
         await _transitionCoordinator.ExecuteWithTransition(async () =>
         {
             // 1. Find the scene group to load
@@ -92,12 +94,15 @@ public class SceneService : MonoBehaviour, IInitializableService
             }
             SceneGroup groupToLoad = record.SceneGroupAsset;
 
+            Debug.Log($"[SceneService] Loading scene group: {groupToLoad.name}");
 
             await UnloadUnusedScenes(groupToLoad);
             await LoadSceneGroup(groupToLoad);
 
             _currentSceneGroup = groupToLoad;
             CurrentScene = sceneId;
+            Debug.Log($"[SceneService] Scene loaded successfully. Current scene: {CurrentScene}, Current group: {_currentSceneGroup.name}");
+
             OnSceneChanging?.Invoke(sceneId);
         }, addTransition);
     }
@@ -186,24 +191,43 @@ public class SceneService : MonoBehaviour, IInitializableService
 
     public async Task ReloadScene(bool addTransition = true)
     {
+        Debug.Log($"[SceneService] ReloadScene called. Current scene: {CurrentScene}, Current group: {(_currentSceneGroup != null ? _currentSceneGroup.name : "NULL")}");
+
         if (_currentSceneGroup == null)
         {
-            Debug.LogWarning("Cannot reload scene: No current scene group is active.");
-            return;
+            Debug.LogError("Cannot reload scene: No current scene group is active. Attempting fallback...");
+
+            // Fallback: Try to find current scene group from CurrentScene
+            SceneRecord record = SceneRecords.Find(r => r.SceneId == CurrentScene);
+            if (record != null && record.SceneGroupAsset != null)
+            {
+                Debug.Log($"[SceneService] Found scene group from CurrentScene: {record.SceneGroupAsset.name}");
+                _currentSceneGroup = record.SceneGroupAsset;
+            }
+            else
+            {
+                Debug.LogError($"[SceneService] No SceneGroup found for current scene: {CurrentScene}");
+                return;
+            }
         }
 
         await _transitionCoordinator.ExecuteWithTransition(async () =>
         {
+            Debug.Log($"[SceneService] Starting reload of scene group: {_currentSceneGroup.name}");
+
             // 1. Unload all scenes by passing `null`.
             // The UnloadUnusedScenes method will treat this as "keep nothing"
             // (except the persistent manager scene at build index 0).
             await UnloadUnusedScenes(null);
+            Debug.Log("[SceneService] Unused scenes unloaded");
 
             // 2. Now load the same scene group again from scratch.
             await LoadSceneGroup(_currentSceneGroup);
+            Debug.Log("[SceneService] Scene group reloaded");
 
             // 3. Notify other systems that the scene has been reloaded.
             OnSceneChanging?.Invoke(CurrentScene);
+            Debug.Log($"[SceneService] Scene reload complete: {CurrentScene}");
         }, addTransition);
     }
 
