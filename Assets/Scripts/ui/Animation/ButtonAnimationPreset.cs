@@ -17,7 +17,7 @@ public class ButtonAnimationPreset : ScriptableObject
     [Tooltip("Easing function for hover animation (OutBack gives a bouncy feel)")]
     public Ease hoverEase = Ease.OutBack;
 
-    [Tooltip("Rotation offset when hovering (e.g., Vector3(0, 0, 5) rotates 5 degrees on Z axis)")]
+[Tooltip("Rotation offset when hovering (e.g., Vector3(0, 0, 5) rotates 5 degrees on Z axis)")]
     public Vector3 hoverRotation = Vector3.zero;
 
     [Tooltip("Position offset when hovering (relative to original position)")]
