@@ -4,7 +4,7 @@ using TMPro;
 /// <summary>
 /// Central manager for the HUD system. Coordinates all HUD elements including health, battery, items, and timer.
 /// </summary>
-public class HUDManager : ShowHideProceduralWithEventBus<HUDManager>
+public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
 {
     [Header("HUD Components")]
     [SerializeField] private HealthDisplay healthDisplay;

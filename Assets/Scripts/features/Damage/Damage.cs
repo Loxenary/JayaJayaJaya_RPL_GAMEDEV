@@ -5,7 +5,7 @@ public class Damage : MonoBehaviour
 {
     [Header("Damage Value")]
     [Range(0, 100)]
-    [SerializeField] int fearAddValue = 10;
+    [SerializeField] protected int fearAddValue = 10;
 
     [Header("Event")]
     public UnityEvent OnDoneSendDamage;
@@ -17,8 +17,12 @@ public class Damage : MonoBehaviour
     {
         IDamageable i = other.GetComponent<IDamageable>();
 
-        SendDamage(i);
+        if (i != null)
+        {
+            SendDamage(i);
+            OnDoneSendDamage?.Invoke();
 
-        OnDoneSendDamage?.Invoke();
+            Debug.Log($"[Damage] Sent {fearAddValue} fear damage to {other.gameObject.name}");
+        }
     }
 }

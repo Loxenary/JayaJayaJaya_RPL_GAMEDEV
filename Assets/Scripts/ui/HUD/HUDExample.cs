@@ -42,7 +42,7 @@ public class HUDExample : MonoBehaviour
         UIManager.Open<HUDManager>();
 
         // Set initial health
-        var hudManager = FindFirstObjectByType<HUDManager>();
+        HUDManager hudManager = FindAnyObjectByType<HUDManager>();
         if (hudManager != null)
         {
             hudManager.UpdateHealth(currentHealth, maxHealth);
@@ -52,7 +52,7 @@ public class HUDExample : MonoBehaviour
 
     private void HandleTestInput()
     {
-        var hudManager = FindFirstObjectByType<HUDManager>();
+        HUDManager hudManager = FindAnyObjectByType<HUDManager>();
         if (hudManager == null) return;
 
         // Health controls
