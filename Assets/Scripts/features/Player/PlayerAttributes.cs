@@ -14,8 +14,8 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     [SerializeField] Light flashlight;
     [SerializeField] int initalBatteryValue = 100;
     [SerializeField] bool initialTogle = true;
-    [SerializeField] float decrementInterval = 1f;
-    [SerializeField] int decrementBatteryaValue = 2;
+    [SerializeField] float decrementInterval = 3f;
+    [SerializeField] int decrementBatteryValue = 1;
 
     [Header("Event")]
     public UnityEvent OnValueFearUpdate;
@@ -147,8 +147,8 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
             {
                 if (toggleFlashlight)
                 {
-                    if (currentBattery - decrementBatteryaValue > 0) {
-                        currentBattery -= decrementBatteryaValue;
+                    if (currentBattery - decrementBatteryValue > 0) {
+                        currentBattery -= decrementBatteryValue;
                     }
                     else
                     {
