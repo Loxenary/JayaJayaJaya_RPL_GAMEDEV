@@ -15,6 +15,23 @@ public class Ghost : Damage
     [SerializeField] private bool hasHitPlayer = false;
 
     /// <summary>
+    /// Override SendDamage to check if ghost is active
+    /// </summary>
+    protected override void SendDamage(IDamageable target)
+    {
+        if (!isActive)
+        {
+            Debug.Log("[Ghost] Ghost is not active, no damage sent");
+            return;
+        }
+
+        base.SendDamage(target);
+        hasHitPlayer = true;
+
+        Debug.Log("[Ghost] Ghost damaged player!");
+    }
+
+    /// <summary>
     /// Activate or deactivate the ghost
     /// </summary>
     public void SetActive(bool active)

@@ -74,7 +74,7 @@ public class BatteryDisplay : MonoBehaviour
     [SerializeField] private Sprite lowBatterySprite;
 
     private float currentBattery;
-    private float maxBattery;
+    private float maxBattery = 100f;
     private float targetFillAmount;
     private float currentFillAmount;
     private float blinkTimer;
@@ -83,6 +83,32 @@ public class BatteryDisplay : MonoBehaviour
     private void Awake()
     {
         ValidateComponents();
+    }
+
+    private void Start()
+    {
+        // Initialize with full battery
+        UpdateBattery(maxBattery, maxBattery);
+    }
+
+    private void OnEnable()
+    {
+        // Subscribe to player battery updates
+        PlayerAttributes.onBatteryUpdate += OnBatteryUpdated;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from events
+        PlayerAttributes.onBatteryUpdate -= OnBatteryUpdated;
+    }
+
+    /// <summary>
+    /// Called when player's battery value changes
+    /// </summary>
+    private void OnBatteryUpdated(float batteryValue)
+    {
+        UpdateBattery(batteryValue, maxBattery);
     }
 
     private void ValidateComponents()

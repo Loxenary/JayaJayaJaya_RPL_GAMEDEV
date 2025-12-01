@@ -128,7 +128,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoSubscribeToEventBus: 1
-  animationType: 0
+  onShowStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onShowCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  onHideStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onHideCompleted:
+    m_PersistentCalls:
+      m_Calls: []
   animationDuration: 0.3
   animationCurve:
     serializedVersion: 2
@@ -154,10 +165,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hiddenScale: {x: 0, y: 0, z: 0}
-  shownScale: {x: 1, y: 1, z: 1}
   canvasGroup: {fileID: 0}
-  hiddenPositionOffset: {x: 0, y: -100, z: 0}
   healthDisplay: {fileID: 8184514728264599609}
   batteryDisplay: {fileID: 6626541396714435162}
   itemIconsDisplay: {fileID: 5563492247558796310}
@@ -1435,7 +1443,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 1, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 150, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3074298400036712784
 CanvasRenderer:

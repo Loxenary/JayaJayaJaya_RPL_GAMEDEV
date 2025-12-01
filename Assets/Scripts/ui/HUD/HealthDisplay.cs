@@ -50,13 +50,42 @@ public class HealthDisplay : MonoBehaviour
     [SerializeField] private bool showPercentage = false;
 
     private float currentHealth;
-    private float maxHealth;
+    private float maxHealth = 100f;
     private float targetFillAmount;
     private float currentFillAmount;
 
     private void Awake()
     {
         ValidateComponents();
+    }
+
+    private void Start()
+    {
+        // Initialize with full health (0 fear)
+        UpdateHealth(maxHealth, maxHealth);
+    }
+
+    private void OnEnable()
+    {
+        // Subscribe to player fear updates (fear = health in this game)
+        PlayerAttributes.onFearUpdate += OnFearUpdated;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from events
+        PlayerAttributes.onFearUpdate -= OnFearUpdated;
+    }
+
+    /// <summary>
+    /// Called when player's fear value changes
+    /// </summary>
+    private void OnFearUpdated(float fearValue)
+    {
+        // Fear acts as health - 0 fear = full health, 100 fear = dead
+        // Invert the value so UI shows health correctly
+        float healthValue = maxHealth - fearValue;
+        UpdateHealth(healthValue, maxHealth);
     }
 
     private void ValidateComponents()

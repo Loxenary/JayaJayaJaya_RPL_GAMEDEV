@@ -56,6 +56,10 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     private void Start()
     {
         TweeningBattery();
+
+        // Trigger initial events for HUD update
+        onFearUpdate?.Invoke(currentFear);
+        onBatteryUpdate?.Invoke(currentBattery);
     }
     private void OnEnable()
     {
@@ -80,6 +84,8 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
                 break;
             case AttributesType.Battery:
                 currentBattery = Mathf.Clamp(currentBattery + value,0,100);
+                onBatteryUpdate?.Invoke(currentBattery);
+                OnValueBatteryUpdate?.Invoke();
                 Debug.Log("Add Battery By Interactable");
                 break;
         }
@@ -107,7 +113,7 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
             Debug.Log("Player Dead");
             return;
         }
-        
+
         onFearUpdate?.Invoke(currentFear);
         OnValueFearUpdate?.Invoke();
 
@@ -127,7 +133,11 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     }
     void AddBattery(int value)
     {
-        currentBattery += value;
+        currentBattery = Mathf.Clamp(currentBattery + value, 0, 100);
+
+        // Trigger events for UI update
+        onBatteryUpdate?.Invoke(currentBattery);
+        OnValueBatteryUpdate?.Invoke();
     }
     void TweeningBattery()
     {
@@ -135,7 +145,7 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         {
             if (toggleFlashlight)
             {
-                if (currentBattery - decrementBatteryaValue > 0) { 
+                if (currentBattery - decrementBatteryaValue > 0) {
                     currentBattery-= decrementBatteryaValue;
                 }
                 else
@@ -144,6 +154,10 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
                     flashlight.enabled = toggleFlashlight;
                     currentBattery = 0;
                 }
+
+                // Trigger events for UI update
+                onBatteryUpdate?.Invoke(currentBattery);
+                OnValueBatteryUpdate?.Invoke();
             }
         }).SetLoops(-1);
     }
