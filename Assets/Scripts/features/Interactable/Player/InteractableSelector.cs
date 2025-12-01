@@ -42,7 +42,8 @@ public class InteractableSelector : MonoBehaviour
         {
             currentObject.InteractObject();
             EventBus.Publish(InteractEventState.OnInteract);
-
+            
+            currentObject = null;
         }
     }
 
@@ -55,8 +56,12 @@ public class InteractableSelector : MonoBehaviour
             Debug.Log("Trigger With Interactable Name : "+other.gameObject.name);
 
             EventBus.Publish(InteractEventState.OnEnter);
+            IHighlight highligh = other.gameObject.GetComponent<IHighlight>();
 
-            other.gameObject.GetComponent<IHighlight>().Highlight();
+            if (highligh != null)
+                other.gameObject.GetComponent<IHighlight>().Highlight();
+
+            
         }
 
     }
@@ -66,7 +71,10 @@ public class InteractableSelector : MonoBehaviour
             currentObject = null;
             EventBus.Publish(InteractEventState.OnExit);
 
-            other.gameObject.GetComponent<IHighlight>().UnHighlight();
+            IHighlight highligh = other.gameObject.GetComponent<IHighlight>();
+
+            if (highligh != null)
+                other.gameObject.GetComponent<IHighlight>().UnHighlight();
         }
     }
 }
