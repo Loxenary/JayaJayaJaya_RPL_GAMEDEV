@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 55c634bfb4e429945ab882aa84b93758
+guid: eb92bd6c27f2c5449a9fcb7a41ad7ab6
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -95,12 +95,34 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: hand_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51de34cde4c409343888dd2f2f3f3919
+      internalID: 471611500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a6d958e51e5718a41a6c967f7a64b429
     internalID: 0
     vertices: []
     indices: 
@@ -109,7 +131,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hand_0: 471611500
+      hand_1: 1419202445
+      hand_2: -1544034040
+      hand_3: 1878726859
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
