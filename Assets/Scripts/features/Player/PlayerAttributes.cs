@@ -8,8 +8,9 @@ using UnityEngine.Experimental.GlobalIllumination;
 [RequireComponent (typeof(PlayerInputHandler))]
 public class PlayerAttributes : MonoBehaviour,IDamageable
 {
-    [Header("Fear Stats")]
-    [SerializeField] int maxFear = 100;
+    [Header("Sanity Stats")]
+    [SerializeField] int maxSanity = 100;
+
     [Header("Flashlight Stat")]
     [SerializeField] Light flashlight;
     [SerializeField] int initalBatteryValue = 100;
@@ -18,13 +19,13 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     [SerializeField] int decrementBatteryValue = 1;
 
     [Header("Event")]
-    public UnityEvent OnValueFearUpdate;
+    public UnityEvent OnValueSanityUpdate;
     public UnityEvent OnValueBatteryUpdate;
     public UnityEvent OnPlayerDead;
 
     [Header("Debbuging")]
     [ReadOnly]
-    [SerializeField] float currentFear = 0;
+    [SerializeField] int currentSanity;
     [ReadOnly]
     [SerializeField] int currentBattery;
     [ReadOnly]
@@ -33,9 +34,9 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     [SerializeField] bool isDead;
 
 
-    //C# Event
-    public delegate void OnFearUpdate(float value);
-    public static event OnFearUpdate onFearUpdate;
+    //C# Event - Sanity: 100 = full health, 0 = dead
+    public delegate void OnSanityUpdate(float normalizedValue);
+    public static event OnSanityUpdate onSanityUpdate;
 
     public delegate void OnBatteryUpdate(float value);
     public static event OnBatteryUpdate onBatteryUpdate;
@@ -54,13 +55,15 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         toggleFlashlight = initialTogle;
 
         currentBattery = initalBatteryValue;
+        currentSanity = maxSanity; // Start with full sanity
     }
     private void Start()
     {
         TweeningBattery();
 
-        // Trigger initial events for HUD update
-        onFearUpdate?.Invoke(currentFear);
+        // Trigger initial events for HUD update (normalized: 0-1)
+        float normalizedSanity = (float)currentSanity / maxSanity;
+        onSanityUpdate?.Invoke(normalizedSanity);
         onBatteryUpdate?.Invoke(currentBattery);
     }
 
@@ -73,7 +76,6 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     {
         input.OnFlashlightPerformed += ToggleFlashlight;
 
-
         InteractableAddAttributes.onInteractAddAttribute += UpdateAttributes;
     }
 
@@ -83,21 +85,23 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
 
         InteractableAddAttributes.onInteractAddAttribute -= UpdateAttributes;
     }
+
     private void UpdateAttributes(AttributesType type, int value)
     {
         switch (type)
         {
-            case AttributesType.Fear:
-                SubstractFear(value);
+            case AttributesType.Sanity:
+                AddSanity(value);
                 break;
             case AttributesType.Battery:
                 int previousBattery = currentBattery;
-                currentBattery = Mathf.Clamp(currentBattery + value,0,100);
+                currentBattery = Mathf.Clamp(currentBattery + value, 0, 100);
                 onBatteryUpdate?.Invoke(currentBattery);
                 OnValueBatteryUpdate?.Invoke();
                 break;
         }
     }
+
     private void ToggleFlashlight()
     {
         if (currentBattery <= 0)
@@ -105,41 +109,47 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
 
         toggleFlashlight = !toggleFlashlight;
         flashlight.enabled = toggleFlashlight;
-        Debug.Log("Toggle Flashlight");
     }
-    void AddFear(int value)
+
+    /// <summary>
+    /// Add sanity (healing). Positive value = heal.
+    /// </summary>
+    void AddSanity(int value)
     {
-        float previousFear = currentFear;
-        currentFear = Mathf.Clamp(currentFear+value,0,maxFear);
+        int previousSanity = currentSanity;
+        currentSanity = Mathf.Clamp(currentSanity + value, 0, maxSanity);
 
-        Debug.Log($"[PlayerAttributes] Fear changed: {previousFear} → {currentFear} (Added: {value})");
+        float normalizedSanity = (float)currentSanity / maxSanity;
+        Debug.Log($"[PlayerAttributes] Sanity changed: {previousSanity} → {currentSanity} (Added: {value})");
 
-        if(currentFear == maxFear)
+        onSanityUpdate?.Invoke(normalizedSanity);
+        OnValueSanityUpdate?.Invoke();
+    }
+
+    /// <summary>
+    /// Reduce sanity (damage). Positive value = damage taken.
+    /// </summary>
+    void ReduceSanity(int damage)
+    {
+        int previousSanity = currentSanity;
+        currentSanity = Mathf.Clamp(currentSanity - damage, 0, maxSanity);
+
+        float normalizedSanity = (float)currentSanity / maxSanity;
+        Debug.Log($"[PlayerAttributes] Sanity damaged: {previousSanity} → {currentSanity} (Damage: {damage})");
+
+        if (currentSanity <= 0)
         {
             isDead = true;
-
             onPlayerDead?.Invoke();
             OnPlayerDead?.Invoke();
-
-            Debug.Log("Player Dead");
+            Debug.Log("Player Dead - Sanity depleted");
             return;
         }
 
-        onFearUpdate?.Invoke(currentFear);
-        OnValueFearUpdate?.Invoke();
-
+        onSanityUpdate?.Invoke(normalizedSanity);
+        OnValueSanityUpdate?.Invoke();
     }
-    void SubstractFear(int value)
-    {
-        float temp = ((float)value / 100) * currentFear;
 
-        Debug.Log("Temp = " + temp);
-
-        currentFear -= temp;
-
-        onFearUpdate?.Invoke(currentFear);
-        OnValueFearUpdate?.Invoke();
-    }
     void AddBattery(int value)
     {
         int previousBattery = currentBattery;
@@ -149,6 +159,7 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         onBatteryUpdate?.Invoke(currentBattery);
         OnValueBatteryUpdate?.Invoke();
     }
+
     void TweeningBattery()
     {
         // Kill existing sequence to prevent multiple sequences running
@@ -181,15 +192,19 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
             .SetUpdate(UpdateType.Normal, false)
             .SetAutoKill(false);
     }
-    public void Add(AttributesType type, int value)
+
+    /// <summary>
+    /// IDamageable implementation - receives damage
+    /// </summary>
+    public void TakeDamage(AttributesType type, int value)
     {
         switch (type)
         {
-            case AttributesType.Fear:
-                AddFear(value);
+            case AttributesType.Sanity:
+                ReduceSanity(value); // Damage reduces sanity
                 break;
             case AttributesType.Battery:
-                AddBattery(value);
+                AddBattery(-value); // Negative to reduce battery
                 break;
         }
     }

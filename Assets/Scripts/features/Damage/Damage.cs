@@ -5,7 +5,8 @@ public class Damage : MonoBehaviour
 {
     [Header("Damage Value")]
     [Range(0, 100)]
-    [SerializeField] protected int fearAddValue = 10;
+    [Tooltip("Amount of sanity to drain when damaging player")]
+    [SerializeField] protected int sanityDamage = 10;
 
     [Header("Damage Cooldown")]
     [Tooltip("Minimum time between damage hits (in seconds)")]
@@ -18,7 +19,7 @@ public class Damage : MonoBehaviour
 
     protected virtual void SendDamage(IDamageable target)
     {
-        target.Add(AttributesType.Fear, fearAddValue);
+        target.TakeDamage(AttributesType.Sanity, sanityDamage);
     }
 
     private void OnTriggerEnter(Collider other)

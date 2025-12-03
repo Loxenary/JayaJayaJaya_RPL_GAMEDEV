@@ -2,15 +2,15 @@
 
 ## ✅ System Sudah Terhubung!
 
-Fear system (PlayerAttributes) sudah otomatis terhubung ke HUD system melalui C# events.
+Sanity system (PlayerAttributes) sudah otomatis terhubung ke HUD system melalui C# events.
 
 ## 📊 Sistem yang Terhubung:
 
-### 1. Fear System → Health Display
+### 1. Sanity System → Sanity Display
 
-- **Fear = 0** → Health bar **penuh** (hijau)
-- **Fear = 50** → Health bar **setengah** (kuning)
-- **Fear = 100** → Health bar **kosong** (merah) + Player mati
+- **Sanity = 100** → Sanity bar **penuh** (hijau) - Player sehat
+- **Sanity = 50** → Sanity bar **setengah** (kuning)
+- **Sanity = 0** → Sanity bar **kosong** (merah) + Player mati
 
 ### 2. Battery System → Battery Display
 
@@ -30,7 +30,7 @@ Fear system (PlayerAttributes) sudah otomatis terhubung ke HUD system melalui C#
 2. **Setup HUD:**
 
    - Buat Canvas jika belum ada
-   - Add `HealthDisplay` ke UI Image (filled type)
+   - Add `SanityDisplay` ke UI Image (filled type)
    - Add `BatteryDisplay` ke UI Image (filled type)
 
 3. **Connect (Optional):**
@@ -40,13 +40,13 @@ Fear system (PlayerAttributes) sudah otomatis terhubung ke HUD system melalui C#
 
 ### Manual Setup:
 
-#### HealthDisplay:
+#### SanityDisplay:
 
 ```
 1. Create UI → Image
 2. Set Image Type = Filled
-3. Add Component: HealthDisplay
-4. Assign Fill Image ke field "Health Bar Fill"
+3. Add Component: SanityDisplay
+4. Assign Fill Image ke field "Sanity Bar Fill"
 5. (Optional) Add TextMeshPro untuk text display
 ```
 
@@ -67,9 +67,9 @@ Fear system (PlayerAttributes) sudah otomatis terhubung ke HUD system melalui C#
 ```
 PlayerAttributes
     ↓ (static event)
-    ├─→ onFearUpdate (float value)
-    │   └─→ HealthDisplay.OnFearUpdated()
-    │       └─→ UpdateHealth() - Inverted (100-fear)
+    ├─→ onSanityUpdate (float normalizedValue 0-1)
+    │   └─→ SanityDisplay.OnSanityUpdated()
+    │       └─→ UpdateSanityNormalized() - 1=full, 0=dead
     │
     └─→ onBatteryUpdate (float value)
         └─→ BatteryDisplay.OnBatteryUpdated()
@@ -83,12 +83,13 @@ PlayerAttributes
    - PlayerAttributes.Start() memanggil initial events
    - HUD display langsung terupdate
 
-2. **Saat Fear Berubah:**
+2. **Saat Sanity Berubah:**
 
    - Ghost menyentuh player
-   - AddFear() dipanggil
-   - onFearUpdate event triggered
-   - HealthDisplay update otomatis
+   - TakeDamage() dipanggil
+   - Sanity berkurang
+   - onSanityUpdate event triggered
+   - SanityDisplay update otomatis
 
 3. **Saat Battery Berubah:**
    - Flashlight menyala (drain)
@@ -98,13 +99,13 @@ PlayerAttributes
 
 ## 📝 Testing
 
-### Test Fear/Health:
+### Test Sanity:
 
 ```csharp
-// Tambah fear (kurangi health)
+// Kurangi sanity (damage)
 PlayerAttributes player = FindObjectOfType<PlayerAttributes>();
-player.Add(AttributesType.Fear, 20); // +20 fear
-// Health bar akan berkurang
+player.TakeDamage(DamageType.Sanity, 20); // -20 sanity
+// Sanity bar akan berkurang
 ```
 
 ### Test Battery:
@@ -120,18 +121,18 @@ player.Add(AttributesType.Battery, 30); // +30 battery
 ```
 1. Spawn ghost di scene
 2. Player menyentuh ghost
-3. Fear bertambah
-4. Health bar berkurang otomatis
+3. Sanity berkurang
+4. Sanity bar berkurang otomatis
 ```
 
 ## 🎨 Customization
 
-### HealthDisplay Colors:
+### SanityDisplay Colors:
 
 ```
-High Health (> 50%) = Green
-Medium Health (25-50%) = Yellow
-Low Health (< 25%) = Red
+High Sanity (> 50%) = Green
+Medium Sanity (25-50%) = Yellow
+Low Sanity (< 25%) = Red
 ```
 
 ### BatteryDisplay Features:
@@ -147,11 +148,11 @@ Low Health (< 25%) = Red
 
 ### PlayerAttributes (Inspector):
 
-- `Max Fear` = 100 (default)
+- `Max Sanity` = 100 (default, player starts with full sanity)
 - `Initial Battery` = 100 (default)
 - Events sudah auto-wired
 
-### HealthDisplay (Inspector):
+### SanityDisplay (Inspector):
 
 - `Smooth Transition` = true (recommended)
 - `Transition Speed` = 5 (adjust sesuai selera)
@@ -172,11 +173,11 @@ Low Health (< 25%) = Red
 ✅ Check console untuk error
 ✅ Check HUD displays ada di scene dan active
 
-### Health bar terbalik?
+### Sanity system:
 
-✅ Fear system sudah inverted otomatis
-✅ 0 fear = full health bar
-✅ 100 fear = empty bar
+✅ Sanity 100 = healthy (full bar)
+✅ Sanity 0 = dead (empty bar)
+✅ Ghost damage mengurangi sanity
 
 ### Battery tidak berkurang?
 
@@ -194,8 +195,8 @@ Low Health (< 25%) = Red
 
 **Modified Files:**
 
-- `PlayerAttributes.cs` - Added battery event invocations
-- `HealthDisplay.cs` - Subscribe to onFearUpdate
+- `PlayerAttributes.cs` - Manages sanity and battery with events
+- `SanityDisplay.cs` - Subscribe to onSanityUpdate
 - `BatteryDisplay.cs` - Subscribe to onBatteryUpdate
 
 **New Files:**
@@ -205,11 +206,11 @@ Low Health (< 25%) = Red
 ## 🎯 Quick Test Checklist
 
 - [ ] Player ada di scene dengan PlayerAttributes
-- [ ] HealthDisplay ada dan assigned
+- [ ] SanityDisplay ada dan assigned
 - [ ] BatteryDisplay ada dan assigned
-- [ ] Play mode → Health bar full (green)
+- [ ] Play mode → Sanity bar full (green)
 - [ ] Play mode → Battery bar full
-- [ ] Test ghost damage → Health berkurang
+- [ ] Test ghost damage → Sanity berkurang
 - [ ] Test flashlight → Battery berkurang
 - [ ] All working! ✅
 

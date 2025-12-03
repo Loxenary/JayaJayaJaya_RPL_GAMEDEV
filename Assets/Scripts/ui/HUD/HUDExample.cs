@@ -12,13 +12,13 @@ public class HUDExample : MonoBehaviour
     [SerializeField] private Sprite testMedicineIcon;
 
     [Header("Test Values")]
-    [SerializeField] private float testHealthDamage = 10f;
-    [SerializeField] private float testHealthHeal = 15f;
+    [SerializeField] private float testSanityDamage = 10f;
+    [SerializeField] private float testSanityHeal = 15f;
     [SerializeField] private float testBatteryDrain = 5f;
     [SerializeField] private float testBatteryCharge = 10f;
 
-    private float currentHealth = 100f;
-    private float maxHealth = 100f;
+    private float currentSanity = 100f;
+    private float maxSanity = 100f;
     private float currentBattery = 100f;
     private float maxBattery = 100f;
 
@@ -41,11 +41,11 @@ public class HUDExample : MonoBehaviour
         // Show the HUD
         UIManager.Open<HUDManager>();
 
-        // Set initial health
+        // Set initial sanity
         HUDManager hudManager = FindAnyObjectByType<HUDManager>();
         if (hudManager != null)
         {
-            hudManager.UpdateHealth(currentHealth, maxHealth);
+            hudManager.UpdateSanity(currentSanity, maxSanity);
             hudManager.UpdateBattery(currentBattery, maxBattery);
         }
     }
@@ -55,14 +55,14 @@ public class HUDExample : MonoBehaviour
         HUDManager hudManager = FindAnyObjectByType<HUDManager>();
         if (hudManager == null) return;
 
-        // Health controls
+        // Sanity controls
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            TakeDamage(testHealthDamage);
+            TakeDamage(testSanityDamage);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            Heal(testHealthHeal);
+            Heal(testSanityHeal);
         }
 
         // Battery controls
@@ -118,35 +118,35 @@ public class HUDExample : MonoBehaviour
         }
     }
 
-    #region Health Methods
+    #region Sanity Methods
 
     public void TakeDamage(float damage)
     {
-        currentHealth = Mathf.Max(0, currentHealth - damage);
-        UpdateHealthDisplay();
-        Debug.Log($"[HUDExample] Took {damage} damage. Health: {currentHealth}/{maxHealth}");
+        currentSanity = Mathf.Max(0, currentSanity - damage);
+        UpdateSanityDisplay();
+        Debug.Log($"[HUDExample] Took {damage} sanity damage. Sanity: {currentSanity}/{maxSanity}");
     }
 
     public void Heal(float amount)
     {
-        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
-        UpdateHealthDisplay();
-        Debug.Log($"[HUDExample] Healed {amount}. Health: {currentHealth}/{maxHealth}");
+        currentSanity = Mathf.Min(maxSanity, currentSanity + amount);
+        UpdateSanityDisplay();
+        Debug.Log($"[HUDExample] Healed {amount} sanity. Sanity: {currentSanity}/{maxSanity}");
     }
 
-    public void SetMaxHealth(float newMaxHealth)
+    public void SetMaxSanity(float newMaxSanity)
     {
-        maxHealth = newMaxHealth;
-        currentHealth = Mathf.Min(currentHealth, maxHealth);
-        UpdateHealthDisplay();
+        maxSanity = newMaxSanity;
+        currentSanity = Mathf.Min(currentSanity, maxSanity);
+        UpdateSanityDisplay();
     }
 
-    private void UpdateHealthDisplay()
+    private void UpdateSanityDisplay()
     {
         var hudManager = FindFirstObjectByType<HUDManager>();
         if (hudManager != null)
         {
-            hudManager.UpdateHealth(currentHealth, maxHealth);
+            hudManager.UpdateSanity(currentSanity, maxSanity);
         }
     }
 

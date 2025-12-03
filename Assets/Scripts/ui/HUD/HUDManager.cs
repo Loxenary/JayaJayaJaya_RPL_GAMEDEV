@@ -2,12 +2,12 @@ using UnityEngine;
 using TMPro;
 
 /// <summary>
-/// Central manager for the HUD system. Coordinates all HUD elements including health, battery, items, and timer.
+/// Central manager for the HUD system. Coordinates all HUD elements including sanity, battery, items, and timer.
 /// </summary>
 public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
 {
     [Header("HUD Components")]
-    [SerializeField] private HealthDisplay healthDisplay;
+    [SerializeField] private SanityDisplay sanityDisplay;
     [SerializeField] private BatteryDisplay batteryDisplay;
     [SerializeField] private ItemIconsDisplay itemIconsDisplay;
     [SerializeField] private TimerDisplay timerDisplay;
@@ -28,8 +28,8 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
 
     private void TryFindComponents()
     {
-        if (healthDisplay == null)
-            healthDisplay = GetComponentInChildren<HealthDisplay>();
+        if (sanityDisplay == null)
+            sanityDisplay = GetComponentInChildren<SanityDisplay>();
 
         if (batteryDisplay == null)
             batteryDisplay = GetComponentInChildren<BatteryDisplay>();
@@ -43,8 +43,8 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
 
     private void ValidateComponents()
     {
-        if (healthDisplay == null)
-            Debug.LogWarning("[HUDManager] HealthDisplay not assigned or found.", this);
+        if (sanityDisplay == null)
+            Debug.LogWarning("[HUDManager] SanityDisplay not assigned or found.", this);
 
         if (batteryDisplay == null)
             Debug.LogWarning("[HUDManager] BatteryDisplay not assigned or found.", this);
@@ -56,29 +56,29 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
             Debug.LogWarning("[HUDManager] TimerDisplay not assigned or found.", this);
     }
 
-    #region Public API - Health
+    #region Public API - Sanity
 
     /// <summary>
-    /// Updates the health display.
+    /// Updates the sanity display.
     /// </summary>
-    /// <param name="currentHealth">Current health value</param>
-    /// <param name="maxHealth">Maximum health value</param>
-    public void UpdateHealth(float currentHealth, float maxHealth)
+    /// <param name="currentSanity">Current sanity value</param>
+    /// <param name="maxSanity">Maximum sanity value</param>
+    public void UpdateSanity(float currentSanity, float maxSanity)
     {
-        if (healthDisplay != null)
+        if (sanityDisplay != null)
         {
-            healthDisplay.UpdateHealth(currentHealth, maxHealth);
+            sanityDisplay.UpdateSanity(currentSanity, maxSanity);
         }
     }
 
     /// <summary>
-    /// Updates health with a single normalized value (0-1).
+    /// Updates sanity with a single normalized value (0-1).
     /// </summary>
-    public void UpdateHealthNormalized(float normalizedHealth)
+    public void UpdateSanityNormalized(float normalizedSanity)
     {
-        if (healthDisplay != null)
+        if (sanityDisplay != null)
         {
-            healthDisplay.UpdateHealthNormalized(normalizedHealth);
+            sanityDisplay.UpdateSanityNormalized(normalizedSanity);
         }
     }
 
