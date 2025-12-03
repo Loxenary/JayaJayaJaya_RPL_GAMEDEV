@@ -27,25 +27,20 @@ public class Ghost : Damage
     /// </summary>
     protected override void SendDamage(IDamageable target)
     {
-        Debug.Log($"[Ghost] SendDamage called on {gameObject.name} at time {Time.time:F3}");
-
         if (!isActive)
         {
-            Debug.Log("[Ghost] Ghost is not active, no damage sent");
             return;
         }
 
         // ABSOLUTE PROTECTION: Time-based check at Ghost level
         if (Time.time - lastDamageTimeGhost < 0.5f)
         {
-            Debug.Log($"[Ghost] Too soon! Blocked by ghost-level cooldown (time since last: {Time.time - lastDamageTimeGhost:F3}s)");
             return;
         }
 
         // If damageOncePerContact is enabled, only damage once until player leaves
         if (damageOncePerContact && currentlyTouchingPlayer)
         {
-            Debug.Log("[Ghost] Already touching player, no additional damage (blocked by damageOncePerContact)");
             return;
         }
 
@@ -55,8 +50,6 @@ public class Ghost : Damage
 
         base.SendDamage(target);
         hasHitPlayer = true;
-
-        Debug.Log($"[Ghost] Ghost damaged player! (Time: {Time.time:F2}, Flag set)");
     }    private void OnTriggerExit(Collider other)
     {
         // Reset when player leaves

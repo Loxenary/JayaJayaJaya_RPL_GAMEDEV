@@ -87,7 +87,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   isInteract: 0
-  collider: {fileID: 0}
+  collider: {fileID: 3720982525135780837}
   timeRotate: 1.5
   rootObject: {fileID: 2031302712429714237}
   targetRotation: {x: 0, y: 95, z: 0}
@@ -109,12 +109,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.5, z: 0.5}
-  m_Center: {x: 0, y: 1, z: 0.4}
+  m_Size: {x: 1.25, y: 2.2, z: 0.2}
+  m_Center: {x: 0, y: 1.1, z: 0}
 --- !u!1 &3436308362727453690
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,7 +328,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30

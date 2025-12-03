@@ -53,12 +53,25 @@ public class SanityDisplay : MonoBehaviour
     private void Awake()
     {
         ValidateComponents();
+        // Initialize fill amount
+        currentFillAmount = 1f;
+        targetFillAmount = 1f;
     }
 
     private void Start()
     {
-        // Initialize with full sanity
-        UpdateSanityNormalized(1f);
+        // Initialize with full sanity immediately
+        if (sanityBarFill != null)
+        {
+            sanityBarFill.fillAmount = 1f;
+            sanityBarFill.color = highSanityColor;
+        }
+
+        // Update text to show 100%
+        if (sanityText != null)
+        {
+            sanityText.text = string.Format(sanityTextFormat, 100f);
+        }
     }
 
     private void OnEnable()
