@@ -120,7 +120,6 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         currentSanity = Mathf.Clamp(currentSanity + value, 0, maxSanity);
 
         float normalizedSanity = (float)currentSanity / maxSanity;
-        Debug.Log($"[PlayerAttributes] Sanity changed: {previousSanity} → {currentSanity} (Added: {value})");
 
         onSanityUpdate?.Invoke(normalizedSanity);
         OnValueSanityUpdate?.Invoke();
@@ -135,14 +134,12 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         currentSanity = Mathf.Clamp(currentSanity - damage, 0, maxSanity);
 
         float normalizedSanity = (float)currentSanity / maxSanity;
-        Debug.Log($"[PlayerAttributes] Sanity damaged: {previousSanity} → {currentSanity} (Damage: {damage})");
 
         if (currentSanity <= 0)
         {
             isDead = true;
             onPlayerDead?.Invoke();
             OnPlayerDead?.Invoke();
-            Debug.Log("Player Dead - Sanity depleted");
             return;
         }
 

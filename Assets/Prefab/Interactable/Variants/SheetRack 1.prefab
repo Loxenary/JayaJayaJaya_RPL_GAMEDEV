@@ -1177,7 +1177,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   isInteract: 0
-  collider: {fileID: 0}
+  collider: {fileID: 7177720092454049305}
   prefabCollectible: {fileID: 0}
   timeMove: 1.5
   targetObject: {fileID: 3665412801464911182}
@@ -1224,12 +1224,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.93441725, y: 1, z: 1.4011812}
-  m_Center: {x: -0.08723855, y: 0.5, z: -0.9774518}
+  m_Size: {x: 1.6, y: 1.2, z: 0.14}
+  m_Center: {x: 0, y: 0.6, z: -0.2}
 --- !u!1 &8304487889190795341
 GameObject:
   m_ObjectHideFlags: 0
@@ -1565,6 +1565,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3665412801464911182}
     m_Modifications:
+    - target: {fileID: 5820595321234187861, guid: 233481141d8730548a3439856ef30c5c, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5820595321234187861, guid: 233481141d8730548a3439856ef30c5c, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5820595321234187861, guid: 233481141d8730548a3439856ef30c5c, type: 3}
+      propertyPath: m_Size.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5820595321234187861, guid: 233481141d8730548a3439856ef30c5c, type: 3}
+      propertyPath: m_Center.x
+      value: 0.0000038146973
+      objectReference: {fileID: 0}
+    - target: {fileID: 5820595321234187861, guid: 233481141d8730548a3439856ef30c5c, type: 3}
+      propertyPath: m_Center.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5820595321234187861, guid: 233481141d8730548a3439856ef30c5c, type: 3}
+      propertyPath: m_Center.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5820595321234187861, guid: 233481141d8730548a3439856ef30c5c, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6343009588209214392, guid: 233481141d8730548a3439856ef30c5c, type: 3}
       propertyPath: m_Name
       value: Key

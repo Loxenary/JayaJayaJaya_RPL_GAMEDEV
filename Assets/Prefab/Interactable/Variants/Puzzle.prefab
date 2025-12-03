@@ -63,11 +63,11 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.2, y: 0.2, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3469722626472911691
 MonoBehaviour:
@@ -109,7 +109,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   isInteract: 0
-  collider: {fileID: 0}
+  collider: {fileID: 190520106120000589}
 --- !u!1 &5216592379768939068
 GameObject:
   m_ObjectHideFlags: 0

@@ -166,7 +166,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   canvasGroup: {fileID: 0}
-  healthDisplay: {fileID: 8184514728264599609}
+  sanityDisplay: {fileID: 4202458906718821904}
   batteryDisplay: {fileID: 6626541396714435162}
   itemIconsDisplay: {fileID: 5563492247558796310}
   timerDisplay: {fileID: 945513504617841572}
@@ -693,7 +693,7 @@ GameObject:
   - component: {fileID: 296815512402281274}
   - component: {fileID: 311593615343414152}
   m_Layer: 5
-  m_Name: HealthBarBackground
+  m_Name: SanityBarBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1005,9 +1005,9 @@ GameObject:
   - component: {fileID: 447639507774245305}
   - component: {fileID: 9106407918410598682}
   - component: {fileID: 3460967969686195952}
-  - component: {fileID: 8184514728264599609}
+  - component: {fileID: 4202458906718821904}
   m_Layer: 5
-  m_Name: HealthDisplay
+  m_Name: SanityDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1073,7 +1073,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8184514728264599609
+--- !u!114 &4202458906718821904
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1082,21 +1082,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 3304909230081272533}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f138298e25a50c41b91052fbc10ac0e, type: 3}
+  m_Script: {fileID: 11500000, guid: 882c3ff2c14c9a84cab6b7fb25f4035e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarFill: {fileID: 7179138651993243199}
-  healthText: {fileID: 9055471358094171682}
-  healthIcon: {fileID: 311593615343414152}
-  highHealthColor: {r: 0, g: 1, b: 0, a: 1}
-  mediumHealthColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
-  mediumHealthThreshold: 0.5
-  lowHealthThreshold: 0.25
+  sanityBarFill: {fileID: 7179138651993243199}
+  sanityText: {fileID: 9055471358094171682}
+  sanityIcon: {fileID: 311593615343414152}
+  highSanityColor: {r: 0, g: 1, b: 0, a: 1}
+  mediumSanityColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  lowSanityColor: {r: 1, g: 0, b: 0, a: 1}
+  mediumSanityThreshold: 0.5
+  lowSanityThreshold: 0.25
   smoothTransition: 1
   transitionSpeed: 5
-  healthTextFormat: '{0:0}/{1:0}'
-  showPercentage: 0
+  sanityTextFormat: '{0:0}%'
 --- !u!1 &4422098934361696700
 GameObject:
   m_ObjectHideFlags: 0
@@ -1184,7 +1183,7 @@ GameObject:
   - component: {fileID: 8964267284695511973}
   - component: {fileID: 9055471358094171682}
   m_Layer: 5
-  m_Name: HealthText
+  m_Name: SanityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1420,7 +1419,7 @@ GameObject:
   - component: {fileID: 3074298400036712784}
   - component: {fileID: 7179138651993243199}
   m_Layer: 5
-  m_Name: HealthBarFill
+  m_Name: SanityBarFill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

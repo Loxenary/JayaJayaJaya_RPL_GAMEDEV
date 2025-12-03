@@ -428,136 +428,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wooden Door
       objectReference: {fileID: 0}
-    - target: {fileID: 4123242509716984862, guid: dfcd1f1c6ce1a9d4682b71bb418dd571, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dfcd1f1c6ce1a9d4682b71bb418dd571, type: 3}
---- !u!1 &321851228
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 321851231}
-  - component: {fileID: 321851229}
-  - component: {fileID: 321851230}
-  m_Layer: 0
-  m_Name: AmbientLight
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!108 &321851229
-Light:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 321851228}
-  m_Enabled: 1
-  serializedVersion: 11
-  m_Type: 2
-  m_Color: {r: 0.7, g: 0.8, b: 1, a: 1}
-  m_Intensity: 1
-  m_Range: 2
-  m_SpotAngle: 30
-  m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
-  m_Shadows:
-    m_Type: 0
-    m_Resolution: -1
-    m_CustomResolution: -1
-    m_Strength: 1
-    m_Bias: 0.05
-    m_NormalBias: 0.4
-    m_NearPlane: 0.2
-    m_CullingMatrixOverride:
-      e00: 1
-      e01: 0
-      e02: 0
-      e03: 0
-      e10: 0
-      e11: 1
-      e12: 0
-      e13: 0
-      e20: 0
-      e21: 0
-      e22: 1
-      e23: 0
-      e30: 0
-      e31: 0
-      e32: 0
-      e33: 1
-    m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 0}
-  m_DrawHalo: 0
-  m_Flare: {fileID: 0}
-  m_RenderMode: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingLayerMask: 1
-  m_Lightmapping: 4
-  m_LightShadowCasterMode: 0
-  m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
-  m_ColorTemperature: 6570
-  m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
-  m_ForceVisible: 0
-  m_ShadowRadius: 0
-  m_ShadowAngle: 0
-  m_LightUnit: 1
-  m_LuxAtDistance: 1
-  m_EnableSpotReflector: 1
---- !u!114 &321851230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 321851228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 3
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 0
---- !u!4 &321851231
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 321851228}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1275366956}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &331274194
 GameObject:
   m_ObjectHideFlags: 0
@@ -1397,12 +1272,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.5, z: 0.5}
-  m_Center: {x: 0, y: 1, z: 0.4}
+  m_Size: {x: 1.25, y: 2.2, z: 0.2}
+  m_Center: {x: 0, y: 1.1, z: 0}
 --- !u!4 &737728855
 Transform:
   m_ObjectHideFlags: 0
@@ -2064,34 +1939,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!1 &1275366945 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 989156983715006675, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
-  m_PrefabInstance: {fileID: 7343836157499592371}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1275366946
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1275366945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aecec98ac4ed7dc478e89cd05187a433, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ambientLight: {fileID: 321851229}
-  ambientIntensity: 0.3
-  ambientRange: 2
-  ambientColor: {r: 0.7, g: 0.8, b: 1, a: 1}
-  flashlight: {fileID: 810354348}
-  fadeSpeed: 5
---- !u!4 &1275366956 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 24084774394580246, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
-  m_PrefabInstance: {fileID: 7343836157499592371}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1282239778
 GameObject:
   m_ObjectHideFlags: 0
@@ -2746,11 +2593,11 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3, y: 1, z: 3}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1840741458
 MeshRenderer:
@@ -3377,10 +3224,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1900214022468863052, guid: fcfaaa9837810414099e98236ec5fd80, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6127061890937282220, guid: fcfaaa9837810414099e98236ec5fd80, type: 3}
       propertyPath: m_Name
       value: Consumable Battery
@@ -3438,10 +3281,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1521879330735441022, guid: 6d8636dce7f5ce7478a6e706821cb618, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2671466941792373151, guid: 6d8636dce7f5ce7478a6e706821cb618, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.71
@@ -3604,10 +3443,6 @@ PrefabInstance:
       propertyPath: raycastOrigin
       value: 
       objectReference: {fileID: 1501889264}
-    - target: {fileID: 2787783677809895001, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
-      propertyPath: interactDistance
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 4909404721968805087, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
       propertyPath: playerCamera
       value: 
@@ -3616,24 +3451,18 @@ PrefabInstance:
       propertyPath: flashlight
       value: 
       objectReference: {fileID: 810354348}
+    - target: {fileID: 5607267691951340174, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: flashlight
+      value: 
+      objectReference: {fileID: 810354348}
     - target: {fileID: 6756537923492231578, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 1501889263}
-    - target: {fileID: 8751715549761009909, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.3
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 24084774394580246, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 321851231}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 989156983715006675, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1275366946}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -410,12 +410,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: -0.35, z: 0.5}
+  m_Size: {x: 0.3, y: 0.1, z: 0.3}
+  m_Center: {x: -0.08, y: 0, z: 0}
 --- !u!114 &8324425811609406844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,7 +468,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   isInteract: 0
-  collider: {fileID: 0}
+  collider: {fileID: 8514905505288621}
   timeRotate: 2
   rootObject: {fileID: 6124783456807918002}
   targetRotation: {x: 0, y: 0, z: -180}
