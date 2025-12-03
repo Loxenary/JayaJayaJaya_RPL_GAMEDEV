@@ -11,6 +11,7 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     [Header("Fear Stats")]
     [SerializeField] int maxFear = 100;
     [Header("Flashlight Stat")]
+    [SerializeField] Light pointLight;
     [SerializeField] Light flashlight;
     [SerializeField] int initalBatteryValue = 100;
     [SerializeField] bool initialTogle = true;
@@ -49,6 +50,7 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     {
         input = GetComponent<PlayerInputHandler>();
         flashlight.enabled = initialTogle;
+        pointLight.enabled = !initialTogle;
         toggleFlashlight = initialTogle;
 
         currentBattery = initalBatteryValue;
@@ -95,7 +97,7 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     {
         if (currentBattery <= 0)
             return;
-
+        pointLight.enabled = toggleFlashlight;
         toggleFlashlight = !toggleFlashlight;
         flashlight.enabled = toggleFlashlight;
         Debug.Log("Toggle Flashlight");
