@@ -7,8 +7,8 @@ using UnityEngine;
 public class PlayerHUDConnector : MonoBehaviour
 {
     [Header("HUD References")]
-    [Tooltip("Health display component - will show fear as health (inverted)")]
-    [SerializeField] private HealthDisplay healthDisplay;
+    [Tooltip("Sanity display component - shows player's mental health")]
+    [SerializeField] private SanityDisplay sanityDisplay;
 
     [Tooltip("Battery display component - will show flashlight battery")]
     [SerializeField] private BatteryDisplay batteryDisplay;
@@ -21,7 +21,7 @@ public class PlayerHUDConnector : MonoBehaviour
         if (debugMode)
         {
             Debug.Log("[PlayerHUDConnector] HUD system connected to Player attributes");
-            Debug.Log("- Fear system connected to HealthDisplay (inverted)");
+            Debug.Log("- Sanity system connected to SanityDisplay");
             Debug.Log("- Battery system connected to BatteryDisplay");
         }
 
@@ -30,9 +30,9 @@ public class PlayerHUDConnector : MonoBehaviour
 
     private void ValidateSetup()
     {
-        if (healthDisplay == null)
+        if (sanityDisplay == null)
         {
-            Debug.LogWarning("[PlayerHUDConnector] HealthDisplay not assigned! Health HUD will not update.", this);
+            Debug.LogWarning("[PlayerHUDConnector] SanityDisplay not assigned! Sanity HUD will not update.", this);
         }
 
         if (batteryDisplay == null)
@@ -65,12 +65,12 @@ public class PlayerHUDConnector : MonoBehaviour
     [ContextMenu("Auto-Find HUD Components")]
     public void AutoFindHUDComponents()
     {
-        if (healthDisplay == null)
+        if (sanityDisplay == null)
         {
-            healthDisplay = FindAnyObjectByType<HealthDisplay>();
-            if (healthDisplay != null)
+            sanityDisplay = FindAnyObjectByType<SanityDisplay>();
+            if (sanityDisplay != null)
             {
-                Debug.Log("[PlayerHUDConnector] HealthDisplay found and assigned!");
+                Debug.Log("[PlayerHUDConnector] SanityDisplay found and assigned!");
             }
         }
 
@@ -83,7 +83,7 @@ public class PlayerHUDConnector : MonoBehaviour
             }
         }
 
-        if (healthDisplay == null && batteryDisplay == null)
+        if (sanityDisplay == null && batteryDisplay == null)
         {
             Debug.LogWarning("[PlayerHUDConnector] No HUD components found in scene!");
         }
