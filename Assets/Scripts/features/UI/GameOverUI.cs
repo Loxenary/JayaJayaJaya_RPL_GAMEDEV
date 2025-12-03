@@ -82,8 +82,6 @@ public class GameOverUI : MonoBehaviour
             restartButton.interactable = true;
         if (quitButton != null)
             quitButton.interactable = true;
-
-        Debug.Log("[GameOverUI] Game Over screen shown");
     }
 
     /// <summary>
@@ -107,30 +105,26 @@ public class GameOverUI : MonoBehaviour
     /// </summary>
     private async void OnRestartClicked()
     {
-        Debug.Log("[GameOverUI] Restart button clicked");
-
-        // Hide panel first
-        HideGameOver();
-
-        // Reset time scale before restart
-        Time.timeScale = 1f;
-
-        // Disable this object to prevent any further interaction
+        // Disable buttons to prevent double-click
         if (restartButton != null)
             restartButton.interactable = false;
+        if (quitButton != null)
+            quitButton.interactable = false;
+
+        // Keep game paused and UI visible until reload completes
+        // Time.timeScale stays at 0 to freeze the game
 
         // Get SceneService to reload current scene
         var sceneService = ServiceLocator.Get<SceneService>();
         if (sceneService != null)
         {
-            Debug.Log("[GameOverUI] Calling SceneService.ReloadScene...");
+            // ReloadScene will handle everything - scene loads fresh with Time.timeScale = 1
             await sceneService.ReloadScene(addTransition: true);
-            Debug.Log("[GameOverUI] Scene reload completed");
         }
         else
         {
             // Fallback: Reload using Unity SceneManager
-            Debug.LogWarning("[GameOverUI] SceneService not found, using fallback reload");
+            Time.timeScale = 1f;
             UnityEngine.SceneManagement.SceneManager.LoadScene(
                 UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
             );
@@ -140,19 +134,28 @@ public class GameOverUI : MonoBehaviour
     /// <summary>
     /// Quit button callback (load main menu or quit game)
     /// </summary>
-    private void OnQuitClicked()
+    private async void OnQuitClicked()
     {
-        Debug.Log("[GameOverUI] Quit button clicked");
+        // Disable buttons to prevent double-click
+        if (restartButton != null)
+            restartButton.interactable = false;
+        if (quitButton != null)
+            quitButton.interactable = false;
 
-        // Reset time scale
-        Time.timeScale = 1f;
-
-        // Try to load main menu scene
         var sceneService = ServiceLocator.Get<SceneService>();
         if (sceneService != null)
         {
-            // Assuming you have a MainMenu scene enum
-            // sceneService.LoadScene(SceneEnum.MainMenu, false);
+            // In test mode, just reload the test scene as "quit" behavior
+            // In normal mode, load main menu
+            if (sceneService.IsTestMode)
+            {
+                await sceneService.ReloadScene(addTransition: true);
+            }
+            else
+            {
+                await sceneService.LoadScene(SceneEnum.MAIN_MENU, true);
+            }
+            return;
         }
 
 #if UNITY_EDITOR
