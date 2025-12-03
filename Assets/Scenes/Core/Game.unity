@@ -2407,7 +2407,7 @@ Transform:
   m_GameObject: {fileID: 1501889261}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.496, z: 16.19}
+  m_LocalPosition: {x: 0, y: 2.49, z: 16.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3377,6 +3377,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1900214022468863052, guid: fcfaaa9837810414099e98236ec5fd80, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6127061890937282220, guid: fcfaaa9837810414099e98236ec5fd80, type: 3}
       propertyPath: m_Name
       value: Consumable Battery
@@ -3434,6 +3438,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1521879330735441022, guid: 6d8636dce7f5ce7478a6e706821cb618, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2671466941792373151, guid: 6d8636dce7f5ce7478a6e706821cb618, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.71
@@ -3591,6 +3599,14 @@ PrefabInstance:
     - target: {fileID: 989156983715006675, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
       propertyPath: m_Name
       value: '[GameObject] Player'
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787783677809895001, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: raycastOrigin
+      value: 
+      objectReference: {fileID: 1501889264}
+    - target: {fileID: 2787783677809895001, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: interactDistance
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4909404721968805087, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
       propertyPath: playerCamera
