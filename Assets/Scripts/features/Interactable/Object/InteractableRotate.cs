@@ -10,12 +10,31 @@ public class InteractableRotate : Interactable
 
 
     public UnityEvent OnDoneRotate;
+
+
+    [ReadOnly]
+    [SerializeField] bool wait;
     public override void InteractObject()
     {
-        base.InteractObject();
+        if (wait) return;
 
-        rootObject.DOLocalRotate(targetRotation, timeRotate).OnComplete(() => {
+        wait = true;
+        
+        onInteract?.Invoke();
+        if (isInteract)
+            DoRotate(Vector3.zero);
+        else
+            DoRotate(targetRotation);
+
+
+        isInteract = !isInteract;
+
+    }
+    void DoRotate(Vector3 target)
+    {
+        rootObject.DOLocalRotate(target, timeRotate).OnComplete(() => {
             OnDoneRotate?.Invoke();
+            wait = false;
         });
     }
 }
