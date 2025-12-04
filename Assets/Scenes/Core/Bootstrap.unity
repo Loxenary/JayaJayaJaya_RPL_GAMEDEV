@@ -153,9 +153,7 @@ MonoBehaviour:
   - {fileID: 8289597152984568854, guid: 7ce8dc6f2dc9b504b952559b69e7f192, type: 3}
   - {fileID: 582948092488412116, guid: 95631a702fcf27b49a6868797f6660c9, type: 3}
   - {fileID: 4167566336382903413, guid: 3f21198dc120c924c9be93ea2c5b836b, type: 3}
-  _config: {fileID: 11400000, guid: 7fed01553849d214297d8b736949eae4, type: 2}
-  isTestingEnabled: 1
-  testSceneToLoad: {fileID: 102900000, guid: 13c7a8551126c7646af3d4d64d35c79d, type: 3}
+  _config: {fileID: 11400000, guid: 223dbd4adb1876d4cbe5d842a98ad6d6, type: 2}
   saveDataScriptsToReset: []
 --- !u!4 &85183237
 Transform:
