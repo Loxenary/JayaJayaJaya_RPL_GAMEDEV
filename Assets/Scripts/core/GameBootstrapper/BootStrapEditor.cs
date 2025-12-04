@@ -11,10 +11,12 @@ public class GameBootstrapEditor : Editor
     private bool _isResetting = false;
     private bool _advancedResetActive = false;
     private SerializedProperty _saveDataScriptsToResetProp;
+    private SerializedProperty _configProp;
 
     private void OnEnable()
     {
         _saveDataScriptsToResetProp = serializedObject.FindProperty("saveDataScriptsToReset");
+        _configProp = serializedObject.FindProperty("_config");
     }
 
     public override void OnInspectorGUI()
@@ -22,17 +24,26 @@ public class GameBootstrapEditor : Editor
         serializedObject.Update();
 
         // Draw all properties except the ones we handle manually
-        DrawPropertiesExcluding(serializedObject, "isTestingEnabled", "testSceneToLoad", "saveDataScriptsToReset", "m_Script");
+        DrawPropertiesExcluding(serializedObject, "saveDataScriptsToReset", "m_Script");
 
-        SerializedProperty isTestingEnabled = serializedObject.FindProperty("isTestingEnabled");
-        EditorGUILayout.PropertyField(isTestingEnabled);
-
-        if (isTestingEnabled.boolValue)
+        // Check if config is assigned and testing is enabled
+        bool isTestingEnabled = false;
+        if (_configProp.objectReferenceValue != null)
         {
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("testSceneToLoad"));
-            EditorGUILayout.Space(10);
+            var configObj = new SerializedObject(_configProp.objectReferenceValue);
+            var testingEnabledProp = configObj.FindProperty("isTestingEnabled");
+            if (testingEnabledProp != null)
+            {
+                isTestingEnabled = testingEnabledProp.boolValue;
+            }
+        }
 
+        if (isTestingEnabled)
+        {
+            EditorGUILayout.Space(10);
+            EditorGUILayout.HelpBox("Testing Mode is ENABLED in BootstrapConfig. The test scene will be loaded instead of the initial scene.", MessageType.Info);
+
+            EditorGUILayout.Space(10);
             _advancedResetActive = EditorGUILayout.ToggleLeft("Advanced Reset", _advancedResetActive);
             EditorGUILayout.Space();
 
@@ -55,8 +66,6 @@ public class GameBootstrapEditor : Editor
                 bool success = _resetStatusMessage.StartsWith("Success");
                 EditorGUILayout.HelpBox(_resetStatusMessage, success ? MessageType.Info : MessageType.Error);
             }
-            
-            EditorGUI.indentLevel--;
         }
         else
         {
@@ -71,13 +80,13 @@ public class GameBootstrapEditor : Editor
     {
         EditorGUILayout.LabelField("Selective Data Reset", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox("Drag script files that inherit from 'BaseSaveData' here. Invalid scripts will be removed automatically.", MessageType.None);
-        
+
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(_saveDataScriptsToResetProp, true);
-        
+
         if (EditorGUI.EndChangeCheck())
         {
-            serializedObject.ApplyModifiedProperties(); 
+            serializedObject.ApplyModifiedProperties();
             ValidateSaveDataScriptsList();
         }
 
@@ -97,7 +106,7 @@ public class GameBootstrapEditor : Editor
         }
         EditorGUI.EndDisabledGroup();
     }
-    
+
     private void DrawGlobalResetUI()
     {
         EditorGUILayout.LabelField("Global Data Reset", EditorStyles.boldLabel);
@@ -158,7 +167,7 @@ public class GameBootstrapEditor : Editor
             _resetStatusMessage = "No valid scripts were selected to reset.";
             return;
         }
-        
+
         _isResetting = true;
         GameBootstrap bootstrap = (GameBootstrap)target;
         bootstrap.ResetSelectedData(scriptList, result =>
