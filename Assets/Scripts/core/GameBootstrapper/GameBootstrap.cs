@@ -205,23 +205,27 @@ public class GameBootstrap : MonoBehaviour
                 return; // Stop here to prevent further errors.
             }
 
-            var currentScene = SceneManager.GetActiveScene();
-
-            // Loop through all loaded scenes
-            for (int i = 0; i < SceneManager.sceneCount; i++)
+            // Unload all scenes except the bootstrap scene
+            for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 var scene = SceneManager.GetSceneAt(i);
 
-                // If the scene is loaded and it's not the current active scene, close it
-                if (scene.isLoaded && scene.path != currentScene.path)
+                // Don't unload the bootstrap scene
+                if (scene != gameObject.scene)
                 {
                     SceneManager.UnloadSceneAsync(scene);
                 }
             }
 
+            // Load the test scene additively
+            await SceneManager.LoadSceneAsync(testSceneToLoad.name, LoadSceneMode.Additive);
 
-            SceneManager.LoadScene(testSceneToLoad.name, LoadSceneMode.Additive);
-
+            // Set it as the active scene
+            var loadedTestScene = SceneManager.GetSceneByName(testSceneToLoad.name);
+            if (loadedTestScene.IsValid())
+            {
+                SceneManager.SetActiveScene(loadedTestScene);
+            }
 
             return;
         }
