@@ -12,7 +12,6 @@ public class InteractableKey : Interactable
     {
         base.InteractObject();
 
-
         onFoundKey?.Invoke(keyId);
     }
 }
