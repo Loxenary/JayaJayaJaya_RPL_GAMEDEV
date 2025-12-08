@@ -3087,7 +3087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   angryConfiguration: {fileID: 11400000, guid: 8e965db23edc02b4cadd812adc0b38f7, type: 2}
-  pointConfiguration: {fileID: 0}
+  pointConfiguration: {fileID: 11400000, guid: e5d69c58fce944747acf720ddd6c6276, type: 2}
   OnAngryLevelChanged:
     m_PersistentCalls:
       m_Calls: []
