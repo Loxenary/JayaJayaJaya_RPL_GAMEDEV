@@ -12,9 +12,10 @@ namespace EnemyAI
     /// States:
     /// - Idle: Standing still, scanning for targets with cone vision
     /// - Patrol: Moving between patrol points, scanning for targets
-    /// - Seen: Target spotted! Evaluating if within chase radius
+    /// - Seen: Target spotted! Moving slowly towards target before full chase
     /// - Chase: Actively pursuing detected target
     /// - Attack: Attacking the target
+    /// - Flee: Retreating after attack, waiting for cooldown before re-engaging
     /// </summary>
     [RequireComponent(typeof(AIPath))]
     [RequireComponent(typeof(EnemyDetection))]
@@ -27,22 +28,39 @@ namespace EnemyAI
             Seen,
             Chase,
             Attack,
+            Flee,
         }
 
         [Header("Configuration")]
         [SerializeField] protected EnemyStats stats;
+
+        [Header("Angry System Integration (Optional)")]
+        [Tooltip("Reference to the global EnemyAngrySystem. If set, enemy will use dynamic stats based on anger level.")]
+        [SerializeField] protected EnemyAngrySystem angrySystem;
+        [Tooltip("If true, enemy stats will automatically update when anger level changes")]
+        [SerializeField] protected bool useDynamicAngryStats = false;
 
         [Header("Patrol Points (Optional)")]
         [SerializeField] protected Transform[] patrolPoints;
         [SerializeField] protected bool loopPatrol = true;
 
         [Header("Behavior Settings")]
-        [SerializeField] [Range(0f, 1f)] protected float patrolChance = 0.5f;
+        [SerializeField][Range(0f, 1f)] protected float patrolChance = 0.5f;
         [SerializeField] protected float idleWaitTimeMin = 2f;
         [SerializeField] protected float idleWaitTimeMax = 5f;
         [SerializeField] protected float chaseRadius = 15f;
         [SerializeField] protected float visionLostCountdown = 2f;
         [SerializeField] protected float seenStateTimeout = 5f;
+
+        [Header("Seen State - Slow Approach")]
+        [Tooltip("Duration to move slowly when first seeing target")]
+        [SerializeField] protected float seenSlowMoveDuration = 1.5f;
+        [Tooltip("Speed multiplier during slow approach (0.5 = 50% speed)")]
+        [SerializeField][Range(0.1f, 1f)] protected float seenSlowSpeedMultiplier = 0.5f;
+
+        [Header("Flee State")]
+        [Tooltip("Time to stay in flee state after attack (usually matches attack cooldown)")]
+        [SerializeField] protected float fleeDuration = 1.5f;
 
         [Header("Debug")]
         [SerializeField] protected bool showDebugLogs = false;
@@ -61,15 +79,18 @@ namespace EnemyAI
         protected float idleWaitTimer;
         protected float currentIdleWaitTime;
         protected float seenStateTimer;
+        protected float fleeTimer;
+        protected bool seenSlowPhaseComplete;
 
         public EnemyState CurrentState => fsm != null ? fsm.State : EnemyState.Idle;
         public float HealthPercentage => currentHealth / stats.maxHealth;
         public bool IsAlive => currentHealth > 0;
-
+    
         [Header("CURRENT STATE (Read Only)")]
-        [SerializeField] private string _currentStateDisplay = "Not Started";
-        [SerializeField] private string _targetInfo = "No Target";
-        [SerializeField] private float _visionTimer = 0f;
+        [SerializeField][ReadOnly] private string _currentStateDisplay = "Not Started";
+        [SerializeField][ReadOnly] private string _targetInfo = "No Target";
+        [SerializeField][ReadOnly] private float _visionTimer = 0f;
+        [SerializeField][ReadOnly] private float _fleeTimer = 0f;
 
         #region Unity Lifecycle
 
@@ -87,12 +108,29 @@ namespace EnemyAI
 
             InitializeComponents();
             InitializeFSM();
+            InitializeAngrySystem();
         }
 
         protected virtual void Start()
         {
             currentHealth = stats.maxHealth;
             ChooseRandomBehavior();
+        }
+
+        protected virtual void OnEnable()
+        {
+            if (useDynamicAngryStats && angrySystem != null)
+            {
+                EnemyAngrySystem.OnGlobalAngryLevelChanged += OnAngryLevelChanged;
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (useDynamicAngryStats && angrySystem != null)
+            {
+                EnemyAngrySystem.OnGlobalAngryLevelChanged -= OnAngryLevelChanged;
+            }
         }
 
         protected virtual void ChooseRandomBehavior()
@@ -133,6 +171,7 @@ namespace EnemyAI
             }
 
             _visionTimer = targetLostTime;
+            _fleeTimer = fleeTimer;
         }
 
         #endregion
@@ -152,6 +191,71 @@ namespace EnemyAI
         protected virtual void InitializeFSM()
         {
             fsm = new StateMachine<EnemyState, StateDriverUnity>(this);
+        }
+
+        protected virtual void InitializeAngrySystem()
+        {
+            if (angrySystem == null)
+            {
+                // Try to find angry system in scene if not assigned
+                angrySystem = FindAnyObjectByType<EnemyAngrySystem>();
+            }
+
+            if (useDynamicAngryStats && angrySystem != null)
+            {
+                Log($"Angry System integration enabled. Will use dynamic stats based on anger level.");
+                // Apply initial stats from current angry level
+                UpdateStatsFromAngryLevel(angrySystem.CurrentLevel);
+            }
+            else if (useDynamicAngryStats && angrySystem == null)
+            {
+                Debug.LogWarning($"[{gameObject.name}] useDynamicAngryStats is enabled but no EnemyAngrySystem found in scene!");
+            }
+        }
+
+        protected virtual void OnAngryLevelChanged(EnemyLevel newLevel)
+        {
+            if (!useDynamicAngryStats || angrySystem == null) return;
+
+            Log($"Angry level changed to {newLevel}. Updating enemy stats...");
+            UpdateStatsFromAngryLevel(newLevel);
+        }
+
+        protected virtual void UpdateStatsFromAngryLevel(EnemyLevel level)
+        {
+            if (angrySystem == null) return;
+
+            EnemyStats newStats = angrySystem.GetStatsForLevel(level);
+
+            if (newStats == null)
+            {
+                Debug.LogWarning($"[{gameObject.name}] No stats found for angry level {level}!");
+                return;
+            }
+
+            // Update stats reference
+            stats = newStats;
+
+            // Update AI components with new stats
+            aiPath.maxSpeed = stats.maxSpeed;
+            aiPath.maxAcceleration = stats.acceleration;
+            aiPath.rotationSpeed = stats.rotationSpeed;
+
+            detection.Initialize(stats.detectionRange, stats.detectionAngle, stats.detectionLayer);
+
+            Log($"Stats updated for level {level}: Speed={stats.maxSpeed}, DetectionRange={stats.detectionRange}, Damage={stats.attackDamage}");
+
+            // Optional: Trigger visual effects on level change
+            OnAngryLevelVisualUpdate(level);
+        }
+
+        /// <summary>
+        /// Override this method to add visual effects when angry level changes
+        /// (e.g., change color, add particle effects, play sound)
+        /// </summary>
+        protected virtual void OnAngryLevelVisualUpdate(EnemyLevel level)
+        {
+            // Override in derived classes to add visual feedback
         }
 
         #endregion
@@ -256,10 +360,12 @@ namespace EnemyAI
 
         protected virtual void Seen_Enter()
         {
-            Log("Target SEEN! Evaluating...");
-            aiPath.canMove = false;
+            Log("Target SEEN! Moving slowly towards target...");
+            aiPath.canMove = true;
+            aiPath.maxSpeed = stats.maxSpeed * seenSlowSpeedMultiplier;
             targetLostTime = 0f;
             seenStateTimer = 0f;
+            seenSlowPhaseComplete = false;
         }
 
         protected virtual void Seen_Update()
@@ -289,9 +395,23 @@ namespace EnemyAI
                 targetLostTime = 0f;
             }
 
-            if (distanceToTarget <= chaseRadius)
+            // Move slowly towards target during initial phase
+            if (!seenSlowPhaseComplete)
             {
-                Log("Target within chase radius, initiating chase!");
+                aiPath.destination = currentTarget.position;
+                LookAtTarget(currentTarget);
+
+                if (seenStateTimer >= seenSlowMoveDuration)
+                {
+                    seenSlowPhaseComplete = true;
+                    Log("Slow approach complete, evaluating chase...");
+                }
+            }
+
+            // After slow phase, check if target is within chase radius
+            if (seenSlowPhaseComplete && distanceToTarget <= chaseRadius)
+            {
+                Log("Target within chase radius, initiating full chase!");
                 fsm.ChangeState(EnemyState.Chase);
                 return;
             }
@@ -304,8 +424,14 @@ namespace EnemyAI
                 return;
             }
 
-            Log($"Target spotted but outside chase radius ({distanceToTarget:F1}m > {chaseRadius}m) - waiting {seenStateTimer:F1}s/{seenStateTimeout}s");
-            LookAtTarget(currentTarget);
+            if (!seenSlowPhaseComplete)
+            {
+                Log($"Moving slowly towards target... ({seenStateTimer:F1}s/{seenSlowMoveDuration}s)");
+            }
+            else
+            {
+                Log($"Target spotted but outside chase radius ({distanceToTarget:F1}m > {chaseRadius}m)");
+            }
         }
 
         protected virtual void Seen_Exit()
@@ -415,6 +541,10 @@ namespace EnemyAI
             {
                 PerformAttack();
                 lastAttackTime = Time.time;
+
+                // Transition to Flee state after attacking
+                Log("Attack complete, entering flee state");
+                fsm.ChangeState(EnemyState.Flee);
             }
         }
 
@@ -431,6 +561,65 @@ namespace EnemyAI
 
         protected virtual void OnAttackPerformed()
         {
+        }
+
+        #endregion
+
+        #region State: Flee
+
+        protected virtual void Flee_Enter()
+        {
+            Log("Entering Flee state - waiting for cooldown");
+            aiPath.canMove = false;
+            fleeTimer = 0f;
+        }
+
+        protected virtual void Flee_Update()
+        {
+            if (currentTarget == null)
+            {
+                ChooseRandomBehavior();
+                return;
+            }
+
+            fleeTimer += Time.deltaTime;
+            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+
+            // Stay silent and look at target during cooldown
+            LookAtTarget(currentTarget);
+
+            // After cooldown, check if target is still in range
+            if (fleeTimer >= fleeDuration)
+            {
+                // Check if target is within chase radius
+                if (distanceToTarget <= chaseRadius && detection.HasLineOfSight(currentTarget))
+                {
+                    Log($"Cooldown complete, target still in range ({distanceToTarget:F1}m), re-engaging!");
+                    fsm.ChangeState(EnemyState.Chase);
+                    return;
+                }
+                else if (distanceToTarget > chaseRadius)
+                {
+                    Log($"Cooldown complete, target too far ({distanceToTarget:F1}m > {chaseRadius}m), giving up");
+                    currentTarget = null;
+                    ChooseRandomBehavior();
+                    return;
+                }
+                else if (!detection.HasLineOfSight(currentTarget))
+                {
+                    Log("Cooldown complete, lost sight of target");
+                    currentTarget = null;
+                    ChooseRandomBehavior();
+                    return;
+                }
+            }
+
+            Log($"Fleeing... cooldown: {fleeTimer:F1}s/{fleeDuration}s");
+        }
+
+        protected virtual void Flee_Exit()
+        {
+            Log("Exiting Flee state");
         }
 
         #endregion
@@ -471,7 +660,7 @@ namespace EnemyAI
             // Draw state label above enemy
             Vector3 labelPosition = transform.position + Vector3.up * 2.5f;
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             UnityEngine.GUIStyle style = new UnityEngine.GUIStyle();
             style.fontSize = 14;
             style.fontStyle = FontStyle.Bold;
@@ -495,12 +684,26 @@ namespace EnemyAI
                 case EnemyState.Attack:
                     style.normal.textColor = Color.red;
                     break;
+                case EnemyState.Flee:
+                    style.normal.textColor = Color.magenta;
+                    break;
             }
 
             string label = CurrentState.ToString().ToUpper();
             if (CurrentState == EnemyState.Seen && seenStateTimer > 0)
             {
-                label += $"\n({seenStateTimer:F1}s/{seenStateTimeout}s)";
+                if (!seenSlowPhaseComplete)
+                {
+                    label += $"\n(Slow: {seenStateTimer:F1}s/{seenSlowMoveDuration}s)";
+                }
+                else
+                {
+                    label += $"\n(Wait: {seenStateTimer:F1}s/{seenStateTimeout}s)";
+                }
+            }
+            else if (CurrentState == EnemyState.Flee && fleeTimer > 0)
+            {
+                label += $"\n(CD: {fleeTimer:F1}s/{fleeDuration}s)";
             }
             else if (targetLostTime > 0)
             {
@@ -508,7 +711,7 @@ namespace EnemyAI
             }
 
             UnityEditor.Handles.Label(labelPosition, label, style);
-            #endif
+#endif
         }
 
         protected virtual void OnDrawGizmosSelected()

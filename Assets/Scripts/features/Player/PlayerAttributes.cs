@@ -8,23 +8,24 @@ using UnityEngine.Experimental.GlobalIllumination;
 [RequireComponent (typeof(PlayerInputHandler))]
 public class PlayerAttributes : MonoBehaviour,IDamageable
 {
-    [Header("Fear Stats")]
-    [SerializeField] int maxFear = 100;
+    [Header("Sanity Stats")]
+    [SerializeField] int maxSanity = 100;
+
     [Header("Flashlight Stat")]
     [SerializeField] Light flashlight;
     [SerializeField] int initalBatteryValue = 100;
     [SerializeField] bool initialTogle = true;
-    [SerializeField] float decrementInterval = 1f;
-    [SerializeField] int decrementBatteryaValue = 2;
+    [SerializeField] float decrementInterval = 3f;
+    [SerializeField] int decrementBatteryValue = 1;
 
     [Header("Event")]
-    public UnityEvent OnValueFearUpdate;
+    public UnityEvent OnValueSanityUpdate;
     public UnityEvent OnValueBatteryUpdate;
     public UnityEvent OnPlayerDead;
 
     [Header("Debbuging")]
     [ReadOnly]
-    [SerializeField] float currentFear = 0;
+    [SerializeField] int currentSanity;
     [ReadOnly]
     [SerializeField] int currentBattery;
     [ReadOnly]
@@ -33,9 +34,9 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
     [SerializeField] bool isDead;
 
 
-    //C# Event
-    public delegate void OnFearUpdate(float value);
-    public static event OnFearUpdate onFearUpdate;
+    //C# Event - Sanity: 100 = full health, 0 = dead
+    public delegate void OnSanityUpdate(float normalizedValue);
+    public static event OnSanityUpdate onSanityUpdate;
 
     public delegate void OnBatteryUpdate(float value);
     public static event OnBatteryUpdate onBatteryUpdate;
@@ -45,6 +46,8 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
 
 
     PlayerInputHandler input;
+    private Sequence batteryDrainSequence;
+
     private void Awake()
     {
         input = GetComponent<PlayerInputHandler>();
@@ -52,17 +55,30 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         toggleFlashlight = initialTogle;
 
         currentBattery = initalBatteryValue;
+        currentSanity = maxSanity; // Start with full sanity
     }
     private void Start()
     {
         TweeningBattery();
+
+        // Trigger initial events for HUD update (normalized: 0-1)
+        float normalizedSanity = (float)currentSanity / maxSanity;
+        onSanityUpdate?.Invoke(normalizedSanity);
+        onBatteryUpdate?.Invoke(currentBattery);
+    }
+
+    private void OnDestroy()
+    {
+        // Kill DOTween sequence when object is destroyed
+        batteryDrainSequence?.Kill();
     }
     private void OnEnable()
     {
         input.OnFlashlightPerformed += ToggleFlashlight;
 
-
         InteractableAddAttributes.onInteractAddAttribute += UpdateAttributes;
+        InteractableDamager.onInteractDamager += ListenDamageFromInteractable;
+        //EventBus.Subscribe<int>(ListenDamageFromInteractable);
     }
 
     private void OnDisable()
@@ -70,92 +86,128 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         input.OnFlashlightPerformed -= ToggleFlashlight;
 
         InteractableAddAttributes.onInteractAddAttribute -= UpdateAttributes;
+        InteractableDamager.onInteractDamager -= ListenDamageFromInteractable;
     }
+    void ListenDamageFromInteractable(int val)
+    {
+        AddSanity(val);
+    }
+
     private void UpdateAttributes(AttributesType type, int value)
     {
         switch (type)
         {
-            case AttributesType.Fear:
-                SubstractFear(value);
+            case AttributesType.Sanity:
+                AddSanity(value);
                 break;
             case AttributesType.Battery:
-                currentBattery = Mathf.Clamp(currentBattery + value,0,100);
-                Debug.Log("Add Battery By Interactable");
+                int previousBattery = currentBattery;
+                currentBattery = Mathf.Clamp(currentBattery + value, 0, 100);
+                onBatteryUpdate?.Invoke(currentBattery);
+                OnValueBatteryUpdate?.Invoke();
                 break;
         }
     }
+
     private void ToggleFlashlight()
     {
         if (currentBattery <= 0)
             return;
-
         toggleFlashlight = !toggleFlashlight;
         flashlight.enabled = toggleFlashlight;
-        Debug.Log("Toggle Flashlight");
     }
-    void AddFear(int value)
-    {
-        currentFear = Mathf.Clamp(currentFear+value,0,maxFear);
 
-        if(currentFear == maxFear)
+    /// <summary>
+    /// Add sanity (healing). Positive value = heal.
+    /// </summary>
+    void AddSanity(int value)
+    {
+        int previousSanity = currentSanity;
+        currentSanity = Mathf.Clamp(currentSanity + value, 0, maxSanity);
+
+        float normalizedSanity = (float)currentSanity / maxSanity;
+
+        onSanityUpdate?.Invoke(normalizedSanity);
+        OnValueSanityUpdate?.Invoke();
+    }
+
+    /// <summary>
+    /// Reduce sanity (damage). Positive value = damage taken.
+    /// </summary>
+    void ReduceSanity(int damage)
+    {
+        int previousSanity = currentSanity;
+        currentSanity = Mathf.Clamp(currentSanity - damage, 0, maxSanity);
+
+        float normalizedSanity = (float)currentSanity / maxSanity;
+
+        if (currentSanity <= 0)
         {
             isDead = true;
-
             onPlayerDead?.Invoke();
             OnPlayerDead?.Invoke();
-
-            Debug.Log("Player Dead");
             return;
         }
-        
-        onFearUpdate?.Invoke(currentFear);
-        OnValueFearUpdate?.Invoke();
 
-        Debug.Log("Fear Player added by = " + value);
-
+        onSanityUpdate?.Invoke(normalizedSanity);
+        OnValueSanityUpdate?.Invoke();
     }
-    void SubstractFear(int value)
-    {
-        float temp = ((float)value / 100) * currentFear;
 
-        Debug.Log("Temp = " + temp);
-
-        currentFear -= temp;
-
-        onFearUpdate?.Invoke(currentFear);
-        OnValueFearUpdate?.Invoke();
-    }
     void AddBattery(int value)
     {
-        currentBattery += value;
+        int previousBattery = currentBattery;
+        currentBattery = Mathf.Clamp(currentBattery + value, 0, 100);
+
+        // Trigger events for UI update
+        onBatteryUpdate?.Invoke(currentBattery);
+        OnValueBatteryUpdate?.Invoke();
     }
+
     void TweeningBattery()
     {
-        DOTween.Sequence().SetDelay(decrementInterval).OnStepComplete(() =>
-        {
-            if (toggleFlashlight)
+        // Kill existing sequence to prevent multiple sequences running
+        batteryDrainSequence?.Kill();
+
+        batteryDrainSequence = DOTween.Sequence()
+            .AppendInterval(decrementInterval)
+            .AppendCallback(() =>
             {
-                if (currentBattery - decrementBatteryaValue > 0) { 
-                    currentBattery-= decrementBatteryaValue;
-                }
-                else
+                if (toggleFlashlight && currentBattery > 0)
                 {
-                    toggleFlashlight = false;
-                    flashlight.enabled = toggleFlashlight;
-                    currentBattery = 0;
+                    int previousBattery = currentBattery;
+
+                    if (currentBattery - decrementBatteryValue > 0) {
+                        currentBattery -= decrementBatteryValue;
+                    }
+                    else
+                    {
+                        toggleFlashlight = false;
+                        flashlight.enabled = toggleFlashlight;
+                        currentBattery = 0;
+                    }
+
+                    // Trigger events for UI update
+                    onBatteryUpdate?.Invoke(currentBattery);
+                    OnValueBatteryUpdate?.Invoke();
                 }
-            }
-        }).SetLoops(-1);
+            })
+            .SetLoops(-1)
+            .SetUpdate(UpdateType.Normal, false)
+            .SetAutoKill(false);
     }
-    public void Add(AttributesType type, int value)
+
+    /// <summary>
+    /// IDamageable implementation - receives damage
+    /// </summary>
+    public void TakeDamage(AttributesType type, int value)
     {
         switch (type)
         {
-            case AttributesType.Fear:
-                AddFear(value);
+            case AttributesType.Sanity:
+                ReduceSanity(value); // Damage reduces sanity
                 break;
             case AttributesType.Battery:
-                AddBattery(value);
+                AddBattery(-value); // Negative to reduce battery
                 break;
         }
     }
