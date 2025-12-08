@@ -17116,6 +17116,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1413969646}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1415931809 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2131432200519888151, guid: b4d9d8adce988a343a14b35d9b3458a9, type: 3}
+  m_PrefabInstance: {fileID: 1099992749258382960}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1416025864
 GameObject:
   m_ObjectHideFlags: 0
@@ -53123,6 +53128,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6457686610179287152, guid: b4d9d8adce988a343a14b35d9b3458a9, type: 3}
+      propertyPath: spawnPoints.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6457686610179287152, guid: b4d9d8adce988a343a14b35d9b3458a9, type: 3}
+      propertyPath: 'spawnPoints.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1415931809}
     - target: {fileID: 7146666604702190872, guid: b4d9d8adce988a343a14b35d9b3458a9, type: 3}
       propertyPath: m_Name
       value: GhostManager

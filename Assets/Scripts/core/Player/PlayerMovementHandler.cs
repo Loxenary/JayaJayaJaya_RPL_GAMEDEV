@@ -19,6 +19,7 @@ internal class PlayerMovementHandler
     private Vector3 verticalVelocity;
     private bool isSprinting;
     private bool isCrouching;
+    private bool isFrozen = false;
 
 
     // Movement Variables
@@ -43,6 +44,20 @@ internal class PlayerMovementHandler
     }
 
     /// <summary>
+    /// Freeze or unfreeze player movement
+    /// </summary>
+    public void SetFrozen(bool frozen)
+    {
+        isFrozen = frozen;
+
+        if (frozen)
+        {
+            // Stop all movement when frozen
+            currentVelocity = Vector3.zero;
+        }
+    }
+
+    /// <summary>
     /// Move the character with optional world-space direction override.
     /// </summary>
     /// <param name="inputDirection">Raw input direction (WASD as Vector2)</param>
@@ -51,6 +66,13 @@ internal class PlayerMovementHandler
     /// <param name="worldDirection">Optional: pre-converted world-space direction. If provided, ignores inputDirection</param>
     public void Move(Vector2 inputDirection, bool sprint, bool crouch, Vector3? worldDirection = null)
     {
+        // Don't move if frozen
+        if (isFrozen)
+        {
+            currentVelocity = Vector3.zero;
+            return;
+        }
+
         isSprinting = sprint;
         isCrouching = crouch;
 
