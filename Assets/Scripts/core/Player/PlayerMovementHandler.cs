@@ -31,6 +31,8 @@ internal class PlayerMovementHandler
     // Jump Variables
     private float _jumpHeight => jumpConfig.JumpHeight;
     private float _gravity => jumpConfig.Gravity;
+    private float _fallMultiplier => jumpConfig.FallMultiplier;
+    private float _lowJumpMultiplier => jumpConfig.LowJumpMultiplier;
 
     // Rotation Variables
     private float _rotationSpeed => rotationConfig.RotationSpeed;
@@ -65,13 +67,19 @@ internal class PlayerMovementHandler
             (targetVelocity.magnitude > currentVelocity.magnitude ? _acceleration : _deceleration) * Time.deltaTime
         );
 
-        // Apply gravity
+        // Apply gravity with fall multiplier for realistic jump feel
         if (characterController.isGrounded && verticalVelocity.y < 0)
         {
             verticalVelocity.y = -2f; // Small negative value to keep grounded
         }
+        else if (verticalVelocity.y < 0)
+        {
+            // Falling - apply fall multiplier for faster descent
+            verticalVelocity.y += _gravity * _fallMultiplier * Time.deltaTime;
+        }
         else
         {
+            // Rising - normal gravity (or low jump multiplier if not holding jump)
             verticalVelocity.y += _gravity * Time.deltaTime;
         }
 

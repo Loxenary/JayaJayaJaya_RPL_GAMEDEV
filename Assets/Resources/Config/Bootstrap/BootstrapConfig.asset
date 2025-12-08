@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   persistanceSceneReferences: []
   initialScene: 0
+  isTestingEnabled: 0
+  testSceneAsset: {fileID: 102900000, guid: a956184acd9fe2041b25394642cbcf6d, type: 3}
