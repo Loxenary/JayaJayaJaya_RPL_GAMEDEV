@@ -65,6 +65,7 @@ public class SpatialAudioProvider : MonoBehaviour
         AudioSource.maxDistance = maxDistance;
         AudioSource.rolloffMode = AudioRolloffMode.Linear;
         AudioSource.playOnAwake = false;
+        
     }
 
     private void UpdateVolume()

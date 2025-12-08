@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,16 +26,13 @@ public class GameBootstrap : MonoBehaviour
 
     [Header("Scene Configuration")]
     private List<SceneReference> persistentSceneReferences => _config.PersistanceSceneReferences ?? new();
-    private SceneEnum initialScene;
 
-    [Header("Testing Overrides")]
-    [Tooltip("Enable this to load a specific test scene instead of the default initial scene.")]
-    [SerializeField] private bool isTestingEnabled = false;
+    // Properties to get scene values from config
+    private SceneEnum initialScene => _config.InitialScene;
+    private bool isTestingEnabled => _config.IsTestingEnabled;
 
 #if UNITY_EDITOR
-    [Tooltip("The scene to load when IsTestingEnabled is true.")]
-    [SerializeField] private SceneAsset testSceneToLoad;
-
+    [Header("Editor Only - Data Reset")]
     [SerializeField] private List<MonoScript> saveDataScriptsToReset;
 #endif
 
@@ -82,6 +81,16 @@ public class GameBootstrap : MonoBehaviour
 
         InstantiateServices();
 
+#if UNITY_EDITOR
+        // In testing mode, skip persistent scenes and load test scene directly
+        if (isTestingEnabled)
+        {
+            await InitializeServicesAsync();
+            await LoadTestSceneAsync();
+            return;
+        }
+#endif
+
         RegisterPersistentScenesWithService();
 
         await LoadPersistentScenesAsync();
@@ -100,21 +109,15 @@ public class GameBootstrap : MonoBehaviour
     {
         if (useAutoServiceDiscovery)
         {
-            Debug.Log("[GameBootstrap] Using auto-discovery to load services from Resources/Services folder.");
             ServiceAutoLoader.LoadAllServices(transform);
         }
         else
         {
-            Debug.Log("[GameBootstrap] Using manual service list.");
             foreach (var prefab in servicePrefabs)
             {
                 if (prefab != null)
                 {
                     Instantiate(prefab, transform);
-                }
-                else
-                {
-                    Debug.LogWarning("[GameBootstrap] A null prefab was found in the servicePrefabs list.");
                 }
             }
         }
@@ -194,42 +197,45 @@ public class GameBootstrap : MonoBehaviour
             throw new ApplicationException("[GameBootstrap] SceneService not found. Cannot load the initial scene. Ensure it is included in the service prefabs list.");
         }
 
-
-#if UNITY_EDITOR
-
-        if (isTestingEnabled)
-        {
-            if (testSceneToLoad == null)
-            {
-                Debug.LogError("[GameBootstrap] Testing is enabled, but the 'Test Scene To Load' has not been assigned in the inspector.", this);
-                return; // Stop here to prevent further errors.
-            }
-
-            // Unload all scenes except the bootstrap scene
-            for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
-            {
-                var scene = SceneManager.GetSceneAt(i);
-
-                // Don't unload the bootstrap scene
-                if (scene != gameObject.scene)
-                {
-                    SceneManager.UnloadSceneAsync(scene);
-                }
-            }
-
-            // Load the test scene additively
-            await SceneManager.LoadSceneAsync(testSceneToLoad.name, LoadSceneMode.Additive);
-
-            // Set it as the active scene
-            var loadedTestScene = SceneManager.GetSceneByName(testSceneToLoad.name);
-            if (loadedTestScene.IsValid())
-            {
-                SceneManager.SetActiveScene(loadedTestScene);
-            }
-
-            return;
-        }
-#endif
         await sceneService.LoadScene(initialScene, false);
     }
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// Loads the test scene directly in Editor mode (no Build Settings required).
+    /// Skips persistent scenes for clean isolated testing.
+    /// </summary>
+    private async Task LoadTestSceneAsync()
+    {
+        string testScenePath = _config.TestScenePath;
+        string testSceneName = _config.TestSceneName;
+
+        if (string.IsNullOrEmpty(testScenePath))
+        {
+            Debug.LogError("[GameBootstrap] Testing is enabled, but no test scene has been assigned in BootstrapConfig.", this);
+            return;
+        }
+
+        // Register test scene info with SceneService for reload support
+        var sceneService = ServiceLocator.Get<SceneService>();
+        if (sceneService != null)
+        {
+            sceneService.SetTestMode(testScenePath, testSceneName);
+        }
+
+        // Load scene directly by path in Editor - no Build Settings needed!
+        var loadOperation = SceneManager.LoadSceneAsync(testScenePath, LoadSceneMode.Additive);
+        while (!loadOperation.isDone)
+        {
+            await Task.Yield();
+        }
+
+        // Set it as the active scene
+        var loadedTestScene = SceneManager.GetSceneByName(testSceneName);
+        if (loadedTestScene.IsValid())
+        {
+            SceneManager.SetActiveScene(loadedTestScene);
+        }
+    }
+#endif
 }
