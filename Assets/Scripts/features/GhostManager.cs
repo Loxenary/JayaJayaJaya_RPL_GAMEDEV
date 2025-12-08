@@ -215,10 +215,24 @@ public class GhostManager : MonoBehaviour
         Collider visualCollider = visual.GetComponent<Collider>();
         if (visualCollider != null) DestroyImmediate(visualCollider);
 
-        // Add trigger collider
-        BoxCollider collider = ghost.AddComponent<BoxCollider>();
-        collider.isTrigger = true;
-        collider.size = new Vector3(1.5f, 2f, 1.5f);
+        // Add NON-TRIGGER collider for physics (gravity, collision)
+        BoxCollider physicsCollider = ghost.AddComponent<BoxCollider>();
+        physicsCollider.isTrigger = false;
+        physicsCollider.size = new Vector3(1f, 2f, 1f);
+        physicsCollider.center = Vector3.zero;
+
+        // Add TRIGGER collider for damage detection
+        BoxCollider triggerCollider = ghost.AddComponent<BoxCollider>();
+        triggerCollider.isTrigger = true;
+        triggerCollider.size = new Vector3(1.5f, 2f, 1.5f);
+        triggerCollider.center = Vector3.zero;
+
+        // Add Rigidbody for physics
+        Rigidbody rb = ghost.AddComponent<Rigidbody>();
+        rb.mass = 1f;
+        rb.useGravity = true;
+        rb.isKinematic = false;
+        rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
 
         // Add Ghost component
         ghost.AddComponent<Ghost>();
