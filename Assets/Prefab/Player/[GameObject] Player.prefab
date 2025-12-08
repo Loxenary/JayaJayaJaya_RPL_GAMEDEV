@@ -256,8 +256,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ambientLight: {fileID: 2285053094517635669}
-  ambientIntensity: 0.3
-  ambientRange: 2
+  ambientIntensity: 0.2
+  ambientRange: 1.5
   ambientColor: {r: 0.7, g: 0.8, b: 1, a: 1}
   flashlight: {fileID: 0}
   fadeSpeed: 5
@@ -425,8 +425,8 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.7, g: 0.8, b: 1, a: 1}
-  m_Intensity: 1
-  m_Range: 2
+  m_Intensity: 0.72
+  m_Range: 1.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
