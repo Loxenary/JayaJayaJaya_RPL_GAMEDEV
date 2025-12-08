@@ -216,10 +216,10 @@ internal class PlayerMovementHandler
 
     try
     {
-      // Generate random shake direction
+      // Generate shake direction - biased downward (simulating footstep impact)
       Vector3 shakeVelocity = new Vector3(
-        UnityEngine.Random.Range(-shakeForce, shakeForce),
-        UnityEngine.Random.Range(-shakeForce, shakeForce),
+        UnityEngine.Random.Range(-shakeForce * 0.5f, shakeForce * 0.5f), // Horizontal (subtle)
+        UnityEngine.Random.Range(-shakeForce, -shakeForce * 0.3f),       // Downward (main direction)
         0
       );
 
