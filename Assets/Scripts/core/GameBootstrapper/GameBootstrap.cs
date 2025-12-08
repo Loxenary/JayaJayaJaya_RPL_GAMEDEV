@@ -188,6 +188,7 @@ public class GameBootstrap : MonoBehaviour
 
     /// <summary>
     /// Loads the final gameplay or test scene.
+    /// Supports both SceneEnum and SceneAsset selection.
     /// </summary>
     private async Task LoadInitialSceneAsync()
     {
@@ -197,6 +198,37 @@ public class GameBootstrap : MonoBehaviour
             throw new ApplicationException("[GameBootstrap] SceneService not found. Cannot load the initial scene. Ensure it is included in the service prefabs list.");
         }
 
+#if UNITY_EDITOR
+        // Use SceneAsset if enabled (more flexible, doesn't need Build Settings)
+        if (_config.UseSceneAssetForInitial)
+        {
+            string scenePath = _config.InitialScenePath;
+            string sceneName = _config.InitialSceneName;
+
+            if (string.IsNullOrEmpty(scenePath))
+            {
+                Debug.LogError("[GameBootstrap] UseSceneAssetForInitial is enabled, but no scene has been assigned in BootstrapConfig.", this);
+                return;
+            }
+
+            // Load scene directly by path in Editor
+            var loadOperation = SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
+            while (!loadOperation.isDone)
+            {
+                await Task.Yield();
+            }
+
+            // Set it as the active scene
+            var loadedScene = SceneManager.GetSceneByName(sceneName);
+            if (loadedScene.IsValid())
+            {
+                SceneManager.SetActiveScene(loadedScene);
+            }
+            return;
+        }
+#endif
+
+        // Default: use SceneEnum
         await sceneService.LoadScene(initialScene, false);
     }
 
