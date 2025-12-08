@@ -26,14 +26,12 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>
 
     private void OnEnable()
     {
-        EventBus.Subscribe<CollectibleType>(ListenToPuzzleCollected);
         EventBus.Subscribe<PuzzleInteracted>(OnPuzzleInteracted);
         EventBus.Subscribe<ResetNarrativeTimer>(ResetPuzzleTimer);
     }
 
     private void OnDisable()
     {
-        EventBus.Unsubscribe<CollectibleType>(ListenToPuzzleCollected);
         EventBus.Unsubscribe<PuzzleInteracted>(OnPuzzleInteracted);
         EventBus.Unsubscribe<ResetNarrativeTimer>(ResetPuzzleTimer);
     }
@@ -42,23 +40,6 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>
     {
         base.Awake();
         Assert.IsNotNull(narrativeTimerConfig, "NarrativeTimerConfig is not assigned in NarrativeSystem");
-    }
-
-    // Called when player actually collects a puzzle piece
-    private void ListenToPuzzleCollected(CollectibleType type)
-    {
-        if (type == CollectibleType.Key) return;
-
-        // Stop any running timer since the puzzle was collected
-        if (currentTimerCoroutine != null)
-        {
-            StopCoroutine(currentTimerCoroutine);
-            currentTimerCoroutine = null;
-        }
-
-        // Move to next puzzle tracking
-        currentTrackedCollectible++;
-        interactedPuzzleIndices.Clear();
     }
 
     // Called when player interacts with a puzzle (but hasn't collected it yet)
@@ -103,6 +84,8 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>
         {
             content = currentRecord.content
         });
+
+        currentTrackedCollectible++;
 
         currentTimerCoroutine = null;
     }

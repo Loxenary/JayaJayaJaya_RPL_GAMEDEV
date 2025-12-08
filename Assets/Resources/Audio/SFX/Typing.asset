@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cbe25e5bf09a624e943c10511094388, type: 3}
-  m_Name: NarrativeTimerConfig
+  m_Script: {fileID: 11500000, guid: 150eabf66f7cb5149bf2ba7ea8ab1800, type: 3}
+  m_Name: Typing
   m_EditorClassIdentifier: 
-  timerContentRecords:
-  - timer: 0
-    content: Test Narrative Content Bla Bla Bla
-  - timer: 60
-    content: Test Narrative yang ga bla bla bla
+  audioClip: {fileID: 8300000, guid: 919324dcf744cca4283f3371b51b3b78, type: 3}
+  clipVolume: 1
+  sfxNameEnum: 1
+  delay: 0
+  pitch: 1
