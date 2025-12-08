@@ -1,4 +1,5 @@
 public enum SFXIdentifier
 {
-    GrandfatherClock,
+    GrandfatherClock = 0,
+    Typing = 1,
 }
