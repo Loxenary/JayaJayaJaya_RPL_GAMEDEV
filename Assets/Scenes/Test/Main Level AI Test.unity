@@ -2833,8 +2833,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: e828f2cdbf0a6ba4d822630546756684, type: 2}
-  angrySystem: {fileID: 0}
-  useDynamicAngryStats: 0
+  angrySystem: {fileID: 212855358}
+  useDynamicAngryStats: 1
   patrolPoints:
   - {fileID: 1857386964}
   - {fileID: 449935377}
@@ -3086,19 +3086,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6faef1f97d70069488df42e63de3251e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  angryConfiguration: {fileID: 0}
-  pointsPerItemTaken: 10
-  pointsPerSecondLowSanity: 2
-  lowSanityThreshold: 0.3
-  pointsPerSecondLowTimer: 1.5
-  lowTimerThreshold: 60
+  angryConfiguration: {fileID: 11400000, guid: 8e965db23edc02b4cadd812adc0b38f7, type: 2}
+  pointConfiguration: {fileID: 0}
   OnAngryLevelChanged:
     m_PersistentCalls:
       m_Calls: []
   OnAngryPointsChanged:
     m_PersistentCalls:
       m_Calls: []
-  showDebugLogs: 1
+  showDebugLogs: 0
   showDebugGUI: 1
   currentAngryPoints: 0
   currentLevel: 0
