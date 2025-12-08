@@ -144,6 +144,10 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
         if (currentSanity <= 0)
         {
             isDead = true;
+
+            // Freeze player immediately
+            FreezePlayer();
+
             onPlayerDead?.Invoke();
             OnPlayerDead?.Invoke();
             return;
@@ -210,5 +214,35 @@ public class PlayerAttributes : MonoBehaviour,IDamageable
                 AddBattery(-value); // Negative to reduce battery
                 break;
         }
+    }
+
+    /// <summary>
+    /// Freeze player when dead (disable movement and input)
+    /// </summary>
+    private void FreezePlayer()
+    {
+        // Disable flashlight
+        if (flashlight != null)
+        {
+            flashlight.enabled = false;
+            toggleFlashlight = false;
+        }
+
+        // Freeze input
+        if (input != null)
+        {
+            input.SetFrozen(true);
+        }
+
+        // Freeze movement (need to access PlayerController)
+        var playerController = GetComponent<PlayerController>();
+        if (playerController != null)
+        {
+            playerController.SetFrozen(true);
+        }
+
+        // Lock and show cursor for death UI
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }

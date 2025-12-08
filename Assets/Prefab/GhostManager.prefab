@@ -9,8 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2131432200519888151}
-  - component: {fileID: 3825592256342467412}
-  - component: {fileID: 6457686610179287152}
+  - component: {fileID: 6113403966389225866}
   m_Layer: 0
   m_Name: GhostManager
   m_TagString: Untagged
@@ -30,10 +29,11 @@ Transform:
   m_LocalPosition: {x: -2.2773314, y: 6.2436833, z: 24.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4767387494626110524}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3825592256342467412
+--- !u!114 &6113403966389225866
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,39 +42,50 @@ MonoBehaviour:
   m_GameObject: {fileID: 7146666604702190872}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf7ce8eb53b0d60429a1c28841a43b81, type: 3}
+  m_Script: {fileID: 11500000, guid: 95d6476efea45094d9bff48583285181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnType: 1
   ghostPrefab: {fileID: 3546154474924961571, guid: 1dcf58a13dd8856419a2a69e30de44bd, type: 3}
-  createOnStart: 1
-  spawnPosition: {x: 0, y: 2, z: 0}
-  fearDamageValue: 10
---- !u!114 &6457686610179287152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7146666604702190872}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cf4e836fb9697f4191ddf43df96c4b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ghostPrefab: {fileID: 3546154474924961571, guid: 1dcf58a13dd8856419a2a69e30de44bd, type: 3}
-  spawnPoints: []
-  maxGhostsInScene: 1
-  spawnInterval: 30
-  autoSpawn: 0
-  defaultFearDamage: 10
+  spawnPoint: {fileID: 4767387494626110524}
+  sanityDamage: 10
+  activateOnSpawn: 1
   OnGhostSpawned:
     m_PersistentCalls:
       m_Calls: []
   OnGhostDestroyed:
     m_PersistentCalls:
       m_Calls: []
-  OnMaxGhostsReached:
-    m_PersistentCalls:
-      m_Calls: []
-  currentGhostCount: 0
-  activeGhosts: []
+  currentGhost: {fileID: 0}
+  hasGhost: 0
+--- !u!1 &7961486600711930828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4767387494626110524}
+  m_Layer: 0
+  m_Name: GhostSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4767387494626110524
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7961486600711930828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2131432200519888151}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
