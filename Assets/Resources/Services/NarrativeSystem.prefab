@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 255d83f46363fe74ba8629b98cf49808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  narrativeTimerConfig: {fileID: 0}
+  narrativeTimerConfig: {fileID: 11400000, guid: 3ec33644e96412546a205cfb58c58d2e, type: 2}

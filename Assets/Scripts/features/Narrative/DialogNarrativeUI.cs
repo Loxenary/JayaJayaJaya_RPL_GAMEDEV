@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -9,7 +10,7 @@ public class DialogNarrativeUI : FadeShowHideProcedural
     [Header("Configuraiton")]
     [SerializeField] private float characterRevealSpeed = 0.5f;
     [SerializeField] private SfxClipData typingSfx;
-
+    [SerializeField] private float characterRevealWaitTime = 1f;
     [SerializeField] private AudioSource audioSourcesForTypingSound;
 
     public struct OpenDialogNarrtiveUI
@@ -42,8 +43,20 @@ public class DialogNarrativeUI : FadeShowHideProcedural
         ShowUI();
 
         // Reveal the text with typing animation
-        TextAnimationHelper.RevealTextWithTypingSound(contentTextDialog, evt.content, characterRevealSpeed, typingSfx, audioSourcesForTypingSound, audioManager);
+        StartCoroutine(TextAnimationHelper.RevealTextWithTypingSound(contentTextDialog, evt.content, characterRevealSpeed, typingSfx, audioSourcesForTypingSound, audioManager, 2, OnDialogFinishedShowing));
     }
+
+    private void OnDialogFinishedShowing()
+    {
+        StartCoroutine(WaitForDialogToFinishShowing());
+    }
+
+    private IEnumerator WaitForDialogToFinishShowing()
+    {
+        yield return new WaitForSeconds(characterRevealWaitTime);
+        HideUI();
+    }
+
 
     private void Awake()
     {
