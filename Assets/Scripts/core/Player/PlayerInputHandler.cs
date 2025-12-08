@@ -102,7 +102,10 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnLook(InputAction.CallbackContext context)
     {
-        lookInput = context.ReadValue<Vector2>();
+        if (!isFrozen)
+        {
+            lookInput = context.ReadValue<Vector2>();
+        }
     }
 
     private void OnJump(InputAction.CallbackContext context)
