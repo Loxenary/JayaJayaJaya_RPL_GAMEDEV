@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using MonsterLove.StateMachine;
 using Pathfinding;
+using Unity.VisualScripting;
+using System.Collections.Generic;
 
 namespace EnemyAI
 {
@@ -41,7 +43,9 @@ namespace EnemyAI
         [SerializeField] protected bool useDynamicAngryStats = false;
 
         [Header("Patrol Points (Optional)")]
-        [SerializeField] protected Transform[] patrolPoints;
+
+        [SerializeField] protected Transform patrolGroups;
+        [SerializeField, ReadOnly] protected List<Transform> patrolPoints;
         [SerializeField] protected bool loopPatrol = true;
 
         [Header("Behavior Settings")]
@@ -68,6 +72,8 @@ namespace EnemyAI
 
         protected StateMachine<EnemyState, StateDriverUnity> fsm;
         protected AIPath aiPath;
+
+        protected AIDestinationSetter destinationSetter;
         protected EnemyDetection detection;
 
         protected float currentHealth;
@@ -82,10 +88,19 @@ namespace EnemyAI
         protected float fleeTimer;
         protected bool seenSlowPhaseComplete;
 
+        // Patrol improvement fields
+        protected float patrolPointReachedDistance = 1.5f; // Distance threshold to consider patrol point reached
+        protected float patrolStuckTimer = 0f;
+        protected float patrolStuckThreshold = 5f; // Time before considering the AI stuck
+        protected Vector3 lastPatrolPosition;
+        protected float patrolPositionCheckInterval = 0.5f; // How often to check if position changed
+        protected float patrolPositionCheckTimer = 0f;
+        protected bool isStuckAtPatrolPoint = false;
+
         public EnemyState CurrentState => fsm != null ? fsm.State : EnemyState.Idle;
         public float HealthPercentage => currentHealth / stats.maxHealth;
         public bool IsAlive => currentHealth > 0;
-    
+
         [Header("CURRENT STATE (Read Only)")]
         [SerializeField][ReadOnly] private string _currentStateDisplay = "Not Started";
         [SerializeField][ReadOnly] private string _targetInfo = "No Target";
@@ -115,7 +130,11 @@ namespace EnemyAI
         {
             currentHealth = stats.maxHealth;
             ChooseRandomBehavior();
+
+
         }
+
+
 
         protected virtual void OnEnable()
         {
@@ -133,9 +152,39 @@ namespace EnemyAI
             }
         }
 
+        private void PatrolGroupRework()
+        {
+            patrolPoints.Clear();
+
+            if (patrolGroups == null)
+            {
+                Debug.LogWarning($"[{gameObject.name}] PatrolGroups is null! Cannot initialize patrol points.");
+                return;
+            }
+
+            // Get all child transforms from patrolGroups
+            foreach (Transform child in patrolGroups)
+            {
+                // Skip the parent itself, only add actual patrol point children
+                if (child != patrolGroups)
+                {
+                    patrolPoints.Add(child);
+                }
+            }
+
+            if (patrolPoints.Count == 0)
+            {
+                Debug.LogWarning($"[{gameObject.name}] No patrol points found in patrolGroups!");
+            }
+            else
+            {
+                Log($"Initialized {patrolPoints.Count} patrol points");
+            }
+        }
+
         protected virtual void ChooseRandomBehavior()
         {
-            if (patrolPoints != null && patrolPoints.Length > 0 && Random.value <= patrolChance)
+            if (patrolPoints != null && patrolPoints.Count > 0 && Random.value <= patrolChance)
             {
                 fsm.ChangeState(EnemyState.Patrol);
             }
@@ -301,6 +350,19 @@ namespace EnemyAI
         {
             Log("Entering Patrol state");
             aiPath.canMove = true;
+
+            // Reset patrol tracking variables
+            patrolStuckTimer = 0f;
+            patrolPositionCheckTimer = 0f;
+            lastPatrolPosition = transform.position;
+            isStuckAtPatrolPoint = false;
+
+            // Initialize patrol points if not already done
+            if (patrolPoints == null || patrolPoints.Count == 0)
+            {
+                PatrolGroupRework();
+            }
+
             SetNextPatrolPoint();
         }
 
@@ -314,29 +376,75 @@ namespace EnemyAI
                 return;
             }
 
-            if (aiPath.reachedEndOfPath)
+            // Validate patrol points exist
+            if (patrolPoints == null || patrolPoints.Count == 0)
             {
-                if (patrolPoints != null && patrolPoints.Length > 0)
+                Log("No patrol points available, switching to idle");
+                ChooseRandomBehavior();
+                return;
+            }
+
+            // Ensure current patrol index is valid
+            if (currentPatrolIndex >= patrolPoints.Count)
+            {
+                currentPatrolIndex = 0;
+            }
+
+            Transform currentPatrolPoint = patrolPoints[currentPatrolIndex];
+            if (currentPatrolPoint == null)
+            {
+                Log($"Patrol point {currentPatrolIndex} is null, moving to next");
+                MoveToNextPatrolPoint();
+                return;
+            }
+
+            // Calculate distance to current patrol point
+            float distanceToPatrolPoint = Vector3.Distance(transform.position, currentPatrolPoint.position);
+
+            // Check if reached patrol point using distance threshold
+            bool reachedByDistance = distanceToPatrolPoint <= patrolPointReachedDistance;
+            bool reachedByPathfinding = aiPath.reachedEndOfPath;
+
+            // Update stuck detection timer
+            patrolPositionCheckTimer += Time.deltaTime;
+            if (patrolPositionCheckTimer >= patrolPositionCheckInterval)
+            {
+                float distanceMoved = Vector3.Distance(transform.position, lastPatrolPosition);
+
+                // Check if AI is stuck (hasn't moved significantly)
+                if (distanceMoved < 0.1f)
                 {
-                    currentPatrolIndex++;
-                    if (currentPatrolIndex >= patrolPoints.Length)
+                    patrolStuckTimer += patrolPositionCheckTimer;
+
+                    if (patrolStuckTimer >= patrolStuckThreshold)
                     {
-                        if (loopPatrol)
+                        if (!isStuckAtPatrolPoint)
                         {
-                            currentPatrolIndex = 0;
-                            SetNextPatrolPoint();
+                            Log($"AI stuck at patrol point {currentPatrolIndex} for {patrolStuckTimer:F1}s. Forcing move to next point.");
+                            isStuckAtPatrolPoint = true;
                         }
-                        else
-                        {
-                            ChooseRandomBehavior();
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        SetNextPatrolPoint();
+
+                        // Force move to next patrol point after being stuck
+                        MoveToNextPatrolPoint();
+                        patrolStuckTimer = 0f;
                     }
                 }
+                else
+                {
+                    // AI is moving, reset stuck timer
+                    patrolStuckTimer = 0f;
+                    isStuckAtPatrolPoint = false;
+                }
+
+                lastPatrolPosition = transform.position;
+                patrolPositionCheckTimer = 0f;
+            }
+
+            // Check if reached patrol point (by either method)
+            if (reachedByDistance || reachedByPathfinding)
+            {
+                Log($"Reached patrol point {currentPatrolIndex} (Distance: {distanceToPatrolPoint:F2}, ByPath: {reachedByPathfinding})");
+                MoveToNextPatrolPoint();
             }
         }
 
@@ -347,10 +455,46 @@ namespace EnemyAI
 
         protected virtual void SetNextPatrolPoint()
         {
-            if (patrolPoints != null && patrolPoints.Length > 0 && currentPatrolIndex < patrolPoints.Length)
+            if (patrolPoints != null && patrolPoints.Count > 0 && currentPatrolIndex < patrolPoints.Count)
             {
                 aiPath.destination = patrolPoints[currentPatrolIndex].position;
                 Log($"Moving to patrol point {currentPatrolIndex}");
+
+                // Reset stuck detection when setting new patrol point
+                patrolStuckTimer = 0f;
+                isStuckAtPatrolPoint = false;
+                lastPatrolPosition = transform.position;
+            }
+        }
+
+        protected virtual void MoveToNextPatrolPoint()
+        {
+            if (patrolPoints == null || patrolPoints.Count == 0)
+            {
+                Log("Cannot move to next patrol point: no patrol points available");
+                return;
+            }
+
+            currentPatrolIndex++;
+
+            // Handle end of patrol points list
+            if (currentPatrolIndex >= patrolPoints.Count)
+            {
+                if (loopPatrol)
+                {
+                    Log("Reached end of patrol points, looping back to start");
+                    currentPatrolIndex = 0;
+                    SetNextPatrolPoint();
+                }
+                else
+                {
+                    Log("Reached end of patrol points, choosing random behavior");
+                    ChooseRandomBehavior();
+                }
+            }
+            else
+            {
+                SetNextPatrolPoint();
             }
         }
 
@@ -448,10 +592,16 @@ namespace EnemyAI
             Log("Entering Chase state");
             aiPath.canMove = true;
             // Apply chase speed multiplier for faster pursuit
-            aiPath.maxSpeed = stats.maxSpeed * stats.chaseSpeedMultiplier;
+            aiPath.maxSpeed = stats.maxSpeed * stats.chaseSpeedMultiplier * stats.chaseSpeedMultiplier;
             targetLostTime = 0f;
 
             Log($"Chase speed: {aiPath.maxSpeed:F1} (base: {stats.maxSpeed}, multiplier: {stats.chaseSpeedMultiplier}x)");
+
+            // Initialize last known position if we have a target
+            if (currentTarget != null)
+            {
+                lastKnownTargetPosition = currentTarget.position;
+            }
         }
 
         protected virtual void Chase_Update()
@@ -464,32 +614,7 @@ namespace EnemyAI
 
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
-            if (distanceToTarget <= stats.attackRange)
-            {
-                fsm.ChangeState(EnemyState.Attack);
-                return;
-            }
-
-            if (!detection.HasLineOfSight(currentTarget))
-            {
-                targetLostTime += Time.deltaTime;
-                aiPath.destination = lastKnownTargetPosition;
-
-                if (targetLostTime >= visionLostCountdown)
-                {
-                    Log($"Lost vision of target for {visionLostCountdown} seconds, returning to previous behavior");
-                    currentTarget = null;
-                    ChooseRandomBehavior();
-                }
-                return;
-            }
-            else
-            {
-                lastKnownTargetPosition = currentTarget.position;
-                aiPath.destination = currentTarget.position;
-                targetLostTime = 0f;
-            }
-
+            // Check if target is too far away (give up chase)
             if (distanceToTarget > chaseRadius * 1.5f)
             {
                 Log("Target moved too far outside chase zone, giving up");
@@ -497,13 +622,54 @@ namespace EnemyAI
                 ChooseRandomBehavior();
                 return;
             }
+
+            // Check if within attack range
+            if (distanceToTarget <= stats.attackRange)
+            {
+                fsm.ChangeState(EnemyState.Attack);
+                return;
+            }
+
+            // Check line of sight
+            bool hasLOS = detection.HasLineOfSight(currentTarget);
+
+            if (hasLOS)
+            {
+                // Has line of sight - chase directly
+                lastKnownTargetPosition = currentTarget.position;
+                aiPath.destination = currentTarget.position;
+                targetLostTime = 0f;
+            }
+            else
+            {
+                // Lost line of sight but still in range
+                targetLostTime += Time.deltaTime;
+
+                // Continue moving to last known position
+                aiPath.destination = lastKnownTargetPosition;
+
+                // Only give up if lost sight for too long AND target is far from last known position
+                if (targetLostTime >= visionLostCountdown)
+                {
+                    float distanceToLastKnown = Vector3.Distance(transform.position, lastKnownTargetPosition);
+
+                    // If we reached last known position and still no sight, give up
+                    if (distanceToLastKnown < 2f)
+                    {
+                        Log($"Lost vision of target for {visionLostCountdown}s and reached last known position, giving up");
+                        currentTarget = null;
+                        ChooseRandomBehavior();
+                        return;
+                    }
+                }
+
+                Log($"Lost sight but continuing to last known position ({targetLostTime:F1}s)");
+            }
         }
 
         protected virtual void Chase_Exit()
         {
             Log("Exiting Chase state");
-            // Restore normal speed when exiting chase
-            aiPath.maxSpeed = stats.maxSpeed;
         }
 
         #endregion
@@ -754,10 +920,10 @@ namespace EnemyAI
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, chaseRadius);
 
-            if (patrolPoints != null && patrolPoints.Length > 1)
+            if (patrolPoints != null && patrolPoints.Count > 1)
             {
                 Gizmos.color = Color.cyan;
-                for (int i = 0; i < patrolPoints.Length - 1; i++)
+                for (int i = 0; i < patrolPoints.Count - 1; i++)
                 {
                     if (patrolPoints[i] != null && patrolPoints[i + 1] != null)
                     {
@@ -765,9 +931,9 @@ namespace EnemyAI
                     }
                 }
 
-                if (loopPatrol && patrolPoints[0] != null && patrolPoints[patrolPoints.Length - 1] != null)
+                if (loopPatrol && patrolPoints[0] != null && patrolPoints[patrolPoints.Count - 1] != null)
                 {
-                    Gizmos.DrawLine(patrolPoints[patrolPoints.Length - 1].position, patrolPoints[0].position);
+                    Gizmos.DrawLine(patrolPoints[patrolPoints.Count - 1].position, patrolPoints[0].position);
                 }
             }
 
