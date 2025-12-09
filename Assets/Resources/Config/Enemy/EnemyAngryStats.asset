@@ -18,10 +18,10 @@ MonoBehaviour:
     angryPointBaseline: 0
   - enemyStats: {fileID: 11400000, guid: 0065b15443b7c154d8fcf91201c4ff4b, type: 2}
     level: 1
-    angryPointBaseline: 0
+    angryPointBaseline: 25
   - enemyStats: {fileID: 11400000, guid: b15d3d223efe07c4a95f1facd872014c, type: 2}
     level: 2
-    angryPointBaseline: 0
+    angryPointBaseline: 75
   - enemyStats: {fileID: 11400000, guid: 135c3f3d867a0fd4f916a028bed19780, type: 2}
     level: 3
-    angryPointBaseline: 0
+    angryPointBaseline: 100
