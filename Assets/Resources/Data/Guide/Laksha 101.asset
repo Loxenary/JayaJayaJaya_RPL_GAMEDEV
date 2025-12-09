@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2408149469b5a418989552d999761b, type: 3}
+  m_Name: Laksha 101
+  m_EditorClassIdentifier: 
+  content: Aku selalu memulai hariku di sini. Sofa berdebu itu dulu tempatku menunggu
+    kabar dari negeri jauh, sementara <b>lemari besar</b> di sudut ruangan menyimpan
+    satu-satunya benda yang masih kuanggap milikku sendiri. Bila kau ingin tahu bagaimana
+    aku pertama kali terperangkap di rumah ini, bukalah <b>lemari besar di LAKSHA
+    101</b>. Di antara rak yang usang, ada sesuatu yang sengaja kuselipkan agar tak
+    bisa diambil dariku lagi.

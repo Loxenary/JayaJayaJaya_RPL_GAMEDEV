@@ -1,12 +1,18 @@
 using UnityEngine;
+using UnityEngine.Events;
+using static InteractableLockedDoor;
 
-public class InteractableLockedDoor : InteractableRotate
+public class InteractableLockedDoor : InteractableDoor
 {
     [Header("Locked Door Section")]
     [SerializeField] int keyID;
     [ReadOnly]
     [SerializeField] bool isUnlock;
 
+    public UnityEvent OnWrongKeys;
+
+    public delegate void WrongKey();
+    public static event WrongKey onWrongKey;
     private void OnEnable()
     {
         InteractableKey.onFoundKey += OnFoundKey;
@@ -26,6 +32,10 @@ public class InteractableLockedDoor : InteractableRotate
         if (isUnlock)
             base.InteractObject();
         else
+        {
+            OnWrongKeys?.Invoke();
+            onWrongKey?.Invoke();
             Debug.Log("Masih Terkunci");
+        }
     }
 }

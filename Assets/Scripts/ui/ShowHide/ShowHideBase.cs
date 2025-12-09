@@ -59,6 +59,12 @@ public abstract class ShowHideBase : MonoBehaviour
     [SerializeField] protected UnityEvent onHideStarted;
     [SerializeField] protected UnityEvent onHideCompleted;
 
+    [Tooltip("Turn this on so that the UI will stop time when shown and resume time when hidden")]
+    [SerializeField] protected bool isStopTime = false;
+
+    [Tooltip("Show the cursor on the UI Show")]
+    [SerializeField] protected bool isShowCursor = false;
+
     /// <summary>
     /// True if the UI is currently visible or transitioning to visible.
     /// </summary>
@@ -68,6 +74,9 @@ public abstract class ShowHideBase : MonoBehaviour
     /// True if the UI is currently transitioning (showing or hiding).
     /// </summary>
     public bool IsTransitioning { get; private set; }
+
+    private bool _lastCursorVisible = false;
+    private CursorLockMode _lastCursorLockMode = CursorLockMode.None;
 
     /// <summary>
     /// Shows the UI element. Calls ShowUIStart, then triggers the show implementation.
@@ -79,10 +88,21 @@ public abstract class ShowHideBase : MonoBehaviour
             return; // Already visible
         }
 
+        // Save cursor state BEFORE showing
+        if (isShowCursor)
+        {
+            _lastCursorVisible = Cursor.visible;
+            _lastCursorLockMode = Cursor.lockState;
+        }
+
         IsTransitioning = true;
         IsVisible = true;
         ShowUIStart();
         ShowInternal();
+        if (isStopTime)
+        {
+            ServiceLocator.Get<TimeService>().RequestStopTime(this);
+        }
     }
 
     /// <summary>
@@ -171,6 +191,12 @@ public abstract class ShowHideBase : MonoBehaviour
     {
         IsTransitioning = false;
         ShowUIComplete();
+        if (isShowCursor)
+        {
+            // Unlock and show cursor
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
     /// <summary>
@@ -182,6 +208,17 @@ public abstract class ShowHideBase : MonoBehaviour
         IsTransitioning = false;
         IsVisible = false;
         HideUIComplete();
+        if (isStopTime)
+        {
+            ServiceLocator.Get<TimeService>().RequestResumeTime(this);
+        }
+
+        if (isShowCursor)
+        {
+            // Restore previous cursor state
+            Cursor.visible = _lastCursorVisible;
+            Cursor.lockState = _lastCursorLockMode;
+        }
     }
 
     /// <summary>
