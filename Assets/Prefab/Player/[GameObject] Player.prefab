@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 2787783677809895001}
   - component: {fileID: 5607267691951340174}
   - component: {fileID: 6162355860233422685}
+  - component: {fileID: 5395369997416465854}
   m_Layer: 0
   m_Name: '[GameObject] Player'
   m_TagString: Player
@@ -205,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b09338e26a5f37409f4af2b196bb0e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSanity: 100
+  maxSanity: 1000
   flashlight: {fileID: 0}
   initalBatteryValue: 100
   initialTogle: 1
@@ -256,8 +257,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ambientLight: {fileID: 2285053094517635669}
-  ambientIntensity: 0.2
-  ambientRange: 1.5
+  ambientIntensity: 0.12
+  ambientRange: 1.8
   ambientColor: {r: 0.7, g: 0.8, b: 1, a: 1}
   flashlight: {fileID: 0}
   fadeSpeed: 5
@@ -350,6 +351,24 @@ MonoBehaviour:
     DissipationDistance: 100
     PropagationSpeed: 343
   DefaultVelocity: {x: 0, y: -1, z: 0}
+--- !u!114 &5395369997416465854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989156983715006675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd611b946f087684eaa553cb89035e1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sanityThreshold: 60
+  sanityDrainRate: 0.1
+  autoStart: 1
+  currentTime: 0
+  isRunning: 0
+  isDrainingStarted: 0
 --- !u!1 &1461355363414621340
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,7 +445,7 @@ Light:
   m_Type: 2
   m_Color: {r: 0.7, g: 0.8, b: 1, a: 1}
   m_Intensity: 0.72
-  m_Range: 1.5
+  m_Range: 1.8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

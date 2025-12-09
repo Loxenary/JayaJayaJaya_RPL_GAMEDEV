@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnType: 1
-  ghostPrefab: {fileID: 3546154474924961571, guid: 1dcf58a13dd8856419a2a69e30de44bd, type: 3}
+  ghostPrefab: {fileID: 6586449540834189895, guid: a5ac9e8cbe9ca474b8547833455842dd, type: 3}
   spawnPoint: {fileID: 4767387494626110524}
   sanityDamage: 10
   activateOnSpawn: 1

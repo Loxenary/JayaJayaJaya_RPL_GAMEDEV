@@ -26,12 +26,11 @@ internal class PlayerMovementHandler
   private bool isCrouching;
   private bool isFrozen = false;
   private float lastShakeTime = 0f;
+  private bool shakeDirectionLeft = true; // Alternate left/right
 
   // Use reflection to avoid hard dependency on Cinemachine
   private Component impulseSource;
   private System.Reflection.MethodInfo generateImpulseMethod;
-
-
   // Movement Variables
   private float _acceleration => movementConfig.Acceleration;
   private float _deceleration => movementConfig.Deceleration;
@@ -216,10 +215,14 @@ internal class PlayerMovementHandler
 
     try
     {
-      // Generate shake direction - biased downward (simulating footstep impact)
+      // Alternate left/right footstep pattern
+      float horizontalDirection = shakeDirectionLeft ? -1f : 1f;
+      shakeDirectionLeft = !shakeDirectionLeft; // Toggle for next step
+
+      // Generate shake direction - alternating left/right, biased downward
       Vector3 shakeVelocity = new Vector3(
-        UnityEngine.Random.Range(-shakeForce * 0.5f, shakeForce * 0.5f), // Horizontal (subtle)
-        UnityEngine.Random.Range(-shakeForce, -shakeForce * 0.3f),       // Downward (main direction)
+        horizontalDirection * shakeForce * UnityEngine.Random.Range(0.3f, 0.6f), // Left/Right alternating
+        UnityEngine.Random.Range(-shakeForce, -shakeForce * 0.3f),               // Downward (footstep impact)
         0
       );
 
