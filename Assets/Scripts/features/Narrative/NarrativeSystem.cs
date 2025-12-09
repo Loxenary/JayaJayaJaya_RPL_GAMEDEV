@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class NarrativeSystem : ServiceBase<NarrativeSystem>
+public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
 {
     // Call This every time an item is taken
     public struct ResetNarrativeTimer
@@ -11,83 +12,111 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>
 
     }
 
-    // Event to signal puzzle interaction (not collected yet)
-    public struct PuzzleInteracted
-    {
-
-    }
-
     [Header("Configuration")]
-    [SerializeField] private NarrativeTimerConfig narrativeTimerConfig;
+
+    [SerializeField] private JournalDatabaseConfig journalDatabaseConfig;
+    [SerializeField] private int guideTimerDuration = 25;
+
 
     private int currentTrackedCollectible = 0;
     private Coroutine currentTimerCoroutine;
-    private readonly HashSet<int> interactedPuzzleIndices = new();
+    private readonly HashSet<string> interactedPuzzle = new();
+    private readonly HashSet<GuideData> interactedGuides = new();
+
+    private GuideData lastGuideData = null;
 
     private void OnEnable()
     {
         EventBus.Subscribe<PuzzleInteracted>(OnPuzzleInteracted);
+        EventBus.Subscribe<GuideInteracted>(OnGuideInteracted);
         EventBus.Subscribe<ResetNarrativeTimer>(ResetPuzzleTimer);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<PuzzleInteracted>(OnPuzzleInteracted);
+        EventBus.Unsubscribe<GuideInteracted>(OnGuideInteracted);
         EventBus.Unsubscribe<ResetNarrativeTimer>(ResetPuzzleTimer);
     }
 
     protected override void Awake()
     {
         base.Awake();
-        Assert.IsNotNull(narrativeTimerConfig, "NarrativeTimerConfig is not assigned in NarrativeSystem");
+        RestartManager.Register(this);
     }
 
     // Called when player interacts with a puzzle (but hasn't collected it yet)
     private void OnPuzzleInteracted(PuzzleInteracted evt)
     {
-        // Check if this is a new interaction for the current puzzle index
-        if (!interactedPuzzleIndices.Contains(currentTrackedCollectible))
+        HandleJournal();
+
+        if (!interactedPuzzle.Contains(evt.puzzleId))
         {
-            interactedPuzzleIndices.Add(currentTrackedCollectible);
-
-            // Stop any existing timer
-            if (currentTimerCoroutine != null)
+            interactedPuzzle.Add(evt.puzzleId);
+            currentTrackedCollectible++;
+            EventBus.Publish(new InteractedPuzzleCount()
             {
-                StopCoroutine(currentTimerCoroutine);
-            }
-
-            // Start new timer
-            currentTimerCoroutine = StartCoroutine(StartPuzzleTimerCoroutine());
+                puzzleCount = currentTrackedCollectible
+            });
         }
     }
 
-    private IEnumerator StartPuzzleTimerCoroutine()
+    // Called when player interacts with a guide interactable
+    private void OnGuideInteracted(GuideInteracted evt)
     {
-        if (narrativeTimerConfig.TimerContentRecords == null ||
-            currentTrackedCollectible >= narrativeTimerConfig.TimerContentRecords.Length)
+
+        // Check if this guide has already been interacted with
+        if (!interactedGuides.Contains(evt.guideData))
         {
-            Debug.LogWarning($"No timer configuration found for puzzle index {currentTrackedCollectible}");
-            yield break;
+            interactedGuides.Add(evt.guideData);
+            lastGuideData = evt.guideData;
+            GuideTimerCoroutine(evt.guideData);
+        }
+    }
+
+    private void GuideTimerCoroutine(GuideData guideData)
+    {
+        // Stop any existing timer
+        if (currentTimerCoroutine != null)
+        {
+            StopCoroutine(currentTimerCoroutine);
         }
 
-        TimerContentRecord currentRecord = narrativeTimerConfig.TimerContentRecords[currentTrackedCollectible];
-
-        Debug.Log($"Starting narrative timer for {currentRecord.timer} seconds");
-
-        // Wait for the specified time
-        yield return new WaitForSeconds(currentRecord.timer);
-
-        // Timer reached 0, show the narrative hint
-        Debug.Log($"Timer expired! Showing narrative hint: {currentRecord.content}");
-
+        // Show the dialog immediately for the new interaction
         EventBus.Publish(new DialogNarrativeUI.OpenDialogNarrtiveUI
         {
-            content = currentRecord.content
+            content = guideData.Content
         });
 
-        currentTrackedCollectible++;
+        // Start new timer for this guide (will loop)
+        currentTimerCoroutine = StartCoroutine(StartGuideTimerCoroutine());
+    }
 
-        currentTimerCoroutine = null;
+    private void HandleJournal()
+    {
+        EventBus.Publish(new JournalUI.OpenJournalUI()
+        {
+            content = journalDatabaseConfig.Journals[currentTrackedCollectible]
+        });
+    }
+
+    private IEnumerator StartGuideTimerCoroutine()
+    {
+        while (true)
+        {
+            // Wait for 25 seconds (20-30 range)
+            yield return new WaitForSeconds(guideTimerDuration);
+
+            // If we have a last guide, show its content again
+            if (lastGuideData != null)
+            {
+                Debug.Log($"Timer expired! Showing last guide narrative again: {lastGuideData.Content}");
+                EventBus.Publish(new DialogNarrativeUI.OpenDialogNarrtiveUI
+                {
+                    content = lastGuideData.Content
+                });
+            }
+        }
     }
 
     private void ResetPuzzleTimer(ResetNarrativeTimer evt)
@@ -100,6 +129,15 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>
         }
 
         currentTrackedCollectible = 0;
-        interactedPuzzleIndices.Clear();
+        interactedPuzzle.Clear();
+    }
+
+    public void Restart()
+    {
+        ResetPuzzleTimer(new());
+        currentTrackedCollectible = 0;
+        interactedPuzzle.Clear();
+        interactedGuides.Clear();
+        lastGuideData = null;
     }
 }
