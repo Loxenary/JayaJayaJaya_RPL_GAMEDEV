@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32bf226e93b6902469ec20802ae746cb, type: 3}
-  m_Name: InGameRef
+  m_Name: InGameUIRef
   m_EditorClassIdentifier: 
-  sceneName: In Game
-  sceneAsset: {fileID: 102900000, guid: 9c45e0f255726954a9399e6da89822cc, type: 3}
+  sceneName: In Game UI
+  sceneAsset: {fileID: 102900000, guid: bf9f0f41877f3c9428584f4c5bb99aa2, type: 3}
