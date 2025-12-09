@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: InGameGroup
   m_EditorClassIdentifier: 
   activeScene: {fileID: 11400000, guid: cbee0c115b1408648a5fe15943f76201, type: 2}
-  additionalScenes: []
+  additionalScenes:
+  - {fileID: 11400000, guid: 487813e9635534647b78c8ba4db3bb8a, type: 2}
