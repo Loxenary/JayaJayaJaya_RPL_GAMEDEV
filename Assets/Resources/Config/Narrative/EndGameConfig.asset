@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48ce29988f38d0441b3e27b1b3a840dc, type: 3}
+  m_Name: EndGameConfig
+  m_EditorClassIdentifier: 
+  endGames:
+  - Area: "Joko berhasil melarikan diri dari mansion Lakshana. Nafasnya terengah,
+      tangannya bergetar, dan kamera yang ia bawa tak menampilkan apa pun selain
+      rekaman samar lorong gelap. Tidak ada suara, tidak ada penampakan, tidak ada
+      sesuatu yang bisa dijadikan konten. Ia keluar seperti seorang pengecut yang
+      kabur dari tempat kosong.\r\n\r\nBegitu sampai di luar, ia mencoba memutar
+      ulang hasil rekaman, berharap ada satu momen saja yang bisa dibuat viral. Tetapi
+      tidak ada apa-apa. Benar-benar sia-sia. Usahanya mengejar ketenaran justru
+      membuatnya tampak seperti pembuat konten amatir yang gagal.\r\n\r\nPublik pun
+      tidak peduli. Tidak ada yang menonton. Tidak ada yang tertarik. Joko pun menyadari
+      bahwa kadang-kadang, bukan horor yang menakutkan\u2014melainkan kesempatan
+      yang hilang begitu saja."
+    collectibleCount: 0
+  - Area: "Joko berhasil kabur dari mansion itu, meskipun ia tidak menemukan seluruh
+      petunjuk. Ia membawa pulang rekaman yang cukup menyeramkan. Dunia maya menyukainya,
+      memberikan ribuan komentar dan likes. Konten itu akhirnya viral, dan Joko merasa
+      mimpinya sebagai kreator mungkin tidak mustahil.\r\n\r\nNamun ada satu masalah.
+      Sejak keluar dari Lakshana, ia merasa selalu diawasi. Terutama ketika ia sendirian.
+      Bayangan seorang gadis Belanda dengan gaun lusuh sering muncul di pantulan
+      kaca\u2026 dan kadang berdiri tepat di belakangnya saat ia mengedit videonya.
+      Semakin lama, sosok itu semakin jelas. Semakin dekat.\r\n\r\nIa sadar: ia tidak
+      keluar sendirian. Noni ikut \u201Cmenempel\u201D padanya, mengikuti kemanapun
+      ia pergi. Bukan untuk melindungi, tapi untuk memastikan bahwa kisahnya tidak
+      pernah berhenti menghantui Joko\u2026 bahkan seumur hidupnya."
+    collectibleCount: 1
+  - Area: "Joko berhasil mengumpulkan ketiga item dan memahami cerita sang Noni sepenuhnya.
+      Ia mempersatukan potongan-potongan kisah tragis itu, dan untuk pertama kalinya,
+      arwah sang Noni mereda. Bukan hilang\u2026 tapi tenang. Ia menatap Joko seakan
+      berterima kasih telah menyelesaikan kisahnya.\r\n\r\nKetika Joko keluar dari
+      mansion, fajar terlihat lebih terang dari biasanya. Kamera di tangannya berisi
+      rekaman paling intens yang pernah ia ambil: suara-suara, bayangan, bahkan interaksi
+      nyata dengan arwah penghuni Lakshana. Konten itu meledak di internet. Joko
+      menjadi nama baru dalam dunia horor digital.\r\n\r\nKini ia siap untuk ekspedisi
+      berikutnya\u2014bukan sekadar demi ketenaran, tetapi karena ia akhirnya memahami
+      bahwa setiap hantu punya cerita. Dan ia adalah orang yang cukup berani untuk
+      mendengarkannya."
+    collectibleCount: 3
