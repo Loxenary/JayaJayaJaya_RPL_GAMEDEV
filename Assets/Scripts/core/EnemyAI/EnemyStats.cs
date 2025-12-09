@@ -54,9 +54,8 @@ namespace EnemyAI
         public float patrolPointReachedDistance = 0.5f;
 
         [Header("Chase")]
-        [Range(1f, 3f)]
-        [Tooltip("Speed multiplier during chase (1.5 = 50% faster)")]
-        public float chaseSpeedMultiplier = 1.5f;
+        [Tooltip("Speed multiplier when chasing (1.0 = normal speed, 1.5 = 50% faster)")]
+        [Range(1f, 3f)] public float chaseSpeedMultiplier = 1.5f;
 
         [Tooltip("Distance before giving up chase")]
         public float maxChaseDistance = 20f;
