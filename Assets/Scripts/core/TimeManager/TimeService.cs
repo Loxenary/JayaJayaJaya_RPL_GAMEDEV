@@ -1,11 +1,12 @@
 using UnityEngine;
 using CustomLogger;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 public class TimeService : ServiceBase<TimeService>
 {
     private static int _t_stop_counter = 0;
+
+    [SerializeField, ReadOnly] private float time_counter = 0;
 
     private static Queue<object> _stopperQueue = new();
 
@@ -29,6 +30,8 @@ public class TimeService : ServiceBase<TimeService>
         {
             Time.timeScale = 1;
         }
+
+        time_counter = _t_stop_counter;
     }
 
     public void RequestResumeTime(object requesterObject)
@@ -42,6 +45,14 @@ public class TimeService : ServiceBase<TimeService>
         }
 
         HandleTimeInternal();
+    }
+
+    public void RequestResumeWhileClearingQueue()
+    {
+        _stopperQueue.Clear();
+        Time.timeScale = 1f;
+        _t_stop_counter = 0;
+        time_counter = 0;
     }
 
     [ContextMenu("Log Stop Queue")]

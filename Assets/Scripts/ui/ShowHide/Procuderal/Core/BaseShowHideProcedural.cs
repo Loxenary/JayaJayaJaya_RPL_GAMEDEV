@@ -14,7 +14,6 @@ public abstract class BaseShowHideProcedural : ShowHideBase
 
     [Tooltip("Animation curve for the transition")]
     [SerializeField] protected AnimationCurve animationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-
     protected Coroutine _currentAnimation;
 
     protected override void ShowInternal()
@@ -24,7 +23,7 @@ public abstract class BaseShowHideProcedural : ShowHideBase
             StopCoroutine(_currentAnimation);
         }
 
-        _currentAnimation = StartCoroutine(AnimateShow());
+        _currentAnimation = isStopTime ? StartCoroutine(AnimateShowUnscaledTime()) : StartCoroutine(AnimateShow());
     }
 
     protected override void HideInternal()
@@ -34,7 +33,7 @@ public abstract class BaseShowHideProcedural : ShowHideBase
             StopCoroutine(_currentAnimation);
         }
 
-        _currentAnimation = StartCoroutine(AnimateHide());
+        _currentAnimation = isStopTime ? StartCoroutine(AnimateHideUnscaledTime()) : StartCoroutine(AnimateHide());
     }
 
     private IEnumerator AnimateShow()
@@ -58,6 +57,27 @@ public abstract class BaseShowHideProcedural : ShowHideBase
         OnShowComplete();
     }
 
+    private IEnumerator AnimateShowUnscaledTime()
+    {
+        float elapsed = 0f;
+
+        while (elapsed < animationDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = animationCurve.Evaluate(elapsed / animationDuration);
+
+            ApplyAnimation(t, true);
+
+            yield return null;
+        }
+
+        // Ensure we end at exactly the target values
+        ApplyAnimation(1f, true);
+
+        _currentAnimation = null;
+        OnShowComplete();
+    }
+
     private IEnumerator AnimateHide()
     {
         float elapsed = 0f;
@@ -65,6 +85,27 @@ public abstract class BaseShowHideProcedural : ShowHideBase
         while (elapsed < animationDuration)
         {
             elapsed += Time.deltaTime;
+            float t = animationCurve.Evaluate(elapsed / animationDuration);
+
+            ApplyAnimation(1f - t, false);
+
+            yield return null;
+        }
+
+        // Ensure we end at exactly the target values
+        ApplyAnimation(0f, false);
+
+        _currentAnimation = null;
+        OnHideComplete();
+    }
+
+    private IEnumerator AnimateHideUnscaledTime()
+    {
+        float elapsed = 0f;
+
+        while (elapsed < animationDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
             float t = animationCurve.Evaluate(elapsed / animationDuration);
 
             ApplyAnimation(1f - t, false);

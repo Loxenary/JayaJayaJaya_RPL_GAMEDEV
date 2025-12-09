@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8832b17ccd8a1df459bc39c8d48959ba, type: 3}
+  m_Name: JournalConfig
+  m_EditorClassIdentifier: 
+  journals:
+  - Area: "Aku tiba di Hindia dengan kepala penuh janji manis. Ia menjemputku di
+      pelabuhan dengan senyum yang tampak hangat, lalu membawaku ke mansion ini\u2014Lakshana,
+      katanya, tanda kehormatan untuk seorang istri dari Eropa. Malam pertama, aku
+      duduk di ruangan ini, <b>LAKSHA 101</b>, memandangi dinding kosong dan lemari
+      besar yang terlalu rapi. Aku yakin saat itu, inilah awal kehidupan baru yang
+      lebih cerah.\n\r\nHari berganti minggu, dan ruangan ini menjadi saksi perubahan
+      sikapnya. Suaranya meninggi, tatapannya dingin, dan setiap langkahku mulai
+      diatur. Aku dilarang keluar sendirian, dilarang berbicara dengan siapa pun
+      kecuali pelayan yang ia percaya. Lemari ini kemudian menjadi tempat persembunyian
+      kecilku\u2014aku menyimpan surat-surat dari keluargaku, potongan foto, dan
+      catatan yang tak boleh ia lihat. Di sinilah aku pertama kali sadar: rumah megah
+      ini bukan hadiah, melainkan kandang.\n\r\nSaat cemas, aku duduk di sofa dan
+      melayangkan pandang melewati pintu ke arah <b>ruang utama, LAKSHA 111</b>.
+      Dari sana aku sering mendengar suara langkahnya naik turun, memeriksa gudang
+      dan ruang penyimpanan di belakang. Aku curiga ada rahasia yang ia simpan di
+      <b>ruang penyimpanan, LAKSHA 106</b>, jauh dari mata siapa pun. Kalau kau ingin
+      mengerti apa yang sebenarnya ia sembunyikan di rumah ini, pergilah ke sana\u2014di
+      sanalah bab berikutnya dari kisahku menunggu."
+  - Area: "Ruang kecil di atas penyimpanan ini adalah tempat di mana mimpiku benar-benar
+      runtuh. Di <b>LAKSHA 106-1</b>, aku dipaksa mencatat setiap peti yang masuk\u2014nama-nama
+      asing, tanggal, dan simbol yang tak kumengerti. Ia menyuruhku diam, tapi aku
+      mengerti cukup banyak untuk tahu bahwa isi kotak-kotak ini bukan sesuatu yang
+      layak diperdagangkan. Bau logam dan sesuatu yang lebih busuk dari kematian
+      menempel di udara.\n\r\nAku menambahkan catatanku sendiri di sela-sela angka:
+      rasa takutku, bukti bahwa aku tahu apa yang ia lakukan. Ketika ia menyadarinya,
+      amarahnya meledak. Ia mengurungku lebih lama di sini, membiarkanku duduk sendirian
+      di antara peti dan debu, hanya ditemani suara berderit dari langit-langit.
+      Di setiap denting jam dari ruangan lain, aku merasa waktuku semakin menipis.
+      Buku catatan ini adalah satu-satunya suara yang kupunya.\r\nSuatu hari, setelah
+      selesai menulis, ia menggenggam tanganku terlalu keras dan menyeretku menyusuri
+      koridor menuju <b>sayap lain rumah ini, lewat LAKSHA 110</b>. Ia bilang akan
+      'mengabadikan' aku di dinding-dinding potret. Aku tak mengerti maksudnya saat
+      itu, hanya merasakan punggungku dingin saat melewati ruangan penuh lukisan.
+      Jika kau ingin tahu apa yang terjadi setelahnya, carilah koridor sunyi itu\u2014<b>LAKSHA
+      110</b>\u2014dan lihat bagaimana rumah ini menghafalkan wajahku.\t"
+  - Area: "Kamar utama ini dulu dijanjikan sebagai tempat aku dimanjakan. Langit-langit
+      tinggi, ranjang besar, dan peti kayu di sudut ruangan\u2014semuanya tampak
+      seperti mimpi gadis kecil yang ingin hidup mewah. Tapi di sinilah mimpi itu
+      berakhir. Pada malam terakhirku, aku dikunci di kamar ini. Kata-katanya menusuk,
+      tangannya kasar, dan dunia mengecil menjadi empat dinding yang menutup rapat.
+      Aku tak pernah lagi melihat cahaya dari jendela setelah malam itu.\r\nKetika
+      kesadaranku memudar, aku merasakan tubuhku diseret. Bukan ke luar, bukan ke
+      tanah yang layak untuk mengubur jenazah, tapi ke <b>peti kayu di sudut kamar</b>.
+      Rambutku dipotong, tulangku dipatahkan agar muat, seolah aku hanyalah barang
+      yang perlu disimpan rapi agar tidak mengotori reputasinya. Tengkorak yang kau
+      lihat sekarang adalah sisa wajah yang dulu memenuhi dinding potret\u2014dan
+      peti ini adalah altar egoisnya, tempat ia menyembunyikan dosa.\r\nSejak saat
+      itu, aku terbangun bukan sebagai manusia, melainkan sebagai bayangan yang berkeliaran
+      di sepanjang koridor. Denting jam di <b>LAKSHA 108</b>, sunyi di <b>LAKSHA
+      106</b>, dan tatapan kosong di <b>LAKSHA 103</b> semuanya adalah gema dari
+      malam ini. Dengan menemukan peti dan /menatap tengkorakku, kau telah menyatukan
+      bagian terakhir ceritaku. Sekarang hanya ada satu langkah lagi: keluar dari
+      rumah ini dan putuskan apakah kau akan membawaku pergi bersamamu\u2026 atau
+      meninggalkanku di sini, terjebak selamanya di Lakshana."
