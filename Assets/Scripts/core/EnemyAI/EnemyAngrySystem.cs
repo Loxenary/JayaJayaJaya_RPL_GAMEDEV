@@ -231,7 +231,7 @@ public class EnemyAngrySystem : MonoBehaviour
     /// </summary>
     private void OnPlayerSanityChanged(float sanityValue)
     {
-        currentSanityValue = sanityValue;
+        currentSanityValue = sanityValue * pointConfiguration.MaxSanity;
 
         // Recalculate angry points based on new sanity
         RecalculateAngryPoints();
@@ -244,11 +244,13 @@ public class EnemyAngrySystem : MonoBehaviour
     {
         float newPoints = pointConfiguration.CalculateAngryPoints(currentItemsTaken, currentSanityValue);
 
-        // Only update if points increased (never decrease)
-        if (newPoints > currentAngryPoints)
+        // Update points to match current game state (can increase or decrease)
+        if (Mathf.Abs(newPoints - currentAngryPoints) > 0.01f) // Only update if there's a meaningful change
         {
             SetAngryPoints(newPoints);
-            Log($"Angry points recalculated: {currentAngryPoints:F1} (Items: {currentItemsTaken}, Sanity: {currentSanityValue:F1})");
+
+            string changeDirection = newPoints > currentAngryPoints ? "increased" : "decreased";
+            Log($"Angry points {changeDirection}: {currentAngryPoints:F1} (Items: {currentItemsTaken}, Sanity: {currentSanityValue:F1})");
         }
     }
 
