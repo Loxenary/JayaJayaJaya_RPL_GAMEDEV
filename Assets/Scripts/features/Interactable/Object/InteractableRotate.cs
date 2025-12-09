@@ -4,18 +4,37 @@ using UnityEngine.Events;
 
 public class InteractableRotate : Interactable
 {
-    [SerializeField] float timeRotate = 1.5f;
-    [SerializeField] Transform rootObject;
-    [SerializeField] Vector3 targetRotation;
+    [SerializeField] protected float timeRotate = 1.5f;
+    [SerializeField] protected Transform rootObject;
+    [SerializeField] protected Vector3 targetRotation;
 
 
     public UnityEvent OnDoneRotate;
+
+
+    [ReadOnly]
+    [SerializeField] protected bool wait;
     public override void InteractObject()
     {
-        base.InteractObject();
+        if (wait) return;
 
-        rootObject.DOLocalRotate(targetRotation, timeRotate).OnComplete(() => {
+        wait = true;
+        
+        onInteract?.Invoke();
+        if (isInteract)
+            DoRotate(Vector3.zero);
+        else
+            DoRotate(targetRotation);
+
+
+        isInteract = !isInteract;
+
+    }
+    protected void DoRotate(Vector3 target)
+    {
+        rootObject.DOLocalRotate(target, timeRotate).OnComplete(() => {
             OnDoneRotate?.Invoke();
+            wait = false;
         });
     }
 }

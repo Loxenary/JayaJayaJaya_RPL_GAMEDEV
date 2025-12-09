@@ -35,7 +35,7 @@ public class EnemyAngrySystem : MonoBehaviour
   [SerializeField][ReadOnly] private float currentAngryPoints = 0f;
   [SerializeField][ReadOnly] private EnemyLevel currentLevel = EnemyLevel.FIRST;
   [SerializeField][ReadOnly] private float currentSanityValue = 1f;
-  [SerializeField][ReadOnly] private float currentTimerValue = 0f;
+  [SerializeField][ReadOnly] private int currentItemsTaken = 0;
 
   // C# Events for better integration
   public static event Action<EnemyLevel> OnGlobalAngryLevelChanged;
@@ -56,20 +56,18 @@ public class EnemyAngrySystem : MonoBehaviour
     InitializeSystem();
   }
 
-  private void OnEnable()
-  {
-    // Subscribe to player events when they're implemented
-    PlayerAttributes.onSanityUpdate += OnPlayerSanityChanged;
-    // TODO: Subscribe to timer events when implemented
-    // TODO: Subscribe to item collection events when implemented
-  }
+    private void OnEnable()
+    {
+        // Subscribe to player events
+        PlayerAttributes.onSanityUpdate += OnPlayerSanityChanged;
+        EventBus.Subscribe<InteractedPuzzleCount>(evt => OnItemTaken(evt));
+    }
 
-  private void OnDisable()
-  {
-    PlayerAttributes.onSanityUpdate -= OnPlayerSanityChanged;
-    // TODO: Unsubscribe from timer events
-    // TODO: Unsubscribe from item collection events
-  }
+    private void OnDisable()
+    {
+        PlayerAttributes.onSanityUpdate -= OnPlayerSanityChanged;
+        EventBus.Unsubscribe<InteractedPuzzleCount>(evt => OnItemTaken(evt));
+    }
 
   private void Update()
   {
@@ -203,66 +201,58 @@ public class EnemyAngrySystem : MonoBehaviour
 
   #region Point Accumulation Methods
 
-  private void AccumulateAngryPointsOverTime()
-  {
-    float pointsThisFrame = 0f;
-
-    // Accumulate from low sanity
-    if (currentSanityValue < pointConfiguration.LowSanityThreshold)
+    private void AccumulateAngryPointsOverTime()
     {
-      float sanityPoints = pointConfiguration.PointsPerPerSecondLowSanity * Time.deltaTime;
-      pointsThisFrame += sanityPoints;
+        // Calculate dynamic points per second based on current state
+        float pointsPerSecond = pointConfiguration.CalculatePointsPerSecond(currentItemsTaken, currentSanityValue);
+
+        if (pointsPerSecond > 0)
+        {
+            float pointsThisFrame = pointsPerSecond * Time.deltaTime;
+            AddAngryPoints(pointsThisFrame);
+        }
     }
 
-    // Accumulate from low timer (if timer is implemented)
-    if (currentTimerValue > 0 && currentTimerValue < pointConfiguration.LowTimerThreshold)
+    /// <summary>
+    /// Called when an item is taken by the player
+    /// </summary>
+    private void OnItemTaken(InteractedPuzzleCount evt)
     {
-      float timerPoints = pointConfiguration.PointsPerSecondLowTimer * Time.deltaTime;
-      pointsThisFrame += timerPoints;
+        currentItemsTaken = evt.puzzleCount;
+
+        // Recalculate angry points based on new state
+        RecalculateAngryPoints();
+
+        Log($"Item taken! Total items: {currentItemsTaken}/{pointConfiguration.TotalPuzzleItems}");
     }
 
-    if (pointsThisFrame > 0)
+    /// <summary>
+    /// Called when player sanity changes
+    /// </summary>
+    private void OnPlayerSanityChanged(float sanityValue)
     {
-      AddAngryPoints(pointsThisFrame);
+        currentSanityValue = sanityValue * pointConfiguration.MaxSanity;
+
+        // Recalculate angry points based on new sanity
+        RecalculateAngryPoints();
     }
-  }
 
-  /// <summary>
-  /// Called when an item is taken by the player
-  /// Hook this up when item collection is implemented
-  /// </summary>
-  public void OnItemTaken()
-  {
-    AddAngryPoints(pointConfiguration.PointsPerItemTaken);
-    Log($"Item taken! Added {pointConfiguration.PointsPerItemTaken} angry points");
-  }
-
-  /// <summary>
-  /// Called when player sanity changes
-  /// </summary>
-  private void OnPlayerSanityChanged(float normalizedSanity)
-  {
-    currentSanityValue = normalizedSanity;
-
-    if (showDebugLogs && normalizedSanity < pointConfiguration.LowSanityThreshold)
+    /// <summary>
+    /// Recalculate angry points based on current game state
+    /// </summary>
+    private void RecalculateAngryPoints()
     {
-      Log($"Player sanity low ({normalizedSanity:P1}), accumulating anger points...");
-    }
-  }
+        float newPoints = pointConfiguration.CalculateAngryPoints(currentItemsTaken, currentSanityValue);
 
-  /// <summary>
-  /// Called when game timer changes
-  /// Hook this up when timer is implemented
-  /// </summary>
-  public void OnTimerChanged(float timeRemaining)
-  {
-    currentTimerValue = timeRemaining;
+        // Update points to match current game state (can increase or decrease)
+        if (Mathf.Abs(newPoints - currentAngryPoints) > 0.01f) // Only update if there's a meaningful change
+        {
+            SetAngryPoints(newPoints);
 
-    if (showDebugLogs && timeRemaining < pointConfiguration.LowTimerThreshold && timeRemaining > 0)
-    {
-      Log($"Timer low ({timeRemaining:F0}s), accumulating anger points...");
+            string changeDirection = newPoints > currentAngryPoints ? "increased" : "decreased";
+            Log($"Angry points {changeDirection}: {currentAngryPoints:F1} (Items: {currentItemsTaken}, Sanity: {currentSanityValue:F1})");
+        }
     }
-  }
 
   #endregion
 
@@ -334,21 +324,26 @@ public class EnemyAngrySystem : MonoBehaviour
     style.fontSize = 12;
     style.normal.textColor = Color.white;
 
-    string debugText = $"=== ENEMY ANGRY SYSTEM ===\n" +
-                      $"Current Level: {currentLevel}\n" +
-                      $"Angry Points: {currentAngryPoints:F1}\n" +
-                      $"Progress to Next: {GetProgressToNextLevel():P1}\n" +
-                      $"At Max Level: {IsAtMaxLevel()}\n" +
-                      $"\nPlayer Status:\n" +
-                      $"Sanity: {currentSanityValue:P1} (Threshold: {pointConfiguration.LowSanityThreshold:P1})\n" +
-                      $"Timer: {currentTimerValue:F1}s (Threshold: {pointConfiguration.LowTimerThreshold:F0}s)\n" +
-                      $"\nAccumulation Rates:\n" +
-                      $"Per Item: {pointConfiguration.PointsPerItemTaken:F1}\n" +
-                      $"Per Sec (Low Sanity): {pointConfiguration.PointsPerPerSecondLowSanity:F1}\n" +
-                      $"Per Sec (Low Timer): {pointConfiguration.PointsPerSecondLowTimer:F1}";
+        float currentPointsPerSec = pointConfiguration.CalculatePointsPerSecond(currentItemsTaken, currentSanityValue);
+        float calculatedPoints = pointConfiguration.CalculateAngryPoints(currentItemsTaken, currentSanityValue);
 
-    GUI.Box(new Rect(10, 10, 300, 240), debugText, style);
-  }
+        string debugText = $"=== ENEMY ANGRY SYSTEM (DYNAMIC) ===\n" +
+                          $"Current Level: {currentLevel}\n" +
+                          $"Angry Points: {currentAngryPoints:F1} / {pointConfiguration.MaxAngryPoints:F1}\n" +
+                          $"Progress to Next: {GetProgressToNextLevel():P0}\n" +
+                          $"At Max Level: {IsAtMaxLevel()}\n" +
+                          $"\nPlayer Status:\n" +
+                          $"Items Taken: {currentItemsTaken}/{pointConfiguration.TotalPuzzleItems}\n" +
+                          $"Sanity: {currentSanityValue:F1}/{pointConfiguration.MaxSanity:F1}\n" +
+                          $"\nDynamic Calculation:\n" +
+                          $"Calculated Points: {calculatedPoints:F1}\n" +
+                          $"Points/Second: {currentPointsPerSec:F2}\n" +
+                          $"\nWeights:\n" +
+                          $"Item Weight: {pointConfiguration.ItemWeight:F2} (Exp: {pointConfiguration.ItemExponent:F1})\n" +
+                          $"Sanity Weight: {pointConfiguration.SanityWeight:F2} (Exp: {pointConfiguration.SanityExponent:F1})";
+
+        GUI.Box(new Rect(10, 10, 350, 280), debugText, style);
+    }
 
   #endregion
 }

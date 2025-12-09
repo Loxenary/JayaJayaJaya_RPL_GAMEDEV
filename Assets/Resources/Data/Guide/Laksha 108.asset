@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2408149469b5a418989552d999761b, type: 3}
+  m_Name: Laksha 108
+  m_EditorClassIdentifier: 
+  content: 'Aku pernah mencoba mengambil kembali kunci itu. Tapi sebelum ke kamar
+    tidur, LAKSHA 107, aku harus melewati ruangan ini. Di sini berdiri jam besar
+    yang tak pernah berhenti berdentang, bahkan ketika rumah ini sepi. Suatu malam,
+    saat aku membuka surat aneh di pedestal di samping jam, loncengnya meraung dan
+    laci tersembunyi terbuka, menjatuhkan sebuah kunci. Ia pikir aku takut, tapi
+    aku tahu: jika kau ingin masuk ke kamarku dan merebut kunci menuju LAKSHA 106-1,
+    buatlah jam ini menangis lagi.'
