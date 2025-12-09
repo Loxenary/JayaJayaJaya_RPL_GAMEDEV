@@ -139,7 +139,7 @@ public static class TextAnimationHelper
 
             if (characterRevealSpeed > 0)
             {
-                yield return new WaitForSeconds(characterRevealSpeed);
+                yield return new WaitForSecondsRealtime(characterRevealSpeed);
             }
         }
 

@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cbe25e5bf09a624e943c10511094388, type: 3}
-  m_Name: NarrativeTimerConfig
+  m_Script: {fileID: 11500000, guid: 6b2408149469b5a418989552d999761b, type: 3}
+  m_Name: Key1
   m_EditorClassIdentifier: 
-  timerContentRecords:
-  - timer: 0
-    content: Test Narrative Content Bla Bla Bla
-  - timer: 60
-    content: Test Narrative yang ga bla bla bla
+  content: 'This is the Lakara Key Tester
+
+'
