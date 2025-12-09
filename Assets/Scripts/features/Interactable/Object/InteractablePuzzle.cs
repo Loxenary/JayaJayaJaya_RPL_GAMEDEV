@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class InteractablePuzzle : Interactable
 {
+
+    private string _randomGUID = Guid.NewGuid().ToString();
 
     private CollectibleType type => CollectibleType.Puzzle;
 
@@ -10,7 +13,10 @@ public class InteractablePuzzle : Interactable
         base.InteractObject();
 
         // Notify that puzzle was interacted with (for narrative timer)
-        EventBus.Publish(new NarrativeSystem.PuzzleInteracted());
+        EventBus.Publish(new PuzzleInteracted()
+        {
+            puzzleId = _randomGUID
+        });
 
         // Notify that puzzle was collected
         EventBus.Publish(type);
