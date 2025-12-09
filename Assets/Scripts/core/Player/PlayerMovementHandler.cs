@@ -15,10 +15,16 @@ internal class PlayerMovementHandler
   [Header("Rotation Settings")]
   [SerializeField] private RotationConfig rotationConfig;
 
-  [Header("Sprint Camera Shake")]
-  [SerializeField] private bool enableSprintShake = true;
-  [SerializeField] private float shakeInterval = 0.4f; // Time between shakes
-  [SerializeField] private float shakeForce = 0.15f; // Subtle shake
+  [Header("Camera Shake Settings")]
+  [SerializeField] private bool enableCameraShake = true;
+
+  [Header("Sprint Shake")]
+  [SerializeField] private float sprintShakeInterval = 0.4f; // Time between shakes when sprinting
+  [SerializeField] private float sprintShakeForce = 0.15f; // Sprint shake force
+
+  [Header("Walk Shake")]
+  [SerializeField] private float walkShakeInterval = 0.6f; // Slower interval for walking
+  [SerializeField] private float walkShakeForce = 0.08f; // Less force for walking
 
   private Vector3 currentVelocity;
   private Vector3 verticalVelocity;
@@ -51,7 +57,7 @@ internal class PlayerMovementHandler
   {
     characterController = controller;
 
-    if (enableSprintShake)
+    if (enableCameraShake)
     {
       // Try to setup Cinemachine Impulse Source using reflection (no hard dependency)
       SetupCameraShake(controller.gameObject);
@@ -67,7 +73,7 @@ internal class PlayerMovementHandler
     if (impulseType == null)
     {
       Debug.LogWarning("[PlayerMovement] Cinemachine not found! Install Cinemachine package for camera shake.");
-      enableSprintShake = false;
+      enableCameraShake = false;
       return;
     }
 
@@ -163,12 +169,16 @@ internal class PlayerMovementHandler
     Vector3 movement = (currentVelocity + verticalVelocity) * Time.deltaTime;
     characterController.Move(movement);
 
-    // Camera shake when sprinting on ground
-    if (enableSprintShake && isSprinting && characterController.isGrounded && moveDirection.magnitude > 0.1f)
+    // Camera shake when moving on ground (walking or sprinting)
+    if (enableCameraShake && characterController.isGrounded && moveDirection.magnitude > 0.1f)
     {
-      if (Time.time - lastShakeTime >= shakeInterval)
+      // Determine interval and force based on movement type
+      float currentInterval = isSprinting ? sprintShakeInterval : walkShakeInterval;
+      float currentForce = isSprinting ? sprintShakeForce : walkShakeForce;
+
+      if (Time.time - lastShakeTime >= currentInterval)
       {
-        TriggerCameraShake();
+        TriggerCameraShake(currentForce);
         lastShakeTime = Time.time;
       }
     }
@@ -208,7 +218,7 @@ internal class PlayerMovementHandler
     }
   }
 
-  private void TriggerCameraShake()
+  private void TriggerCameraShake(float force)
   {
     if (impulseSource == null || generateImpulseMethod == null)
       return;
@@ -221,12 +231,10 @@ internal class PlayerMovementHandler
 
       // Generate shake direction - alternating left/right, biased downward
       Vector3 shakeVelocity = new Vector3(
-        horizontalDirection * shakeForce * UnityEngine.Random.Range(0.3f, 0.6f), // Left/Right alternating
-        UnityEngine.Random.Range(-shakeForce, -shakeForce * 0.3f),               // Downward (footstep impact)
+        horizontalDirection * force * UnityEngine.Random.Range(0.3f, 0.6f), // Left/Right alternating
+        UnityEngine.Random.Range(-force, -force * 0.3f),                    // Downward (footstep impact)
         0
-      );
-
-      // Try to invoke with Vector3 parameter
+      );      // Try to invoke with Vector3 parameter
       if (generateImpulseMethod.GetParameters().Length > 0)
       {
         generateImpulseMethod.Invoke(impulseSource, new object[] { shakeVelocity });
@@ -240,7 +248,7 @@ internal class PlayerMovementHandler
     catch (System.Exception e)
     {
       Debug.LogWarning($"[PlayerMovement] Camera shake failed: {e.Message}");
-      enableSprintShake = false; // Disable to prevent spam
+      enableCameraShake = false; // Disable to prevent spam
     }
   }
 
