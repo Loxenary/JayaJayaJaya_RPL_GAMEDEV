@@ -591,8 +591,11 @@ namespace EnemyAI
         {
             Log("Entering Chase state");
             aiPath.canMove = true;
-            aiPath.maxSpeed = stats.maxSpeed * stats.chaseSpeedMultiplier;
+            // Apply chase speed multiplier for faster pursuit
+            aiPath.maxSpeed = stats.maxSpeed * stats.chaseSpeedMultiplier * stats.chaseSpeedMultiplier;
             targetLostTime = 0f;
+
+            Log($"Chase speed: {aiPath.maxSpeed:F1} (base: {stats.maxSpeed}, multiplier: {stats.chaseSpeedMultiplier}x)");
 
             // Initialize last known position if we have a target
             if (currentTarget != null)
@@ -667,9 +670,6 @@ namespace EnemyAI
         protected virtual void Chase_Exit()
         {
             Log("Exiting Chase state");
-
-            // Restore normal speed when exiting chase
-            aiPath.maxSpeed = stats.maxSpeed;
         }
 
         #endregion
@@ -727,11 +727,33 @@ namespace EnemyAI
         protected virtual void PerformAttack()
         {
             Log($"Attacking target for {stats.attackDamage} damage!");
+
+            // Try to damage the target if it implements IDamageable
+            if (currentTarget != null)
+            {
+                IDamageable damageable = currentTarget.GetComponent<IDamageable>();
+                if (damageable != null)
+                {
+                    // Convert damage to int and apply to sanity
+                    int damageAmount = Mathf.RoundToInt(stats.attackDamage);
+                    damageable.TakeDamage(AttributesType.Sanity, damageAmount);
+                    Log($"Applied {damageAmount} sanity damage to {currentTarget.name}");
+                }
+                else
+                {
+                    Log($"Target {currentTarget.name} is not damageable (no IDamageable component)");
+                }
+            }
+
             OnAttackPerformed();
         }
 
+        /// <summary>
+        /// Override this to add custom attack effects (animations, sounds, particles, etc.)
+        /// </summary>
         protected virtual void OnAttackPerformed()
         {
+            // Override in derived classes for custom attack effects
         }
 
         #endregion
