@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using MonsterLove.StateMachine;
 using Pathfinding;
+using Unity.VisualScripting;
+using System.Collections.Generic;
 
 namespace EnemyAI
 {
@@ -41,7 +43,9 @@ namespace EnemyAI
         [SerializeField] protected bool useDynamicAngryStats = false;
 
         [Header("Patrol Points (Optional)")]
-        [SerializeField] protected Transform[] patrolPoints;
+
+        [SerializeField] protected Transform patrolGroups;
+        [SerializeField, ReadOnly] protected List<Transform> patrolPoints;
         [SerializeField] protected bool loopPatrol = true;
 
         [Header("Behavior Settings")]
@@ -85,7 +89,7 @@ namespace EnemyAI
         public EnemyState CurrentState => fsm != null ? fsm.State : EnemyState.Idle;
         public float HealthPercentage => currentHealth / stats.maxHealth;
         public bool IsAlive => currentHealth > 0;
-    
+
         [Header("CURRENT STATE (Read Only)")]
         [SerializeField][ReadOnly] private string _currentStateDisplay = "Not Started";
         [SerializeField][ReadOnly] private string _targetInfo = "No Target";
@@ -115,7 +119,11 @@ namespace EnemyAI
         {
             currentHealth = stats.maxHealth;
             ChooseRandomBehavior();
+
+
         }
+
+
 
         protected virtual void OnEnable()
         {
@@ -133,9 +141,20 @@ namespace EnemyAI
             }
         }
 
+        private void PatrolGroupRework()
+        {
+            foreach (Transform group in patrolGroups)
+            {
+                if (!group.Equals(patrolGroups.transform))
+                {
+                    patrolPoints.Add(group);
+                }
+            }
+        }
+
         protected virtual void ChooseRandomBehavior()
         {
-            if (patrolPoints != null && patrolPoints.Length > 0 && Random.value <= patrolChance)
+            if (patrolPoints != null && patrolPoints.Count > 0 && Random.value <= patrolChance)
             {
                 fsm.ChangeState(EnemyState.Patrol);
             }
@@ -316,10 +335,10 @@ namespace EnemyAI
 
             if (aiPath.reachedEndOfPath)
             {
-                if (patrolPoints != null && patrolPoints.Length > 0)
+                if (patrolPoints != null && patrolPoints.Count > 0)
                 {
                     currentPatrolIndex++;
-                    if (currentPatrolIndex >= patrolPoints.Length)
+                    if (currentPatrolIndex >= patrolPoints.Count)
                     {
                         if (loopPatrol)
                         {
@@ -347,7 +366,7 @@ namespace EnemyAI
 
         protected virtual void SetNextPatrolPoint()
         {
-            if (patrolPoints != null && patrolPoints.Length > 0 && currentPatrolIndex < patrolPoints.Length)
+            if (patrolPoints != null && patrolPoints.Count > 0 && currentPatrolIndex < patrolPoints.Count)
             {
                 aiPath.destination = patrolPoints[currentPatrolIndex].position;
                 Log($"Moving to patrol point {currentPatrolIndex}");
@@ -727,10 +746,10 @@ namespace EnemyAI
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, chaseRadius);
 
-            if (patrolPoints != null && patrolPoints.Length > 1)
+            if (patrolPoints != null && patrolPoints.Count > 1)
             {
                 Gizmos.color = Color.cyan;
-                for (int i = 0; i < patrolPoints.Length - 1; i++)
+                for (int i = 0; i < patrolPoints.Count - 1; i++)
                 {
                     if (patrolPoints[i] != null && patrolPoints[i + 1] != null)
                     {
@@ -738,9 +757,9 @@ namespace EnemyAI
                     }
                 }
 
-                if (loopPatrol && patrolPoints[0] != null && patrolPoints[patrolPoints.Length - 1] != null)
+                if (loopPatrol && patrolPoints[0] != null && patrolPoints[patrolPoints.Count - 1] != null)
                 {
-                    Gizmos.DrawLine(patrolPoints[patrolPoints.Length - 1].position, patrolPoints[0].position);
+                    Gizmos.DrawLine(patrolPoints[patrolPoints.Count - 1].position, patrolPoints[0].position);
                 }
             }
 
