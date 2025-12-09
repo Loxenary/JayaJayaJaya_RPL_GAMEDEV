@@ -72,6 +72,8 @@ namespace EnemyAI
 
         protected StateMachine<EnemyState, StateDriverUnity> fsm;
         protected AIPath aiPath;
+
+        protected AIDestinationSetter destinationSetter;
         protected EnemyDetection detection;
 
         protected float currentHealth;
@@ -589,8 +591,14 @@ namespace EnemyAI
         {
             Log("Entering Chase state");
             aiPath.canMove = true;
-            aiPath.maxSpeed = stats.maxSpeed;
+            aiPath.maxSpeed = stats.maxSpeed * stats.chaseSpeedMultiplier;
             targetLostTime = 0f;
+
+            // Initialize last known position if we have a target
+            if (currentTarget != null)
+            {
+                lastKnownTargetPosition = currentTarget.position;
+            }
         }
 
         protected virtual void Chase_Update()
@@ -603,32 +611,7 @@ namespace EnemyAI
 
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
-            if (distanceToTarget <= stats.attackRange)
-            {
-                fsm.ChangeState(EnemyState.Attack);
-                return;
-            }
-
-            if (!detection.HasLineOfSight(currentTarget))
-            {
-                targetLostTime += Time.deltaTime;
-                aiPath.destination = lastKnownTargetPosition;
-
-                if (targetLostTime >= visionLostCountdown)
-                {
-                    Log($"Lost vision of target for {visionLostCountdown} seconds, returning to previous behavior");
-                    currentTarget = null;
-                    ChooseRandomBehavior();
-                }
-                return;
-            }
-            else
-            {
-                lastKnownTargetPosition = currentTarget.position;
-                aiPath.destination = currentTarget.position;
-                targetLostTime = 0f;
-            }
-
+            // Check if target is too far away (give up chase)
             if (distanceToTarget > chaseRadius * 1.5f)
             {
                 Log("Target moved too far outside chase zone, giving up");
@@ -636,11 +619,57 @@ namespace EnemyAI
                 ChooseRandomBehavior();
                 return;
             }
+
+            // Check if within attack range
+            if (distanceToTarget <= stats.attackRange)
+            {
+                fsm.ChangeState(EnemyState.Attack);
+                return;
+            }
+
+            // Check line of sight
+            bool hasLOS = detection.HasLineOfSight(currentTarget);
+
+            if (hasLOS)
+            {
+                // Has line of sight - chase directly
+                lastKnownTargetPosition = currentTarget.position;
+                aiPath.destination = currentTarget.position;
+                targetLostTime = 0f;
+            }
+            else
+            {
+                // Lost line of sight but still in range
+                targetLostTime += Time.deltaTime;
+
+                // Continue moving to last known position
+                aiPath.destination = lastKnownTargetPosition;
+
+                // Only give up if lost sight for too long AND target is far from last known position
+                if (targetLostTime >= visionLostCountdown)
+                {
+                    float distanceToLastKnown = Vector3.Distance(transform.position, lastKnownTargetPosition);
+
+                    // If we reached last known position and still no sight, give up
+                    if (distanceToLastKnown < 2f)
+                    {
+                        Log($"Lost vision of target for {visionLostCountdown}s and reached last known position, giving up");
+                        currentTarget = null;
+                        ChooseRandomBehavior();
+                        return;
+                    }
+                }
+
+                Log($"Lost sight but continuing to last known position ({targetLostTime:F1}s)");
+            }
         }
 
         protected virtual void Chase_Exit()
         {
             Log("Exiting Chase state");
+
+            // Restore normal speed when exiting chase
+            aiPath.maxSpeed = stats.maxSpeed;
         }
 
         #endregion
