@@ -15,10 +15,14 @@ public class JournalPopup : MonoBehaviour
     private void Awake()
     {
         cg = GetComponent<CanvasGroup>();
+
     }
     private void Start()
     {
-        
+        if (!canvas.worldCamera)
+        {
+            canvas.worldCamera = Camera.main;
+        }
     }
     private void Update()
     {
