@@ -27,7 +27,6 @@ public class GhostManager : MonoBehaviour
   [SerializeField] private Transform spawnPoint;
 
   [Header("Ghost Configuration")]
-  [SerializeField] private int sanityDamage = 100;
   [SerializeField] private bool activateOnSpawn = true;
 
   [Header("Events")]
