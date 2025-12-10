@@ -1,11 +1,13 @@
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Events;
 using static InteractableLockedDoor;
 
-public class InteractableLockedDoor : InteractableDoor
+public class InteractableLockedDoor : InteractableDoor,IHighlight
 {
     [Header("Locked Door Section")]
     [SerializeField] int keyID;
+    [SerializeField] HiglightObjectPlus highlight;
     [ReadOnly]
     [SerializeField] bool isUnlock;
 
@@ -30,12 +32,39 @@ public class InteractableLockedDoor : InteractableDoor
     public override void InteractObject()
     {
         if (isUnlock)
+        {
             base.InteractObject();
+            if(highlight != null)
+            {
+                highlight.UnHighlight();
+                highlight.SetDisable();
+            }
+
+        }
         else
         {
             OnWrongKeys?.Invoke();
             onWrongKey?.Invoke();
             Debug.Log("Masih Terkunci");
+        }
+    }
+
+
+    public void Highlight()
+    {
+        if (isInteract) return;
+        if (isUnlock)
+        {
+            highlight.Highlight();
+        }
+    }
+
+    public void UnHighlight()
+    {
+        if (isInteract) return;
+        if (isUnlock)
+        {
+            highlight.UnHighlight();
         }
     }
 }
