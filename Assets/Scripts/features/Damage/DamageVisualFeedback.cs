@@ -16,13 +16,27 @@ using UnityEngine.Rendering.Universal;
 [RequireComponent(typeof(Volume))]
 public class DamageVisualFeedback : MonoBehaviour
 {
+    public struct TriggerPulseEvent
+    {
+
+    }
+
+    public struct TriggerPulseEventWithParam
+    {
+
+        public float intensity;
+        public float duration;
+    }
+
+
     [Header("Volume Setup")]
     [Tooltip("The URP Volume component (auto-assigned if not set)")]
     [SerializeField] private Volume postProcessVolume;
 
     [Header("Sanity-Based Effects Configuration")]
     [Tooltip("Sanity threshold ranges and their corresponding visual intensity")]
-    [SerializeField] private SanityVisualThreshold[] sanityThresholds = new SanityVisualThreshold[]
+    [SerializeField]
+    private SanityVisualThreshold[] sanityThresholds = new SanityVisualThreshold[]
     {
         new SanityVisualThreshold { sanityThreshold = 1.0f, vignetteIntensity = 0.0f, chromaticAberrationIntensity = 0.0f, filmGrainIntensity = 0.0f },
         new SanityVisualThreshold { sanityThreshold = 0.7f, vignetteIntensity = 0.2f, chromaticAberrationIntensity = 0.0f, filmGrainIntensity = 0.1f },
@@ -88,11 +102,15 @@ public class DamageVisualFeedback : MonoBehaviour
     {
         // Subscribe to player sanity changes
         PlayerAttributes.onSanityUpdate += OnSanityChanged;
+        EventBus.Subscribe<TriggerPulseEvent>(OnPulseEventTrigger);
+        EventBus.Subscribe<TriggerPulseEventWithParam>(OnSpecialEvent);
     }
 
     private void OnDisable()
     {
         PlayerAttributes.onSanityUpdate -= OnSanityChanged;
+        EventBus.Unsubscribe<TriggerPulseEvent>(OnPulseEventTrigger);
+        EventBus.Unsubscribe<TriggerPulseEventWithParam>(OnSpecialEvent);
     }
 
     private void Update()
@@ -100,11 +118,7 @@ public class DamageVisualFeedback : MonoBehaviour
         // Smoothly interpolate effects to target values
         UpdateEffectIntensities();
 
-        // Update pulse effect
-        if (isPulsing)
-        {
-            UpdatePulseEffect();
-        }
+
     }
 
     /// <summary>
@@ -256,17 +270,9 @@ public class DamageVisualFeedback : MonoBehaviour
     }
 
     /// <summary>
-    /// Update the pulse effect (fade out)
-    /// </summary>
-    private void UpdatePulseEffect()
-    {
-        // Pulse is handled by coroutine
-    }
-
-    /// <summary>
     /// Public method to trigger pulse via event
     /// </summary>
-    public void OnDamageTaken()
+    private void OnPulseEventTrigger(TriggerPulseEvent evt)
     {
         TriggerPulse();
     }
@@ -274,9 +280,9 @@ public class DamageVisualFeedback : MonoBehaviour
     /// <summary>
     /// Trigger a custom pulse for special events
     /// </summary>
-    public void OnSpecialEvent(float intensity, float duration)
+    public void OnSpecialEvent(TriggerPulseEventWithParam param)
     {
-        TriggerPulse(intensity, duration);
+        TriggerPulse(param.intensity, param.duration);
     }
 
     private void Log(string message)

@@ -58,7 +58,7 @@ public class InteractableEndGameDoor : InteractableLockedDoor
         CloseDoorAndLock();
         var audioManager = ServiceLocator.Get<AudioManager>();
 
-        audioManager.PlaySfx(doorLockSound.SFXId);
+        audioProvider.PlaySfx(doorLockSound);
     }
 
     /// <summary>

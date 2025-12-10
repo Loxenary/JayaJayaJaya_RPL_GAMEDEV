@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CollectibleManager : MonoBehaviour
 {
     public CollectibleCount counting;
+
+    public UnityEvent firstPuzzlePickup;
 
     private void OnEnable()
     {
@@ -24,6 +27,10 @@ public class CollectibleManager : MonoBehaviour
                 break;
             case CollectibleType.Puzzle:
                 counting.IncrementPuzzle();
+                if(counting.GetPuzzleCount() == 0)
+                {
+                    firstPuzzlePickup?.Invoke();
+                }
                 break;
             default:
                 break;
@@ -45,6 +52,7 @@ public class CollectibleManager : MonoBehaviour
         {
             puzzle++;
         }
+        public int GetPuzzleCount() {  return key; }
     }
 
 }
