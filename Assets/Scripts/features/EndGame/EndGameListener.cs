@@ -3,9 +3,12 @@ using UnityEngine;
 public class EndGameListener : MonoBehaviour, IRestartable
 {
     [SerializeField] private EndGameConfig endGameConfig;
-
-    [SerializeField, ReadOnly]
     private int _currentPuzzleCount = 0;
+
+#if UNITY_EDITOR
+    [SerializeField, ReadOnly]
+    private int puzzleCount => _currentPuzzleCount;
+#endif
 
     private void OnEnable()
     {

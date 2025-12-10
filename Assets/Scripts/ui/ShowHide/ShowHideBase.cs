@@ -75,6 +75,7 @@ public abstract class ShowHideBase : MonoBehaviour
     /// </summary>
     public bool IsTransitioning { get; private set; }
 
+
     private bool _lastCursorVisible = false;
     private CursorLockMode _lastCursorLockMode = CursorLockMode.None;
 
@@ -93,12 +94,15 @@ public abstract class ShowHideBase : MonoBehaviour
         {
             _lastCursorVisible = Cursor.visible;
             _lastCursorLockMode = Cursor.lockState;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         IsTransitioning = true;
         IsVisible = true;
         ShowUIStart();
         ShowInternal();
+
         if (isStopTime)
         {
             ServiceLocator.Get<TimeService>().RequestStopTime(this);
@@ -191,12 +195,6 @@ public abstract class ShowHideBase : MonoBehaviour
     {
         IsTransitioning = false;
         ShowUIComplete();
-        if (isShowCursor)
-        {
-            // Unlock and show cursor
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
     }
 
     /// <summary>
@@ -213,12 +211,7 @@ public abstract class ShowHideBase : MonoBehaviour
             ServiceLocator.Get<TimeService>().RequestResumeTime(this);
         }
 
-        if (isShowCursor)
-        {
-            // Restore previous cursor state
-            Cursor.visible = _lastCursorVisible;
-            Cursor.lockState = _lastCursorLockMode;
-        }
+
     }
 
     /// <summary>
@@ -227,7 +220,13 @@ public abstract class ShowHideBase : MonoBehaviour
     protected virtual void HideUIStart()
     {
         // Override in derived classes if needed
-        onShowStarted?.Invoke();
+        if (isShowCursor)
+        {
+            // Restore previous cursor state
+            Cursor.visible = _lastCursorVisible;
+            Cursor.lockState = _lastCursorLockMode;
+        }
+        onHideStarted?.Invoke();
     }
 
     /// <summary>

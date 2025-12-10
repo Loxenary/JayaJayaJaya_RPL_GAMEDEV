@@ -3,13 +3,17 @@ using UnityEngine;
 using UnityEngine.Events;
 using static InteractableLockedDoor;
 
-public class InteractableLockedDoor : InteractableDoor,IHighlight
+public class InteractableLockedDoor : InteractableDoor, IHighlight
 {
     [Header("Locked Door Section")]
     [SerializeField] int keyID;
     [SerializeField] HiglightObjectPlus highlight;
+#if UNITY_EDITOR
     [ReadOnly]
-    [SerializeField] bool isUnlock;
+    [SerializeField] bool isKeyUnlock => isUnlock;
+#endif
+
+    bool isUnlock;
 
     public UnityEvent OnWrongKeys;
 
@@ -21,11 +25,11 @@ public class InteractableLockedDoor : InteractableDoor,IHighlight
     }
     private void OnDisable()
     {
-        InteractableKey.onFoundKey -= OnFoundKey;        
+        InteractableKey.onFoundKey -= OnFoundKey;
     }
     private void OnFoundKey(int id)
     {
-        if(id  == keyID)
+        if (id == keyID)
             isUnlock = true;
     }
 
@@ -34,7 +38,7 @@ public class InteractableLockedDoor : InteractableDoor,IHighlight
         if (isUnlock)
         {
             base.InteractObject();
-            if(highlight != null)
+            if (highlight != null)
             {
                 highlight.UnHighlight();
                 highlight.SetDisable();

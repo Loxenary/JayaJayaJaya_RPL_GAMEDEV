@@ -4,148 +4,278 @@ using System;
 [Serializable]
 internal class PlayerMovementHandler
 {
-    private CharacterController characterController;
+  private CharacterController characterController;
 
-    [Header("Movement Settings")]
-    [SerializeField] private MovementConfig movementConfig;
+  [Header("Movement Settings")]
+  [SerializeField] private MovementConfig movementConfig;
 
-    [Header("Jump Settings")]
-    [SerializeField] private JumpConfig jumpConfig;
+  [Header("Jump Settings")]
+  [SerializeField] private JumpConfig jumpConfig;
 
-    [Header("Rotation Settings")]
-    [SerializeField] private RotationConfig rotationConfig;
+  [Header("Rotation Settings")]
+  [SerializeField] private RotationConfig rotationConfig;
 
-    private Vector3 currentVelocity;
-    private Vector3 verticalVelocity;
-    private bool isSprinting;
-    private bool isCrouching;
+  [Header("Camera Shake Settings")]
+  [SerializeField] private bool enableCameraShake = true;
 
+  [Header("Sprint Shake")]
+  [SerializeField] private float sprintShakeInterval = 0.4f; // Time between shakes when sprinting
+  [SerializeField] private float sprintShakeForce = 0.15f; // Sprint shake force
 
-    // Movement Variables
-    private float _acceleration => movementConfig.Acceleration;
-    private float _deceleration => movementConfig.Deceleration;
-    private float _walkSpeed => movementConfig.WalkSpeed;
-    private float _sprintSpeed => movementConfig.SprintSpeed;
-    private float _crouchSpeed => movementConfig.CrouchSpeed;
+  [Header("Walk Shake")]
+  [SerializeField] private float walkShakeInterval = 0.6f; // Slower interval for walking
+  [SerializeField] private float walkShakeForce = 0.08f; // Less force for walking
 
-    // Jump Variables
-    private float _jumpHeight => jumpConfig.JumpHeight;
-    private float _gravity => jumpConfig.Gravity;
-    private float _fallMultiplier => jumpConfig.FallMultiplier;
-    private float _lowJumpMultiplier => jumpConfig.LowJumpMultiplier;
+  private Vector3 currentVelocity;
+  private Vector3 verticalVelocity;
+  private bool isSprinting;
+  private bool isCrouching;
+  private bool isFrozen = false;
+  private float lastShakeTime = 0f;
+  private bool shakeDirectionLeft = true; // Alternate left/right
 
-    // Rotation Variables
-    private float _rotationSpeed => rotationConfig.RotationSpeed;
+  // Use reflection to avoid hard dependency on Cinemachine
+  private Component impulseSource;
+  private System.Reflection.MethodInfo generateImpulseMethod;
+  // Movement Variables
+  private float _acceleration => movementConfig.Acceleration;
+  private float _deceleration => movementConfig.Deceleration;
+  private float _walkSpeed => movementConfig.WalkSpeed;
+  private float _sprintSpeed => movementConfig.SprintSpeed;
+  private float _crouchSpeed => movementConfig.CrouchSpeed;
 
-    public void SetCharacterController(CharacterController controller)
+  // Jump Variables
+  private float _jumpHeight => jumpConfig.JumpHeight;
+  private float _gravity => jumpConfig.Gravity;
+  private float _fallMultiplier => jumpConfig.FallMultiplier;
+  private float _lowJumpMultiplier => jumpConfig.LowJumpMultiplier;
+
+  // Rotation Variables
+  private float _rotationSpeed => rotationConfig.RotationSpeed;
+
+  public void SetCharacterController(CharacterController controller)
+  {
+    characterController = controller;
+
+    if (enableCameraShake)
     {
-        characterController = controller;
+      // Try to setup Cinemachine Impulse Source using reflection (no hard dependency)
+      SetupCameraShake(controller.gameObject);
+    }
+  }
+
+  private void SetupCameraShake(GameObject playerObject)
+  {
+    // Try to find CinemachineImpulseSource type (works for both Cinemachine 2.x and 3.x)
+    System.Type impulseType = System.Type.GetType("Unity.Cinemachine.CinemachineImpulseSource, Unity.Cinemachine") ??
+                              System.Type.GetType("Cinemachine.CinemachineImpulseSource, Cinemachine");
+
+    if (impulseType == null)
+    {
+      Debug.LogWarning("[PlayerMovement] Cinemachine not found! Install Cinemachine package for camera shake.");
+      enableCameraShake = false;
+      return;
     }
 
-    /// <summary>
-    /// Move the character with optional world-space direction override.
-    /// </summary>
-    /// <param name="inputDirection">Raw input direction (WASD as Vector2)</param>
-    /// <param name="sprint">Is sprint button held</param>
-    /// <param name="crouch">Is crouch button held</param>
-    /// <param name="worldDirection">Optional: pre-converted world-space direction. If provided, ignores inputDirection</param>
-    public void Move(Vector2 inputDirection, bool sprint, bool crouch, Vector3? worldDirection = null)
+    // Get or add component
+    impulseSource = playerObject.GetComponent(impulseType);
+    if (impulseSource == null)
     {
-        isSprinting = sprint;
-        isCrouching = crouch;
-
-        float targetSpeed = GetTargetSpeed();
-
-        // Use provided world direction or convert input to world-space
-        Vector3 moveDirection = worldDirection ?? new Vector3(inputDirection.x, 0f, inputDirection.y);
-        Vector3 targetVelocity = moveDirection.normalized * targetSpeed;
-
-        // Smooth movement using interpolation
-        currentVelocity = Vector3.Lerp(
-            currentVelocity,
-            targetVelocity,
-            (targetVelocity.magnitude > currentVelocity.magnitude ? _acceleration : _deceleration) * Time.deltaTime
-        );
-
-        // Apply gravity with fall multiplier for realistic jump feel
-        if (characterController.isGrounded && verticalVelocity.y < 0)
-        {
-            verticalVelocity.y = -2f; // Small negative value to keep grounded
-        }
-        else if (verticalVelocity.y < 0)
-        {
-            // Falling - apply fall multiplier for faster descent
-            verticalVelocity.y += _gravity * _fallMultiplier * Time.deltaTime;
-        }
-        else
-        {
-            // Rising - normal gravity (or low jump multiplier if not holding jump)
-            verticalVelocity.y += _gravity * Time.deltaTime;
-        }
-
-        // Combine horizontal and vertical movement
-        Vector3 movement = (currentVelocity + verticalVelocity) * Time.deltaTime;
-        characterController.Move(movement);
+      impulseSource = playerObject.AddComponent(impulseType);
+      Debug.Log("[PlayerMovement] CinemachineImpulseSource added");
     }
 
-    public void Rotate(Vector3 direction)
+    // Get GenerateImpulse method
+    generateImpulseMethod = impulseType.GetMethod("GenerateImpulse", new System.Type[] { typeof(Vector3) });
+    if (generateImpulseMethod == null)
     {
-        if (direction.magnitude >= 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            characterController.transform.rotation = Quaternion.Slerp(
-                characterController.transform.rotation,
-                targetRotation,
-                _rotationSpeed * Time.deltaTime
-            );
-        }
+      // Try parameterless version
+      generateImpulseMethod = impulseType.GetMethod("GenerateImpulse", System.Type.EmptyTypes);
     }
 
-    public void RotateTowards(Vector3 targetDirection)
+    if (generateImpulseMethod != null)
     {
-        if (targetDirection != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-            characterController.transform.rotation = Quaternion.Slerp(
-                characterController.transform.rotation,
-                targetRotation,
-                _rotationSpeed * Time.deltaTime
-            );
-        }
+      Debug.Log("[PlayerMovement] Camera shake ready!");
+    }
+    else
+    {
+      Debug.LogWarning("[PlayerMovement] Could not find GenerateImpulse method");
+    }
+  }
+
+  /// <summary>
+  /// Freeze or unfreeze player movement
+  /// </summary>
+  public void SetFrozen(bool frozen)
+  {
+    isFrozen = frozen;
+
+    if (frozen)
+    {
+      // Stop all movement when frozen
+      currentVelocity = Vector3.zero;
+    }
+  }
+
+  /// <summary>
+  /// Move the character with optional world-space direction override.
+  /// </summary>
+  /// <param name="inputDirection">Raw input direction (WASD as Vector2)</param>
+  /// <param name="sprint">Is sprint button held</param>
+  /// <param name="crouch">Is crouch button held</param>
+  /// <param name="worldDirection">Optional: pre-converted world-space direction. If provided, ignores inputDirection</param>
+  public void Move(Vector2 inputDirection, bool sprint, bool crouch, Vector3? worldDirection = null)
+  {
+    // Don't move if frozen
+    if (isFrozen)
+    {
+      currentVelocity = Vector3.zero;
+      return;
     }
 
-    public void Jump()
+    isSprinting = sprint;
+    isCrouching = crouch;
+
+    float targetSpeed = GetTargetSpeed();
+
+    // Use provided world direction or convert input to world-space
+    Vector3 moveDirection = worldDirection ?? new Vector3(inputDirection.x, 0f, inputDirection.y);
+    Vector3 targetVelocity = moveDirection.normalized * targetSpeed;
+
+    // Smooth movement using interpolation
+    currentVelocity = Vector3.Lerp(
+        currentVelocity,
+        targetVelocity,
+        (targetVelocity.magnitude > currentVelocity.magnitude ? _acceleration : _deceleration) * Time.deltaTime
+    );
+
+    // Apply gravity with fall multiplier for realistic jump feel
+    if (characterController.isGrounded && verticalVelocity.y < 0)
     {
-        if (characterController.isGrounded)
-        {
-            verticalVelocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-        }
+      verticalVelocity.y = -2f; // Small negative value to keep grounded
+    }
+    else if (verticalVelocity.y < 0)
+    {
+      // Falling - apply fall multiplier for faster descent
+      verticalVelocity.y += _gravity * _fallMultiplier * Time.deltaTime;
+    }
+    else
+    {
+      // Rising - normal gravity (or low jump multiplier if not holding jump)
+      verticalVelocity.y += _gravity * Time.deltaTime;
     }
 
-    public float GetMoveSpeed()
-    {
-        return GetTargetSpeed();
-    }
+    // Combine horizontal and vertical movement
+    Vector3 movement = (currentVelocity + verticalVelocity) * Time.deltaTime;
+    characterController.Move(movement);
 
-    public bool IsGrounded()
+    // Camera shake when moving on ground (walking or sprinting)
+    if (enableCameraShake && characterController.isGrounded && moveDirection.magnitude > 0.1f)
     {
-        return characterController.isGrounded;
-    }
+      // Determine interval and force based on movement type
+      float currentInterval = isSprinting ? sprintShakeInterval : walkShakeInterval;
+      float currentForce = isSprinting ? sprintShakeForce : walkShakeForce;
 
-    public bool IsSprinting()
-    {
-        return isSprinting && !isCrouching;
+      if (Time.time - lastShakeTime >= currentInterval)
+      {
+        TriggerCameraShake(currentForce);
+        lastShakeTime = Time.time;
+      }
     }
+  }
 
-    public bool IsCrouching()
+  public void Rotate(Vector3 direction)
+  {
+    if (direction.magnitude >= 0.1f)
     {
-        return isCrouching;
+      Quaternion targetRotation = Quaternion.LookRotation(direction);
+      characterController.transform.rotation = Quaternion.Slerp(
+          characterController.transform.rotation,
+          targetRotation,
+          _rotationSpeed * Time.deltaTime
+      );
     }
+  }
 
-    private float GetTargetSpeed()
+  public void RotateTowards(Vector3 targetDirection)
+  {
+    if (targetDirection != Vector3.zero)
     {
-        if (isCrouching) return _crouchSpeed;
-        if (isSprinting) return _sprintSpeed;
-        return _walkSpeed;
+      Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+      characterController.transform.rotation = Quaternion.Slerp(
+          characterController.transform.rotation,
+          targetRotation,
+          _rotationSpeed * Time.deltaTime
+      );
     }
+  }
+
+  public void Jump()
+  {
+    if (characterController.isGrounded)
+    {
+      verticalVelocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
+    }
+  }
+
+  private void TriggerCameraShake(float force)
+  {
+    if (impulseSource == null || generateImpulseMethod == null)
+      return;
+
+    try
+    {
+      // Alternate left/right footstep pattern
+      float horizontalDirection = shakeDirectionLeft ? -1f : 1f;
+      shakeDirectionLeft = !shakeDirectionLeft; // Toggle for next step
+
+      // Generate shake direction - alternating left/right, biased downward
+      Vector3 shakeVelocity = new Vector3(
+        horizontalDirection * force * UnityEngine.Random.Range(0.3f, 0.6f), // Left/Right alternating
+        UnityEngine.Random.Range(-force, -force * 0.3f),                    // Downward (footstep impact)
+        0
+      );      // Try to invoke with Vector3 parameter
+      if (generateImpulseMethod.GetParameters().Length > 0)
+      {
+        generateImpulseMethod.Invoke(impulseSource, new object[] { shakeVelocity });
+      }
+      else
+      {
+        // Fallback: parameterless version
+        generateImpulseMethod.Invoke(impulseSource, null);
+      }
+    }
+    catch (System.Exception e)
+    {
+      Debug.LogWarning($"[PlayerMovement] Camera shake failed: {e.Message}");
+      enableCameraShake = false; // Disable to prevent spam
+    }
+  }
+
+  public float GetMoveSpeed()
+  {
+    return GetTargetSpeed();
+  }
+
+  public bool IsGrounded()
+  {
+    return characterController.isGrounded;
+  }
+
+  public bool IsSprinting()
+  {
+    return isSprinting && !isCrouching;
+  }
+
+  public bool IsCrouching()
+  {
+    return isCrouching;
+  }
+
+  private float GetTargetSpeed()
+  {
+    if (isCrouching) return _crouchSpeed;
+    if (isSprinting) return _sprintSpeed;
+    return _walkSpeed;
+  }
 }

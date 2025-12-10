@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1907186072343e44f8243a7f4c53a4f0, type: 3}
   m_Name: BootstrapConfig
   m_EditorClassIdentifier: 
-  persistanceSceneReferences: []
+  persistanceSceneReferences:
+  - {fileID: 11400000, guid: 941a6500a2657124089c1e4f91c6e70a, type: 2}
   initialScene: 0
+  initialSceneAsset: {fileID: 102900000, guid: 13c7a8551126c7646af3d4d64d35c79d, type: 3}
   isTestingEnabled: 0
-  testSceneAsset: {fileID: 102900000, guid: a956184acd9fe2041b25394642cbcf6d, type: 3}
+  testSceneAsset: {fileID: 102900000, guid: 13c7a8551126c7646af3d4d64d35c79d, type: 3}

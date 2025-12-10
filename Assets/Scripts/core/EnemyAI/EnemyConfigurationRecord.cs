@@ -11,6 +11,7 @@ public class EnemyConfigurationRecord
 
     [Tooltip("The Level identifier")]
     public EnemyLevel level;
+    public SfxClipData enemyIncreaseSfx;
 
     [Tooltip("The amount of angry points to reach this level")]
     public float angryPointBaseline = 0;

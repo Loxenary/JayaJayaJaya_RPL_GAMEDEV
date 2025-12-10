@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e838479760fe549a688ce63e0ad234, type: 3}
+  m_Name: AmbienceConfig
+  m_EditorClassIdentifier: 
+  ambienceSequence: 04000000050000000300000006000000070000000500000008000000
+  conditionRecords:
+  - conditionType: 101
+    musicTrack: 1
+    priority: 200
+  - conditionType: 102
+    musicTrack: 1
+    priority: 200
+  - conditionType: 103
+    musicTrack: 2
+    priority: 200
+  - conditionType: 300
+    musicTrack: 9
+    priority: 200
+  - conditionType: 200
+    musicTrack: 9
+    priority: 200

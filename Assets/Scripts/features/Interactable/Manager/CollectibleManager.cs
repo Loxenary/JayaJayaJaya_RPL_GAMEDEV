@@ -4,7 +4,6 @@ using UnityEngine.Events;
 
 public class CollectibleManager : MonoBehaviour
 {
-    [ReadOnly]
     public CollectibleCount counting;
 
     public UnityEvent firstPuzzlePickup;
@@ -16,7 +15,7 @@ public class CollectibleManager : MonoBehaviour
     private void OnDisable()
     {
         EventBus.Unsubscribe<CollectibleType>(ListenerCollectible);
-        
+
     }
 
     void ListenerCollectible(CollectibleType type)
