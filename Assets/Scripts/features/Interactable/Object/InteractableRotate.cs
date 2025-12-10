@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 public class InteractableRotate : Interactable
 {
+  public override bool IsInteractable => true;
   [SerializeField] protected float timeRotate = 1.5f;
   [SerializeField] protected Transform rootObject;
   [SerializeField] protected Vector3 targetRotation;
