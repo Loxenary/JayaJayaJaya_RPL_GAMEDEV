@@ -1022,7 +1022,7 @@
                     "name": "",
                     "id": "4ba2d705-c10f-45e5-858c-392976252113",
                     "path": "<Keyboard>/escape",
-                    "interactions": "",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Setting",

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2408149469b5a418989552d999761b, type: 3}
+  m_Name: Laksha 103
+  m_EditorClassIdentifier: 
+  content: "Di ruangan ini, ia menggantungkan versi lain dari diriku\u2014tersenyum,
+    patuh, dan buta. Namun di balik salah satu potret itu, aku menyembunyikan pengakuanku
+    sendiri. Di sana kutuliskan bahwa malam terakhirku tidak berakhir di sini, melainkan
+    di <b>kamar tidur utama, LAKSHA 105</b>. Pintu kamar itu kini terkunci, karena
+    ia mengambil kuncinya dan menyelipkannya di antara buku dan kertas di <b>ruang
+    baca, LAKSHA 102</b>. Tapi jangan bodoh sepertiku dulu: kunci ruang baca itu
+    sendiri terjatuh dan tenggelam di air yang dingin."

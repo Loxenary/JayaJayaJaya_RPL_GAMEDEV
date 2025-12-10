@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class CollectibleManager : MonoBehaviour
 {
-    [ReadOnly]
     public CollectibleCount counting;
 
     private void OnEnable()
@@ -13,7 +12,7 @@ public class CollectibleManager : MonoBehaviour
     private void OnDisable()
     {
         EventBus.Unsubscribe<CollectibleType>(ListenerCollectible);
-        
+
     }
 
     void ListenerCollectible(CollectibleType type)

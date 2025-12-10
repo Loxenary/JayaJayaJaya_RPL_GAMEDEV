@@ -11,13 +11,19 @@ public class SanityTimerSystem : MonoBehaviour
   [SerializeField] private float sanityDrainRate = 10f; // Sanity points per second (1% = 10 points)
   [SerializeField] private bool autoStart = true; // Auto start for testing
 
+# if UNITY_EDITOR
   [Header("Debug")]
   [ReadOnly]
-  [SerializeField] private float currentTime = 0f;
+  [SerializeField] private float _currentTime => currentTime;
   [ReadOnly]
-  [SerializeField] private bool isRunning = false;
+  [SerializeField] private bool _isRunning => isRunning;
   [ReadOnly]
-  [SerializeField] private bool isDrainingStarted = false;
+  [SerializeField] private bool _isDrainingStarted => isDrainingStarted;
+#endif
+
+  private float currentTime = 0f;
+  private bool isRunning = false;
+  private bool isDrainingStarted = false;
 
   private PlayerAttributes playerAttributes;
   private float lastDrainTime = 0f;

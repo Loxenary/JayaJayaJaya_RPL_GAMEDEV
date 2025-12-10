@@ -19,7 +19,7 @@ MonoBehaviour:
   detectionAngle: 360
   detectionLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 512
   attackRange: 2
   attackCooldown: 1.5
   attackDamage: 10

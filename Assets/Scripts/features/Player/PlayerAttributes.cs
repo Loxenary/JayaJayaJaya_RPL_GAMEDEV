@@ -11,6 +11,10 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   [Header("Sanity Stats")]
   [SerializeField] int maxSanity = 1000;
 
+  // Public property to expose max sanity (single source of truth)
+  public int MaxSanity => maxSanity;
+  public int CurrentSanity => currentSanity;
+
   [Header("Flashlight Stat")]
   [SerializeField] Light flashlight;
   [SerializeField] int initalBatteryValue = 100;
@@ -24,14 +28,10 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   public UnityEvent OnPlayerDead;
 
   [Header("Debbuging")]
-  [ReadOnly]
-  [SerializeField] int currentSanity;
-  [ReadOnly]
-  [SerializeField] int currentBattery;
-  [ReadOnly]
-  [SerializeField] bool toggleFlashlight;
-  [ReadOnly]
-  [SerializeField] bool isDead;
+  private bool isDead;
+  private int currentSanity;
+  private int currentBattery;
+  private bool toggleFlashlight;
 
 
   //C# Event - Sanity: 1000 = full health (100%), 0 = dead (0%)

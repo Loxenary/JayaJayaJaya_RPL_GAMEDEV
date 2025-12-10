@@ -65,7 +65,7 @@ public class SpatialAudioProvider : MonoBehaviour
         AudioSource.maxDistance = maxDistance;
         AudioSource.rolloffMode = AudioRolloffMode.Linear;
         AudioSource.playOnAwake = false;
-        
+
     }
 
     private void UpdateVolume()
@@ -80,11 +80,11 @@ public class SpatialAudioProvider : MonoBehaviour
     /// <summary>
     /// Plays an SFX on this spatial audio source.
     /// </summary>
-    public void PlaySfx(SFXIdentifier sfxId)
+    public void PlaySfx(SfxClipData sfxId)
     {
         if (_audioManager != null)
         {
-            _audioManager.PlaySfx(sfxId, AudioSource);
+            _audioManager.PlaySfx(sfxId.SFXId, AudioSource);
         }
     }
 

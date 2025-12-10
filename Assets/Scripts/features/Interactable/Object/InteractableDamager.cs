@@ -10,8 +10,14 @@ public class InteractableDamager : Interactable
     [Range(0f, 60f)]
     [SerializeField] float resetTime = 30f;
 
+#if UNITY_EDITOR
+
     [ReadOnly]
-    [SerializeField] int currentCount = 0;
+    [SerializeField] private int _currentCount => currentCount;
+#endif
+
+    private int currentCount = 0;
+
 
 
     public delegate void InteractableDamagerDelegate(int damage);
@@ -24,7 +30,7 @@ public class InteractableDamager : Interactable
 
         currentCount++;
 
-        if(currentCount == hitCount)
+        if (currentCount == hitCount)
         {
             isInteract = true;
             currentCount = 0;
@@ -33,11 +39,12 @@ public class InteractableDamager : Interactable
             onInteractDamager?.Invoke(damage);
 
             Debug.Log("Damage !!!");
-            DOTween.Sequence().SetDelay(resetTime).OnComplete(() => {
-                isInteract= false;
+            DOTween.Sequence().SetDelay(resetTime).OnComplete(() =>
+            {
+                isInteract = false;
             });
         }
-        
+
     }
     void BaseInteract()
     {
