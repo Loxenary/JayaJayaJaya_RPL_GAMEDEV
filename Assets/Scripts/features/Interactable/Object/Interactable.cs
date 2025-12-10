@@ -21,6 +21,11 @@ public class Interactable : MonoBehaviour
 
   // Child InteractableZone handles collider + layer. No setup needed here.
 
+  /// <summary>
+  /// Indicates whether this object should still show interaction prompt.
+  /// </summary>
+  public virtual bool IsInteractable => !isInteract;
+
   public virtual void InteractObject()
   {
     if (isInteract)

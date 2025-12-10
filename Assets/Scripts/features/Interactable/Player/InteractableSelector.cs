@@ -68,11 +68,16 @@ public class InteractableSelector : MonoBehaviour
 
     if (Physics.Raycast(ray, out hit, interactDistance, targetLayer))
     {
-      // Allow interaction via collider on child (e.g., door leaf proxy)
       Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
 
       if (interactable != null)
       {
+        if (!interactable.IsInteractable)
+        {
+          ClearCurrentObject();
+          return;
+        }
+
         // New object detected
         if (interactable != currentObject)
         {
