@@ -45,7 +45,13 @@ namespace EnemyAI
         [Header("Patrol Points (Optional)")]
 
         [SerializeField] protected Transform patrolGroups;
-        [SerializeField, ReadOnly] protected List<Transform> patrolPoints;
+
+#if UNITY_EDITOR
+        [SerializeField, ReadOnly] protected List<Transform> _patrolPoints => patrolPoints;
+#endif
+
+        protected List<Transform> patrolPoints = new();
+
         [SerializeField] protected bool loopPatrol = true;
 
         [Header("Behavior Settings")]
@@ -69,6 +75,14 @@ namespace EnemyAI
         [Header("Debug")]
         [SerializeField] protected bool showDebugLogs = false;
         [SerializeField] protected bool showStateInInspector = true;
+
+        [Header("Audio Config")]
+        [SerializeField] private EnemyAudioProvider audioProvider;
+        [SerializeField] private SfxClipData[] attackSfxs;
+        [SerializeField] private SfxClipData[] chasingSfxs;
+        [SerializeField] private SfxClipData[] seenSfxs;
+        [SerializeField] private SfxClipData[] patrolSfxs;
+
 
         protected StateMachine<EnemyState, StateDriverUnity> fsm;
         protected AIPath aiPath;
@@ -97,15 +111,31 @@ namespace EnemyAI
         protected float patrolPositionCheckTimer = 0f;
         protected bool isStuckAtPatrolPoint = false;
 
-        public EnemyState CurrentState => fsm != null ? fsm.State : EnemyState.Idle;
+        public EnemyState CurrentState
+        {
+            get
+            {
+                if (fsm == null) return EnemyState.Idle;
+                try
+                {
+                    return fsm.State;
+                }
+                catch
+                {
+                    return EnemyState.Idle;
+                }
+            }
+        }
         public float HealthPercentage => currentHealth / stats.maxHealth;
         public bool IsAlive => currentHealth > 0;
 
+
         [Header("CURRENT STATE (Read Only)")]
-        [SerializeField][ReadOnly] private string _currentStateDisplay = "Not Started";
-        [SerializeField][ReadOnly] private string _targetInfo = "No Target";
-        [SerializeField][ReadOnly] private float _visionTimer = 0f;
-        [SerializeField][ReadOnly] private float _fleeTimer = 0f;
+        private string _currentStateDisplay = "Not Started";
+        private string _targetInfo = "No Target";
+        private float _visionTimer = 0f;
+        private float _fleeTimer = 0f;
+
 
         #region Unity Lifecycle
 
@@ -129,9 +159,13 @@ namespace EnemyAI
         protected virtual void Start()
         {
             currentHealth = stats.maxHealth;
+        }
+
+        public void Initialize(Transform patrolPoint)
+        {
+            this.patrolGroups = patrolPoint;
+            PatrolGroupRework();
             ChooseRandomBehavior();
-
-
         }
 
 
@@ -364,6 +398,9 @@ namespace EnemyAI
             }
 
             SetNextPatrolPoint();
+
+            // Play patrol sound
+            PlayPatrolSound();
         }
 
         protected virtual void Patrol_Update()
@@ -510,6 +547,9 @@ namespace EnemyAI
             targetLostTime = 0f;
             seenStateTimer = 0f;
             seenSlowPhaseComplete = false;
+
+            // Play seen sound
+            PlaySeenSound();
         }
 
         protected virtual void Seen_Update()
@@ -602,6 +642,9 @@ namespace EnemyAI
             {
                 lastKnownTargetPosition = currentTarget.position;
             }
+
+            // Play looping chasing sound
+            PlayChasingSound();
         }
 
         protected virtual void Chase_Update()
@@ -670,6 +713,9 @@ namespace EnemyAI
         protected virtual void Chase_Exit()
         {
             Log("Exiting Chase state");
+
+            // Stop looping chasing sound
+            StopChasingSound();
         }
 
         #endregion
@@ -727,6 +773,9 @@ namespace EnemyAI
         protected virtual void PerformAttack()
         {
             Log($"Attacking target for {stats.attackDamage} damage!");
+
+            // Play attack sound
+            PlayAttackSound();
 
             // Try to damage the target if it implements IDamageable
             if (currentTarget != null)
@@ -839,6 +888,75 @@ namespace EnemyAI
             if (showDebugLogs)
             {
                 Debug.Log($"[{gameObject.name}] {message}");
+            }
+        }
+
+        #endregion
+
+        #region Audio Methods
+
+        /// <summary>
+        /// Plays a random attack sound once.
+        /// </summary>
+        protected virtual void PlayAttackSound()
+        {
+            if (audioProvider != null && attackSfxs != null && attackSfxs.Length > 0)
+            {
+                audioProvider.PlayRandomSfxOnce(attackSfxs);
+                Log("Playing attack sound");
+            }
+        }
+
+        /// <summary>
+        /// Plays a random chasing sound in loop mode.
+        /// The sound will keep looping until StopChasingSound is called.
+        /// </summary>
+        protected virtual void PlayChasingSound()
+        {
+            if (audioProvider != null && chasingSfxs != null && chasingSfxs.Length > 0)
+            {
+                // Only start if not already looping
+                if (!audioProvider.IsLoopingPlaying())
+                {
+                    audioProvider.PlayRandomSfxLooping(chasingSfxs);
+                    Log("Playing chasing sound (looping)");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Stops the looping chasing sound.
+        /// </summary>
+        protected virtual void StopChasingSound()
+        {
+            if (audioProvider != null)
+            {
+                audioProvider.StopLoopingSfx();
+                Log("Stopped chasing sound");
+            }
+        }
+
+        /// <summary>
+        /// Plays a random seen sound once.
+        /// </summary>
+        protected virtual void PlaySeenSound()
+        {
+            if (audioProvider != null && seenSfxs != null && seenSfxs.Length > 0)
+            {
+                audioProvider.PlayRandomSfxOnce(seenSfxs);
+                Log("Playing seen sound");
+            }
+        }
+
+        /// <summary>
+        /// Plays a random patrol sound once.
+        /// </summary>
+        protected virtual void PlayPatrolSound()
+        {
+            if (audioProvider != null && patrolSfxs != null && patrolSfxs.Length > 0)
+            {
+                audioProvider.PlayRandomSfxOnce(patrolSfxs);
+                Log("Playing patrol sound");
             }
         }
 
