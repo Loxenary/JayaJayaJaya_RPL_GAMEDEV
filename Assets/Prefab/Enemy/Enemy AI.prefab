@@ -493,11 +493,6 @@ MonoBehaviour:
   angrySystem: {fileID: 6463098729092677977}
   useDynamicAngryStats: 1
   patrolGroups: {fileID: 0}
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   loopPatrol: 1
   patrolChance: 1
   idleWaitTimeMin: 2
@@ -515,10 +510,6 @@ MonoBehaviour:
   chasingSfxs: []
   seenSfxs: []
   patrolSfxs: []
-  _currentStateDisplay: Not Started
-  _targetInfo: No Target
-  _visionTimer: 0
-  _fleeTimer: 0
 --- !u!114 &6463098729092677977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -541,11 +532,6 @@ MonoBehaviour:
       m_Calls: []
   showDebugLogs: 0
   showDebugGUI: 1
-  currentAngryPoints: 0
-  currentLevel: 0
-  currentSanityValue: 1
-  currentItemsTaken: 0
-  maxSanityValue: 1000
 --- !u!114 &7125948321971846435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -558,15 +544,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61ea6480da2342d43b2f0d40daeaede6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sanityDamage: 10
-  damageCooldown: 1
+  sanityDamage: 100
+  damageCooldown: 0.5
   OnDoneSendDamage:
     m_PersistentCalls:
       m_Calls: []
   isActive: 1
   damageOncePerContact: 1
-  hasHitPlayer: 0
-  currentlyTouchingPlayer: 0
 --- !u!65 &5703130303889097885
 BoxCollider:
   m_ObjectHideFlags: 0
