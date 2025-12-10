@@ -627,7 +627,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3670,7 +3670,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -4117,7 +4117,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -10898,8 +10898,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  isInteract: 0
-  collider: {fileID: 700336942}
   timeRotate: 2
   rootObject: {fileID: 514643129}
   targetRotation: {x: 0, y: 0, z: 85}
@@ -10930,10 +10928,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-  wait: 0
   keyID: 105
   highlight: {fileID: 0}
-  isUnlock: 0
   OnWrongKeys:
     m_PersistentCalls:
       m_Calls: []
@@ -18909,7 +18905,7 @@ Transform:
   m_GameObject: {fileID: 1187601041}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.6700001, z: -8.61}
+  m_LocalPosition: {x: 0, y: 1.64, z: -8.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -25488,7 +25484,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -27045,7 +27041,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -28178,7 +28174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3237167312675442643, guid: 31b1361c360812743978b37874f000b7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6700001
+      value: 1.64
       objectReference: {fileID: 0}
     - target: {fileID: 3237167312675442643, guid: 31b1361c360812743978b37874f000b7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -43580,8 +43576,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  isInteract: 0
-  collider: {fileID: 5351270101300801372}
   timeRotate: 1.5
   rootObject: {fileID: 2207429668841858883}
   targetRotation: {x: 0, y: 0, z: -180}
@@ -43600,7 +43594,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  wait: 0
   OnSecondInteract:
     m_PersistentCalls:
       m_Calls:
@@ -44174,8 +44167,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  isInteract: 0
-  collider: {fileID: 3720982525223526633}
   timeRotate: 3
   rootObject: {fileID: 1276476937}
   targetRotation: {x: 0, y: -90, z: 0}
@@ -44206,7 +44197,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-  wait: 0
 --- !u!65 &5395555976549327331
 BoxCollider:
   m_ObjectHideFlags: 0

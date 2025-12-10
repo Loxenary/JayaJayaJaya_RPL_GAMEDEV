@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class LightingHandler : MonoBehaviour
 {
     [SerializeField] private SfxClipData lightingSwitchSfx;
+
+    [SerializeField] private List<GameObject> turnedOnLights = new List<GameObject>();
 
     private void OnEnable()
     {
@@ -22,6 +25,15 @@ public class LightingHandler : MonoBehaviour
 
         audioManager.PlaySfx(lightingSwitchSfx.SFXId);
 
-        gameObject.SetActive(false);
+        foreach (var light in turnedOnLights)
+        {
+            light.SetActive(false);
+        }
+    }
+
+    public void TurnOnSound()
+    {
+        var audioManager = ServiceLocator.Get<AudioManager>();
+        audioManager.PlaySfx(lightingSwitchSfx.SFXId);
     }
 }

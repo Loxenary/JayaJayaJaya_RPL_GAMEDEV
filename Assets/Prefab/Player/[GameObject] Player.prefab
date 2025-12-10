@@ -240,7 +240,6 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 8
-  previousObject: {fileID: 0}
 --- !u!114 &5607267691951340174
 MonoBehaviour:
   m_ObjectHideFlags: 0
