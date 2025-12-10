@@ -7,8 +7,14 @@ using System.Collections.Generic;
 /// Displays battery as discrete segments (bars) with 10% increments.
 /// Each segment represents 10% of battery. Blinks when critically low.
 /// </summary>
+[ExecuteAlways] // Allows preview in Editor without Play mode
 public class DiscreteBatteryDisplay : MonoBehaviour
 {
+  [Header("Editor Preview")]
+  [Range(0f, 100f)]
+  [Tooltip("Preview battery value in Editor (drag to see changes)")]
+  [SerializeField] private float previewBatteryValue = 100f;
+
   [Header("UI References")]
   [Tooltip("Container for battery segments (will auto-create if not assigned)")]
   [SerializeField] private Transform segmentContainer;
@@ -97,6 +103,55 @@ public class DiscreteBatteryDisplay : MonoBehaviour
 
   private void Awake()
   {
+    InitializeDisplay();
+  }
+
+  private void Start()
+  {
+    ApplyTextStyling();
+
+    // In play mode, start with full battery; in editor, use preview value
+    if (Application.isPlaying)
+    {
+      UpdateBattery(100f);
+    }
+    else
+    {
+      UpdateBattery(previewBatteryValue);
+    }
+  }
+
+  /// <summary>
+  /// Called when values change in Inspector. Enables live preview without Play mode.
+  /// </summary>
+  private void OnValidate()
+  {
+    // Delay execution to avoid issues during serialization
+    if (!Application.isPlaying)
+    {
+#if UNITY_EDITOR
+      UnityEditor.EditorApplication.delayCall += () =>
+      {
+        if (this == null) return; // Object might be destroyed
+        RefreshDisplay();
+      };
+#endif
+    }
+  }
+
+  /// <summary>
+  /// Initialize or refresh the display (safe for both Editor and Play mode).
+  /// </summary>
+  private void InitializeDisplay()
+  {
+    // Skip when editing prefab asset to avoid dirty overrides
+#if UNITY_EDITOR
+    if (!Application.isPlaying && UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject))
+    {
+      return;
+    }
+#endif
+
     // Generate rounded rect sprite if needed
     if (roundedCorners)
     {
@@ -105,9 +160,39 @@ public class DiscreteBatteryDisplay : MonoBehaviour
     CreateSegments();
   }
 
-  private void Start()
+  /// <summary>
+  /// Refresh display in Editor mode.
+  /// </summary>
+  private void RefreshDisplay()
   {
-    // Apply text styling
+    if (this == null) return;
+
+#if UNITY_EDITOR
+    // Avoid touching prefab asset itself
+    if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject)) return;
+#endif
+
+    // Regenerate rounded sprite if settings changed
+    if (roundedCorners)
+    {
+      roundedRectSprite = CreateRoundedRectSprite((int)segmentWidth, (int)segmentHeight, (int)cornerRadius);
+    }
+    else
+    {
+      roundedRectSprite = null;
+    }
+
+    // Recreate segments with new settings
+    CreateSegmentsEditor();
+    ApplyTextStyling();
+    UpdateBattery(previewBatteryValue);
+  }
+
+  /// <summary>
+  /// Apply text styling.
+  /// </summary>
+  private void ApplyTextStyling()
+  {
     if (batteryText != null)
     {
       batteryText.color = textColor;
@@ -117,18 +202,26 @@ public class DiscreteBatteryDisplay : MonoBehaviour
         batteryText.outlineColor = outlineColor;
       }
     }
-
-    UpdateBattery(100f);
   }
 
   private void OnEnable()
   {
-    PlayerAttributes.onBatteryUpdate += OnBatteryUpdated;
+    // Only subscribe to events in Play mode
+    if (Application.isPlaying)
+    {
+      // Clean any editor preview children before runtime to avoid duplicates
+      CleanupContainer(false);
+      CreateSegmentsInternal();
+      PlayerAttributes.onBatteryUpdate += OnBatteryUpdated;
+    }
   }
 
   private void OnDisable()
   {
-    PlayerAttributes.onBatteryUpdate -= OnBatteryUpdated;
+    if (Application.isPlaying)
+    {
+      PlayerAttributes.onBatteryUpdate -= OnBatteryUpdated;
+    }
   }
 
   private void OnBatteryUpdated(float batteryValue)
@@ -136,13 +229,39 @@ public class DiscreteBatteryDisplay : MonoBehaviour
     UpdateBattery(batteryValue);
   }
 
+  /// <summary>
+  /// Create segments for Editor mode (uses DestroyImmediate).
+  /// </summary>
+  private void CreateSegmentsEditor()
+  {
+#if UNITY_EDITOR
+    CleanupContainer(true);
+    CreateSegmentsInternal();
+#endif
+  }
+
   private void CreateSegments()
   {
+    CleanupContainer(false);
+    CreateSegmentsInternal();
+  }
+
+  /// <summary>
+  /// Internal method to create segments (shared between Editor and Play mode).
+  /// </summary>
+  private void CreateSegmentsInternal()
+  {
+    // Ensure container exists
     if (segmentContainer == null)
     {
       GameObject container = new GameObject("BatterySegments");
       container.transform.SetParent(transform, false);
       segmentContainer = container.transform;
+
+      // Add RectTransform for UI
+      RectTransform containerRT = container.GetComponent<RectTransform>();
+      if (containerRT == null) containerRT = container.AddComponent<RectTransform>();
+      containerRT.anchoredPosition = Vector2.zero;
 
       // Setup layout
       HorizontalLayoutGroup layout = container.AddComponent<HorizontalLayoutGroup>();
@@ -153,14 +272,15 @@ public class DiscreteBatteryDisplay : MonoBehaviour
       layout.childForceExpandWidth = false;
       layout.childForceExpandHeight = false;
     }
-
-    // Clear existing segments
-    foreach (var segment in segments)
+    else
     {
-      if (segment != null) Destroy(segment.gameObject);
+      // Update spacing if container already exists
+      HorizontalLayoutGroup layout = segmentContainer.GetComponent<HorizontalLayoutGroup>();
+      if (layout != null)
+      {
+        layout.spacing = segmentSpacing;
+      }
     }
-    segments.Clear();
-    segmentBaseColors.Clear();
 
     // Create segments
     for (int i = 0; i < segmentCount; i++)
@@ -176,6 +296,11 @@ public class DiscreteBatteryDisplay : MonoBehaviour
         // Create default segment
         GameObject segmentObj = new GameObject($"Segment_{i}");
         segmentObj.transform.SetParent(segmentContainer, false);
+        if (!Application.isPlaying)
+        {
+          // Prevent prefab overrides & scene dirtying in editor preview
+          segmentObj.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.DontSave;
+        }
         segment = segmentObj.AddComponent<Image>();
         segment.color = emptySegmentColor;
 
@@ -191,8 +316,46 @@ public class DiscreteBatteryDisplay : MonoBehaviour
         rt.sizeDelta = new Vector2(segmentWidth, segmentHeight);
       }
 
+      if (!Application.isPlaying)
+      {
+        segment.hideFlags |= HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.DontSave;
+      }
+
       segments.Add(segment);
       segmentBaseColors.Add(emptySegmentColor); // Track base color
+    }
+  }
+
+  /// <summary>
+  /// Clears all generated children/segments to avoid prefab overrides and double instances.
+  /// </summary>
+  private void CleanupContainer(bool immediate)
+  {
+    // Destroy tracked segments
+    for (int i = segments.Count - 1; i >= 0; i--)
+    {
+      if (segments[i] != null)
+      {
+        if (immediate)
+          DestroyImmediate(segments[i].gameObject);
+        else
+          Destroy(segments[i].gameObject);
+      }
+    }
+    segments.Clear();
+    segmentBaseColors.Clear();
+
+    // Destroy any leftover children under container
+    if (segmentContainer != null)
+    {
+      for (int i = segmentContainer.childCount - 1; i >= 0; i--)
+      {
+        Transform child = segmentContainer.GetChild(i);
+        if (immediate)
+          DestroyImmediate(child.gameObject);
+        else
+          Destroy(child.gameObject);
+      }
     }
   }
 
