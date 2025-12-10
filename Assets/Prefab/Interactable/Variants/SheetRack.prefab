@@ -1102,7 +1102,7 @@ GameObject:
   - component: {fileID: 1484101760214571132}
   - component: {fileID: 83137877961918656}
   - component: {fileID: 8300669640351276525}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: SheetRack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1135,6 +1135,7 @@ Transform:
   - {fileID: 208096473334798050}
   - {fileID: 7125963440449206172}
   - {fileID: 6954671431389586304}
+  - {fileID: 8127002740714863828}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &83137877961918656
@@ -1176,8 +1177,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  isInteract: 0
-  collider: {fileID: 0}
   prefabCollectible: {fileID: 4169029994544370755}
   timeMove: 1.5
   targetObject: {fileID: 208096473334798050}
@@ -1224,12 +1223,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.93441725, y: 1, z: 1.4011812}
-  m_Center: {x: -0.08723855, y: 0.5, z: -0.9774518}
+  m_Size: {x: 1.55, y: 1.2, z: 0.5}
+  m_Center: {x: 0, y: 0.6, z: 0}
 --- !u!1 &7758069475375443240
 GameObject:
   m_ObjectHideFlags: 0
@@ -1356,8 +1355,6 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls: []
-  isInteract: 0
-  collider: {fileID: 0}
   type: 0
 --- !u!114 &5765087689554817368
 MonoBehaviour:
@@ -1499,6 +1496,59 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300022, guid: 525e42c8aa5e52e4ea137bc78720fcfc, type: 3}
+--- !u!1 &8217854781564528191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8127002740714863828}
+  - component: {fileID: 4012900868879335171}
+  m_Layer: 3
+  m_Name: InteractableCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8127002740714863828
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8217854781564528191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1484101760214571132}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4012900868879335171
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8217854781564528191}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.55, y: 1.2, z: 0.5}
+  m_Center: {x: 0, y: 0.6, z: 0}
 --- !u!1 &8361116620283857413
 GameObject:
   m_ObjectHideFlags: 0
