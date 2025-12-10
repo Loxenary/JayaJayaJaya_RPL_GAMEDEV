@@ -10274,6 +10274,7 @@ MonoBehaviour:
         m_CallState: 2
   wait: 0
   keyID: 105
+  highlight: {fileID: 0}
   isUnlock: 0
   OnWrongKeys:
     m_PersistentCalls:
@@ -23986,7 +23987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &1566889605
 Light:
   m_ObjectHideFlags: 0

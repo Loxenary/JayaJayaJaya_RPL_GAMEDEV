@@ -5,15 +5,22 @@ public class RandomInstansiateInteractable : MonoBehaviour
 {
     [SerializeField] Interactable interactablePrefab;
 
-    [SerializeField] int objectCount = 1;
+    [SerializeField] protected int objectCount = 1;
 
-    [SerializeField] List<Transform> posInstansiate;
+    [SerializeField] protected List<Transform> posInstansiate;
 
+    [SerializeField] protected bool spawnOnAwake;
 
-    private void Awake()
+    protected virtual void Awake()
     {
-
-        for (int i = 0; i < objectCount; i++) {
+        if(spawnOnAwake)
+            Spawn();
+        
+    }
+    public virtual void Spawn()
+    {
+        for (int i = 0; i < objectCount; i++)
+        {
 
             int rand = Random.Range(0, posInstansiate.Count - 1);
 
