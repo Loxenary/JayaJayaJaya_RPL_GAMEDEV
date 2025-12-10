@@ -114,5 +114,17 @@ public class PlayerController : MonoBehaviour
     {
         movementHandler.Jump();
     }
+
+    /// <summary>
+    /// Freeze or unfreeze the player (disables movement)
+    /// </summary>
+    public void SetFrozen(bool frozen)
+    {
+        if (movementHandler != null)
+        {
+            movementHandler.SetFrozen(frozen);
+        }
+    }
+
     public PlayerInputHandler GetInputHandler() => inputHandler;
 }

@@ -5,8 +5,7 @@ using System.Collections.Generic;
 public class TimeService : ServiceBase<TimeService>
 {
     private static int _t_stop_counter = 0;
-
-    [SerializeField, ReadOnly] private float time_counter = 0;
+    private float time_counter = 0;
 
     private static Queue<object> _stopperQueue = new();
 
