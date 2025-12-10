@@ -11,15 +11,18 @@ public class InteractableRotate : Interactable
 
     public UnityEvent OnDoneRotate;
 
+#if UNITY_EDITOR
 
     [ReadOnly]
-    [SerializeField] protected bool wait;
+    [SerializeField] private bool _waiting => wait;
+#endif
+    protected bool wait;
     public override void InteractObject()
     {
         if (wait) return;
 
         wait = true;
-        
+
         onInteract?.Invoke();
         if (isInteract)
             DoRotate(Vector3.zero);
@@ -32,7 +35,8 @@ public class InteractableRotate : Interactable
     }
     protected void DoRotate(Vector3 target)
     {
-        rootObject.DOLocalRotate(target, timeRotate).OnComplete(() => {
+        rootObject.DOLocalRotate(target, timeRotate).OnComplete(() =>
+        {
             OnDoneRotate?.Invoke();
             wait = false;
         });

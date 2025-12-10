@@ -11,11 +11,20 @@ public class Interactable : MonoBehaviour
     [Header("Event")]
     public UnityEvent onInteract;
 
+#if UNITY_EDITOR
+
     [Header("Debugging Section")]
     [ReadOnly]
-    [SerializeField] protected bool isInteract;
+    [SerializeField] private bool _isInteract => isInteract;
     [ReadOnly]
-    [SerializeField] protected new Collider collider;
+    [SerializeField] private Collider _currentCollider => collider;
+
+#endif
+
+    protected bool isInteract;
+    protected new Collider collider;
+
+
 
     private void OnValidate()
     {

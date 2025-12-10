@@ -6,8 +6,13 @@ public class InteractableLockedDoor : InteractableDoor
 {
     [Header("Locked Door Section")]
     [SerializeField] int keyID;
+
+#if UNITY_EDITOR
     [ReadOnly]
-    [SerializeField] bool isUnlock;
+    [SerializeField] bool isKeyUnlock => isUnlock;
+#endif
+
+    bool isUnlock;
 
     public UnityEvent OnWrongKeys;
 
@@ -19,11 +24,11 @@ public class InteractableLockedDoor : InteractableDoor
     }
     private void OnDisable()
     {
-        InteractableKey.onFoundKey -= OnFoundKey;        
+        InteractableKey.onFoundKey -= OnFoundKey;
     }
     private void OnFoundKey(int id)
     {
-        if(id  == keyID)
+        if (id == keyID)
             isUnlock = true;
     }
 

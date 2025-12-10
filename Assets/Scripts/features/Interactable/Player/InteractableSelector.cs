@@ -14,14 +14,11 @@ public class InteractableSelector : MonoBehaviour
     [SerializeField] private float interactDistance = 3f;
     [SerializeField] private LayerMask targetLayer = -1;
 
-    [Header("Debugging Parameters")]
-    [ReadOnly]
-    [SerializeField] private Interactable currentObject;
-    [ReadOnly]
-    [SerializeField] private Interactable previousObject;
+    private Interactable currentObject;
 
     private InputSystem_Actions input;
     private Camera playerCamera;
+    private Interactable previousObject;
 
     private void Awake()
     {
