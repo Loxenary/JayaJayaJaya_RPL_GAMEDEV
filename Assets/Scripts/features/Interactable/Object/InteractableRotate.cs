@@ -13,6 +13,7 @@ public class InteractableRotate : Interactable
   public UnityEvent OnDoneRotate;
 
   private Tweener rotateTween;
+  private bool targetIsOpen; // tracks desired end state even while tweening
 
   public override void InteractObject()
   {
@@ -24,7 +25,10 @@ public class InteractableRotate : Interactable
 
     onInteract?.Invoke();
 
-    bool wantOpen = !isInteract;
+    // Toggle desired state regardless of current tween progress
+    bool wantOpen = !targetIsOpen;
+    targetIsOpen = wantOpen;
+
     Vector3 target = wantOpen ? GetDirectionalTargetRotation() : Vector3.zero;
 
     DoRotate(target, wantOpen);
@@ -44,9 +48,9 @@ public class InteractableRotate : Interactable
     if (toPlayer.sqrMagnitude < 0.0001f)
       return targetRotation;
 
-    float signed = Mathf.Sign(Vector3.SignedAngle(rootObject.forward, toPlayer, Vector3.up));
-    // signed >=0 : player in front (relative to forward); open away by reversing sign
-    float pushSign = signed >= 0f ? -1f : 1f;
+    float facingDot = Vector3.Dot(rootObject.forward, toPlayer);
+    // Player in front of forward vector => pushSign negative so the door swings away
+    float pushSign = facingDot >= 0f ? -1f : 1f;
 
     return new Vector3(targetRotation.x * pushSign, targetRotation.y * pushSign, targetRotation.z * pushSign);
   }
