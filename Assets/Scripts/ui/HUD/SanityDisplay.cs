@@ -78,9 +78,21 @@ public class SanityDisplay : MonoBehaviour
   private void Awake()
   {
     ValidateComponents();
-    // Initialize fill amount
-    currentFillAmount = 1f;
-    targetFillAmount = 1f;
+    // Ensure fill image is configured to respond to fillAmount changes
+    if (sanityBarFill != null)
+    {
+      sanityBarFill.type = Image.Type.Filled;
+      sanityBarFill.fillMethod = Image.FillMethod.Horizontal;
+      sanityBarFill.fillOrigin = (int)Image.OriginHorizontal.Left;
+      currentFillAmount = sanityBarFill.fillAmount;
+      targetFillAmount = currentFillAmount;
+    }
+    else
+    {
+      // Initialize fill amount when no image assigned (avoid NaN in Update)
+      currentFillAmount = 1f;
+      targetFillAmount = 1f;
+    }
   }
 
   private void Start()
@@ -135,9 +147,19 @@ public class SanityDisplay : MonoBehaviour
 
   private void Update()
   {
-    if (smoothTransition && sanityBarFill != null)
+    if (sanityBarFill != null)
     {
-      currentFillAmount = Mathf.Lerp(currentFillAmount, targetFillAmount, Time.deltaTime * transitionSpeed);
+      if (smoothTransition)
+      {
+        // MoveTowards avoids asymptotic lerp and keeps animating even when timeScale is 0
+        float step = transitionSpeed > 0f ? transitionSpeed * Time.unscaledDeltaTime : 1f;
+        currentFillAmount = Mathf.MoveTowards(currentFillAmount, targetFillAmount, step);
+      }
+      else
+      {
+        currentFillAmount = targetFillAmount;
+      }
+
       sanityBarFill.fillAmount = currentFillAmount;
     }
 
