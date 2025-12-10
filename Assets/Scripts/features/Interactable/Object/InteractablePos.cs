@@ -15,7 +15,8 @@ public class InteractablePos : Interactable
     {
         base.InteractObject();
 
-        targetObject.DOLocalMove(targetPosition, timeMove).OnComplete(() => {
+        targetObject.DOLocalMove(targetPosition, timeMove).OnComplete(() =>
+        {
             OnDoneMoveObject?.Invoke();
         });
     }

@@ -34,5 +34,5 @@ MonoBehaviour:
   enableColorTint: 0
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
   clickColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  hoverSFX: {fileID: 0}
-  clickSFX: {fileID: 0}
+  hoverSFX: {fileID: 11400000, guid: 0b1cdb5808c09404190d42fbfe947bf0, type: 2}
+  clickSFX: {fileID: 11400000, guid: 49dd59793c74e874caa3c4514fa933e0, type: 2}

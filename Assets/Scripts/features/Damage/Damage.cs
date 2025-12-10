@@ -22,6 +22,21 @@ public class Damage : MonoBehaviour
     target.TakeDamage(AttributesType.Sanity, sanityDamage);
   }
 
+  private void OnEnable()
+  {
+    OnDoneSendDamage.AddListener(TriggerVisual);
+  }
+
+  protected virtual void OnDisable()
+  {
+    OnDoneSendDamage.RemoveListener(TriggerVisual);
+  }
+
+  private void TriggerVisual()
+  {
+    EventBus.Publish(new DamageVisualFeedback.TriggerPulseEvent());
+  }
+
   private void OnTriggerEnter(Collider other)
   {
     // Only damage player
