@@ -15,6 +15,9 @@ public class PlayerInputHandler : MonoBehaviour
     private bool attackInput;
     private bool interactInput;
 
+    // Freeze state
+    private bool isFrozen = false;
+
     // Input events
     public event Action OnJumpPerformed;
     public event Action OnAttackPerformed;
@@ -22,10 +25,11 @@ public class PlayerInputHandler : MonoBehaviour
     public event Action OnFlashlightPerformed;
 
     // Properties to access input values
-    public Vector2 MoveInput => moveInput;
-    public Vector2 LookInput => lookInput;
-    public bool IsSprintHeld => sprintInput;
-    public bool IsCrouchHeld => crouchInput;
+    public Vector2 MoveInput => isFrozen ? Vector2.zero : moveInput;
+    public Vector2 LookInput => isFrozen ? Vector2.zero : lookInput;
+    public bool IsSprintHeld => isFrozen ? false : sprintInput;
+    public bool IsCrouchHeld => isFrozen ? false : crouchInput;
+    public bool IsFrozen => isFrozen;
 
     private void Awake()
     {
@@ -98,7 +102,10 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnLook(InputAction.CallbackContext context)
     {
-        lookInput = context.ReadValue<Vector2>();
+        if (!isFrozen)
+        {
+            lookInput = context.ReadValue<Vector2>();
+        }
     }
 
     private void OnJump(InputAction.CallbackContext context)
@@ -153,6 +160,26 @@ public class PlayerInputHandler : MonoBehaviour
         bool value = interactInput;
         interactInput = false;
         return value;
+    }
+
+    /// <summary>
+    /// Freeze or unfreeze player input (useful for death, cutscenes, etc)
+    /// </summary>
+    public void SetFrozen(bool frozen)
+    {
+        isFrozen = frozen;
+
+        if (frozen)
+        {
+            // Clear all inputs when frozen
+            moveInput = Vector2.zero;
+            lookInput = Vector2.zero;
+            jumpInput = false;
+            sprintInput = false;
+            crouchInput = false;
+            attackInput = false;
+            interactInput = false;
+        }
     }
 
     // Utility methods
