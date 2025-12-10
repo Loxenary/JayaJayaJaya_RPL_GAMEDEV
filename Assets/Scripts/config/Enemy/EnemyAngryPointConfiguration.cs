@@ -7,9 +7,6 @@ public class EnemyAngryPointConfiguration : ScriptableObject
     [Tooltip("Total number of puzzle items in the game")]
     [SerializeField] private int totalPuzzleItems = 5;
 
-    [Tooltip("Maximum sanity value (for normalization)")]
-    [SerializeField] private float maxSanity = 100f;
-
     [Header("Dynamic Calculation Weights")]
     [Tooltip("How much items contribute to anger (0-1). Higher = items matter more")]
     [SerializeField][Range(0f, 1f)] private float itemWeight = 0.6f;
@@ -34,7 +31,6 @@ public class EnemyAngryPointConfiguration : ScriptableObject
 
     // Public Properties
     public int TotalPuzzleItems => totalPuzzleItems;
-    public float MaxSanity => maxSanity;
     public float ItemWeight => itemWeight;
     public float SanityWeight => sanityWeight;
     public float ItemExponent => itemExponent;
@@ -49,13 +45,16 @@ public class EnemyAngryPointConfiguration : ScriptableObject
     /// ItemFactor = itemsTaken / totalItems (0-1)
     /// SanityFactor = (maxSanity - currentSanity) / maxSanity (0-1, inverted so low sanity = high factor)
     /// </summary>
-    public float CalculateAngryPoints(int itemsTaken, float currentSanity)
+    /// <param name="itemsTaken">Number of items collected</param>
+    /// <param name="currentSanity">Current sanity value</param>
+    /// <param name="maxSanity">Maximum sanity value (from PlayerAttributes)</param>
+    public float CalculateAngryPoints(int itemsTaken, float currentSanity, float maxSanity)
     {
         // Normalize item progress (0-1)
         float itemFactor = totalPuzzleItems > 0 ? Mathf.Clamp01((float)itemsTaken / totalPuzzleItems) : 0f;
 
         // Normalize sanity (0-1, inverted - low sanity = high anger)
-        float sanityFactor = Mathf.Clamp01((maxSanity - currentSanity) / maxSanity);
+        float sanityFactor = maxSanity > 0 ? Mathf.Clamp01((maxSanity - currentSanity) / maxSanity) : 0f;
 
         // Apply exponential curves
         float itemContribution = Mathf.Pow(itemFactor, itemExponent);
@@ -72,9 +71,12 @@ public class EnemyAngryPointConfiguration : ScriptableObject
     /// Calculate points per second based on current state
     /// More aggressive when both items are taken and sanity is low
     /// </summary>
-    public float CalculatePointsPerSecond(int itemsTaken, float currentSanity)
+    /// <param name="itemsTaken">Number of items collected</param>
+    /// <param name="currentSanity">Current sanity value</param>
+    /// <param name="maxSanity">Maximum sanity value (from PlayerAttributes)</param>
+    public float CalculatePointsPerSecond(int itemsTaken, float currentSanity, float maxSanity)
     {
-        float basePoints = CalculateAngryPoints(itemsTaken, currentSanity);
+        float basePoints = CalculateAngryPoints(itemsTaken, currentSanity, maxSanity);
 
         // The more angry the base calculation, the faster points accumulate
         float multiplier = Mathf.Clamp01(basePoints / maxAngryPoints);
@@ -93,11 +95,6 @@ public class EnemyAngryPointConfiguration : ScriptableObject
         if (totalPuzzleItems <= 0)
         {
             Debug.LogError("[EnemyAngryPointConfiguration] Total puzzle items must be greater than 0!", this);
-        }
-
-        if (maxSanity <= 0)
-        {
-            Debug.LogError("[EnemyAngryPointConfiguration] Max sanity must be greater than 0!", this);
         }
     }
 }

@@ -1,9 +1,14 @@
 public enum MusicIdentifier
 {
-    MainMenuBGM,
-    Intro,
-    BGM1,
-    BGM2,
-    BGM3,
-    BossTheme,
+    MainMenuBGM = 0,
+    Noni_Level1 = 1,
+    Time_To_GetOut = 2,
+    Small_Halway = 3,
+    Opening = 4,
+    Main_Theme = 5,
+    Empty = 6,
+    Empty2 = 7,
+    Empty3 = 8,
+    Ending_Bad = 9
 }
+
