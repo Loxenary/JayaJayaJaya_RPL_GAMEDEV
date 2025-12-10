@@ -4774,6 +4774,22 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 1187601043}
+    - target: {fileID: 4909404721968805087, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: movementHandler.walkShakeForce
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 4909404721968805087, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: movementHandler.walkShakeInterval
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5395369997416465854, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: sanityDrainRate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5395369997416465854, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: sanityThreshold
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5443082549051139556, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
       propertyPath: flashlight
       value: 
@@ -4782,6 +4798,38 @@ PrefabInstance:
       propertyPath: flashlight
       value: 
       objectReference: {fileID: 486549573}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.ImpulseShape
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.CustomImpulseShape.m_Curve.Array.data[1].time
+      value: 0.28760844
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.CustomImpulseShape.m_Curve.Array.data[2].time
+      value: 0.69883156
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.CustomImpulseShape.m_Curve.Array.data[1].value
+      value: -0.6222684
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.CustomImpulseShape.m_Curve.Array.data[2].value
+      value: 0.4619882
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.CustomImpulseShape.m_Curve.Array.data[2].inSlope
+      value: 1.0867618
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.CustomImpulseShape.m_Curve.Array.data[2].outSlope
+      value: 1.0867618
+      objectReference: {fileID: 0}
+    - target: {fileID: 6162355860233422685, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: ImpulseDefinition.CustomImpulseShape.m_Curve.Array.data[2].outWeight
+      value: 0.1618589
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4932,17 +4980,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2172418189906263590, guid: 253d7115d200bd947863ce0986453dfa, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2605584320664972683, guid: 253d7115d200bd947863ce0986453dfa, type: 3}
       propertyPath: m_Name
       value: HUD Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 2605584320664972683, guid: 253d7115d200bd947863ce0986453dfa, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6671,7 +6711,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3453029347061396166, guid: a89361b41c0a948448da9b5dbd514a9d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5323616186101109090, guid: a89361b41c0a948448da9b5dbd514a9d, type: 3}
       propertyPath: m_Pivot.x

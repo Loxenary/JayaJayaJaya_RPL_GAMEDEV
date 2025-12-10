@@ -164,9 +164,11 @@ MonoBehaviour:
     movementConfig: {fileID: 11400000, guid: 15c2061a7571d234182ac183966ce9d3, type: 2}
     jumpConfig: {fileID: 11400000, guid: d650c2a868653bf4ab73a1ba2bdb7b3c, type: 2}
     rotationConfig: {fileID: 11400000, guid: ae49ac9c06b978a42aa719c96904fed2, type: 2}
-    enableSprintShake: 1
-    shakeInterval: 0.5
-    shakeForce: 0.1
+    enableCameraShake: 1
+    sprintShakeInterval: 0.4
+    sprintShakeForce: 0.15
+    walkShakeInterval: 0.6
+    walkShakeForce: 0.08
   useCameraRelativeMovement: 1
 --- !u!114 &4412940989870676345
 MonoBehaviour:
