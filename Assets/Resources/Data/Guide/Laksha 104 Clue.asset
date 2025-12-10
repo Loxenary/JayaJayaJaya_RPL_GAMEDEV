@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2408149469b5a418989552d999761b, type: 3}
+  m_Name: Laksha 104 Clue
+  m_EditorClassIdentifier: 
+  content: Saat mencoba kabur, aku bersembunyi di kamar mandi ini. Di tengah panik,
+    kunci kecil yang kugenggam terlepas dan jatuh ke dalam <b>tangki kloset di LAKSHA
+    104</b>. Aku mendengar suaranya menyelam ke dalam air, diikuti langkahnya yang
+    mendekat. Ia tertawa saat melihatku kebasahan dan memaksaku keluar, meninggalkan
+    kunci itu di sana. Jika kau ingin masuk ke <b>ruang baca, LAKSHA 102</b>, celupkan
+    tanganmu ke dalam air yang dingin dan reguklah ketakutan yang sama seperti yang
+    kurasakan malam itu. Di dalam ruang baca itulah kunci menuju <b>kamar utama,
+    LAKSHA 105</b> menunggu.
