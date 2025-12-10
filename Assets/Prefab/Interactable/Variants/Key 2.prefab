@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &304412852589545162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8286729357529486425}
+  - component: {fileID: 6215315962237235067}
+  m_Layer: 3
+  m_Name: InteractableZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8286729357529486425
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304412852589545162}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.6849071, y: 0.1757905, z: -0.1757905, w: 0.6849071}
+  m_LocalPosition: {x: 0, y: 0.01, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6237525566590940322}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: -28.79}
+--- !u!65 &6215315962237235067
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304412852589545162}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.06, y: 0.2, z: 0.02}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2759534583757567485
 GameObject:
   m_ObjectHideFlags: 0
@@ -9,12 +62,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6237525566590940322}
-  - component: {fileID: 185349671803816633}
   - component: {fileID: 3818543593765693427}
   - component: {fileID: 5784943445381789723}
   - component: {fileID: 2740073300062161386}
   - component: {fileID: 945208791420115899}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Key 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35,29 +87,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5262735400968955450}
+  - {fileID: 8286729357529486425}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &185349671803816633
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2759534583757567485}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &3818543593765693427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,8 +117,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  isInteract: 0
-  collider: {fileID: 185349671803816633}
   keyId: 0
 --- !u!82 &5784943445381789723
 AudioSource:

@@ -3,29 +3,19 @@ using UnityEngine.Events;
 
 public class InteractableHintObject : InteractableRotate
 {
-    [Header("Interactable Hint Object Section")]
-    public UnityEvent OnSecondInteract;
+  [Header("Interactable Hint Object Section")]
+  public UnityEvent OnSecondInteract;
 
-    public override void InteractObject()
+  public override void InteractObject()
+  {
+    // If already opened once, trigger secondary action only
+    if (isInteract)
     {
-
-        if (wait) return;
-
-
-        onInteract?.Invoke();
-        if (isInteract)
-        {
-            OnSecondInteract?.Invoke();
-            return;
-        }
-
-        else
-        {
-            wait = true;
-            DoRotate(targetRotation);
-        }
-
-        isInteract = true;
-
+      OnSecondInteract?.Invoke();
+      return;
     }
+
+    // Use base rotate logic (interruptible) to open
+    base.InteractObject();
+  }
 }

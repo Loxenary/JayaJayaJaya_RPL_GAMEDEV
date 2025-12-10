@@ -9,161 +9,164 @@ using UnityEngine.InputSystem;
 [DisallowMultipleComponent]
 public class InteractableSelector : MonoBehaviour
 {
-    [Header("Raycast Settings")]
-    [SerializeField] private Transform raycastOrigin; // Assign camera or head transform
-    [SerializeField] private float interactDistance = 3f;
-    [SerializeField] private LayerMask targetLayer = -1;
+  [Header("Raycast Settings")]
+  [SerializeField] private Transform raycastOrigin; // Assign camera or head transform
+  [SerializeField] private float interactDistance = 3f;
+  [SerializeField] private LayerMask targetLayer = -1;
+  [SerializeField] private float raycastBackOffset = 0.2f;
 
-    private Interactable currentObject;
+  private Interactable currentObject;
 
-    private InputSystem_Actions input;
-    private Camera playerCamera;
-    private Interactable previousObject;
+  private InputSystem_Actions input;
+  private Camera playerCamera;
+  private Interactable previousObject;
 
-    private void Awake()
+  private void Awake()
+  {
+    input = new InputSystem_Actions();
+    input.Player.Interact.performed += OnPressInteract;
+
+    // Try to find camera if raycastOrigin not assigned
+    if (raycastOrigin == null)
     {
-        input = new InputSystem_Actions();
-        input.Player.Interact.performed += OnPressInteract;
+      playerCamera = Camera.main;
+      if (playerCamera != null)
+      {
+        raycastOrigin = playerCamera.transform;
+      }
+    }
+  }
 
-        // Try to find camera if raycastOrigin not assigned
-        if (raycastOrigin == null)
+  private void OnEnable()
+  {
+    input.Enable();
+  }
+
+  private void OnDisable()
+  {
+    input.Disable();
+  }
+
+  private void Update()
+  {
+    CheckForInteractable();
+  }
+
+  /// <summary>
+  /// Raycast from camera to detect interactable objects player is looking at
+  /// </summary>
+  private void CheckForInteractable()
+  {
+    if (raycastOrigin == null) return;
+
+    Vector3 origin = raycastOrigin.position - raycastOrigin.forward * raycastBackOffset;
+    Ray ray = new Ray(origin, raycastOrigin.forward);
+    RaycastHit hit;
+
+    // Debug ray in Scene view
+    Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.green);
+
+    if (Physics.Raycast(ray, out hit, interactDistance, targetLayer))
+    {
+      // Allow interaction via collider on child (e.g., door leaf proxy)
+      Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
+
+      if (interactable != null)
+      {
+        // New object detected
+        if (interactable != currentObject)
         {
-            playerCamera = Camera.main;
-            if (playerCamera != null)
-            {
-                raycastOrigin = playerCamera.transform;
-            }
-        }
-    }
-
-    private void OnEnable()
-    {
-        input.Enable();
-    }
-
-    private void OnDisable()
-    {
-        input.Disable();
-    }
-
-    private void Update()
-    {
-        CheckForInteractable();
-    }
-
-    /// <summary>
-    /// Raycast from camera to detect interactable objects player is looking at
-    /// </summary>
-    private void CheckForInteractable()
-    {
-        if (raycastOrigin == null) return;
-
-        Ray ray = new Ray(raycastOrigin.position, raycastOrigin.forward);
-        RaycastHit hit;
-
-        // Debug ray in Scene view
-        Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.green);
-
-        if (Physics.Raycast(ray, out hit, interactDistance, targetLayer))
-        {
-            Interactable interactable = hit.collider.GetComponent<Interactable>();
-
-            if (interactable != null)
-            {
-                // New object detected
-                if (interactable != currentObject)
-                {
-                    // Unhighlight previous object
-                    if (currentObject != null)
-                    {
-                        UnhighlightObject(currentObject.gameObject);
-                        EventBus.Publish(InteractEventState.OnExit);
-                    }
-
-                    // Highlight new object
-                    currentObject = interactable;
-                    previousObject = interactable;
-                    HighlightObject(currentObject.gameObject);
-                    EventBus.Publish(InteractEventState.OnEnter);
-                }
-            }
-            else
-            {
-                // Hit something but not interactable
-                ClearCurrentObject();
-            }
-        }
-        else
-        {
-            // No hit
-            ClearCurrentObject();
-        }
-    }
-
-    private void ClearCurrentObject()
-    {
-        if (currentObject != null)
-        {
+          // Unhighlight previous object
+          if (currentObject != null)
+          {
             UnhighlightObject(currentObject.gameObject);
             EventBus.Publish(InteractEventState.OnExit);
-            currentObject = null;
-        }
-    }
+          }
 
-    private void HighlightObject(GameObject obj)
+          // Highlight new object
+          currentObject = interactable;
+          previousObject = interactable;
+          HighlightObject(currentObject.gameObject);
+          EventBus.Publish(InteractEventState.OnEnter);
+        }
+      }
+      else
+      {
+        // Hit something but not interactable
+        ClearCurrentObject();
+      }
+    }
+    else
     {
-        IHighlight highlight = obj.GetComponent<IHighlight>();
-        if (highlight != null)
-        {
-            highlight.Highlight();
-        }
+      // No hit
+      ClearCurrentObject();
     }
+  }
 
-    private void UnhighlightObject(GameObject obj)
+  private void ClearCurrentObject()
+  {
+    if (currentObject != null)
     {
-        IHighlight highlight = obj.GetComponent<IHighlight>();
-        if (highlight != null)
-        {
-            highlight.UnHighlight();
-        }
+      UnhighlightObject(currentObject.gameObject);
+      EventBus.Publish(InteractEventState.OnExit);
+      currentObject = null;
     }
+  }
 
-    private void OnPressInteract(InputAction.CallbackContext context)
+  private void HighlightObject(GameObject obj)
+  {
+    IHighlight highlight = obj.GetComponent<IHighlight>();
+    if (highlight != null)
     {
-        if (currentObject != null)
-        {
-            currentObject.InteractObject();
-            EventBus.Publish(InteractEventState.OnInteract);
-
-            // Clear after interaction (object might be destroyed/disabled)
-            currentObject = null;
-        }
+      highlight.Highlight();
     }
+  }
 
-    /// <summary>
-    /// Get the object player is currently looking at
-    /// </summary>
-    public Interactable GetCurrentInteractable() => currentObject;
-
-    /// <summary>
-    /// Check if player is looking at any interactable
-    /// </summary>
-    public bool HasInteractable() => currentObject != null;
-
-    private void OnDrawGizmosSelected()
+  private void UnhighlightObject(GameObject obj)
+  {
+    IHighlight highlight = obj.GetComponent<IHighlight>();
+    if (highlight != null)
     {
-        if (raycastOrigin != null)
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawRay(raycastOrigin.position, raycastOrigin.forward * interactDistance);
-            Gizmos.DrawWireSphere(raycastOrigin.position + raycastOrigin.forward * interactDistance, 0.1f);
-        }
+      highlight.UnHighlight();
     }
+  }
+
+  private void OnPressInteract(InputAction.CallbackContext context)
+  {
+    if (currentObject != null)
+    {
+      currentObject.InteractObject();
+      EventBus.Publish(InteractEventState.OnInteract);
+
+      // Clear after interaction (object might be destroyed/disabled)
+      currentObject = null;
+    }
+  }
+
+  /// <summary>
+  /// Get the object player is currently looking at
+  /// </summary>
+  public Interactable GetCurrentInteractable() => currentObject;
+
+  /// <summary>
+  /// Check if player is looking at any interactable
+  /// </summary>
+  public bool HasInteractable() => currentObject != null;
+
+  private void OnDrawGizmosSelected()
+  {
+    if (raycastOrigin != null)
+    {
+      Gizmos.color = Color.cyan;
+      Gizmos.DrawRay(raycastOrigin.position, raycastOrigin.forward * interactDistance);
+      Gizmos.DrawWireSphere(raycastOrigin.position + raycastOrigin.forward * interactDistance, 0.1f);
+    }
+  }
 }
 
 public enum InteractEventState
 {
-    OnEnter,
-    OnExit,
-    OnInteract
+  OnEnter,
+  OnExit,
+  OnInteract
 }
