@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class HiglightObjectPlus : HiglightObject
 {
-    [ReadOnly]
-    [SerializeField] bool isDiable;
+ 
+    [SerializeField] private bool isDiable;
 
     public override void Highlight()
     {

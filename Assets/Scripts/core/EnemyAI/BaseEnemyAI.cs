@@ -83,6 +83,9 @@ namespace EnemyAI
         [SerializeField] private SfxClipData[] seenSfxs;
         [SerializeField] private SfxClipData[] patrolSfxs;
 
+        [SerializeField] private SfxClipData[] fleeSfxs;
+        [SerializeField] private SfxClipData[] lostSfxs;
+
 
         protected StateMachine<EnemyState, StateDriverUnity> fsm;
         protected AIPath aiPath;
@@ -569,6 +572,7 @@ namespace EnemyAI
                 if (targetLostTime >= visionLostCountdown)
                 {
                     Log("Lost sight of target in SEEN state, returning to previous behavior");
+                    PlayLostSound();
                     currentTarget = null;
                     ChooseRandomBehavior();
                 }
@@ -603,6 +607,7 @@ namespace EnemyAI
             if (seenStateTimer >= seenStateTimeout)
             {
                 Log($"Target too far for too long ({distanceToTarget:F1}m > {chaseRadius}m), giving up");
+                PlayLostSound();
                 currentTarget = null;
                 ChooseRandomBehavior();
                 return;
@@ -661,6 +666,7 @@ namespace EnemyAI
             if (distanceToTarget > chaseRadius * 1.5f)
             {
                 Log("Target moved too far outside chase zone, giving up");
+                PlayLostSound();
                 currentTarget = null;
                 ChooseRandomBehavior();
                 return;
@@ -700,6 +706,7 @@ namespace EnemyAI
                     if (distanceToLastKnown < 2f)
                     {
                         Log($"Lost vision of target for {visionLostCountdown}s and reached last known position, giving up");
+                        PlayLostSound();
                         currentTarget = null;
                         ChooseRandomBehavior();
                         return;
@@ -774,6 +781,8 @@ namespace EnemyAI
         {
             Log($"Attacking target for {stats.attackDamage} damage!");
 
+            EventBus.Publish(new DamageVisualFeedback.TriggerPulseEvent());
+
             // Play attack sound
             PlayAttackSound();
 
@@ -814,6 +823,9 @@ namespace EnemyAI
             Log("Entering Flee state - waiting for cooldown");
             aiPath.canMove = false;
             fleeTimer = 0f;
+
+            // Play flee sound
+            PlayFleeSound();
         }
 
         protected virtual void Flee_Update()
@@ -843,6 +855,7 @@ namespace EnemyAI
                 else if (distanceToTarget > chaseRadius)
                 {
                     Log($"Cooldown complete, target too far ({distanceToTarget:F1}m > {chaseRadius}m), giving up");
+                    PlayLostSound();
                     currentTarget = null;
                     ChooseRandomBehavior();
                     return;
@@ -850,6 +863,7 @@ namespace EnemyAI
                 else if (!detection.HasLineOfSight(currentTarget))
                 {
                     Log("Cooldown complete, lost sight of target");
+                    PlayLostSound();
                     currentTarget = null;
                     ChooseRandomBehavior();
                     return;
@@ -957,6 +971,30 @@ namespace EnemyAI
             {
                 audioProvider.PlayRandomSfxOnce(patrolSfxs);
                 Log("Playing patrol sound");
+            }
+        }
+
+        /// <summary>
+        /// Plays a random flee sound once.
+        /// </summary>
+        protected virtual void PlayFleeSound()
+        {
+            if (audioProvider != null && fleeSfxs != null && fleeSfxs.Length > 0)
+            {
+                audioProvider.PlayRandomSfxOnce(fleeSfxs);
+                Log("Playing flee sound");
+            }
+        }
+
+        /// <summary>
+        /// Plays a random lost sound once (when target is lost).
+        /// </summary>
+        protected virtual void PlayLostSound()
+        {
+            if (audioProvider != null && lostSfxs != null && lostSfxs.Length > 0)
+            {
+                audioProvider.PlayRandomSfxOnce(lostSfxs);
+                Log("Playing lost sound");
             }
         }
 

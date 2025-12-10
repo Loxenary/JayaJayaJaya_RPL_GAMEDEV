@@ -23,6 +23,7 @@ public class DamageVisualFeedback : MonoBehaviour
 
     public struct TriggerPulseEventWithParam
     {
+
         public float intensity;
         public float duration;
     }

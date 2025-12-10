@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EndDoorClose
   m_EditorClassIdentifier: 
   audioClip: {fileID: 8300000, guid: dc38942a1de8a3b4fb44a91533fc29fa, type: 3}
-  clipVolume: 1
+  clipVolume: 0.16
   sfxNameEnum: 20
   delay: 0
   pitch: 1

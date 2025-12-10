@@ -22,5 +22,6 @@ public enum SFXIdentifier
     Trap_Hit = 18,
     Light_Off = 19,
     Endgame_DoorLocked = 20,
-
+    SFX_Hover = 21,
+    SFX_Click = 22
 }
