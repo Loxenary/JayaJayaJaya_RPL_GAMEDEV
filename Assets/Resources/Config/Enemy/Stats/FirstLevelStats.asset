@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f6108ed678066e45bc9da680719c7ef, type: 3}
   m_Name: FirstLevelStats
   m_EditorClassIdentifier: 
-  maxSpeed: 1.5
-  acceleration: 8
-  rotationSpeed: 360
+  maxSpeed: 2
+  acceleration: 5
+  rotationSpeed: 180
   detectionRange: 5
-  detectionAngle: 360
+  detectionAngle: 90
   detectionLayer:
     serializedVersion: 2
-    m_Bits: 512
-  attackRange: 2
-  attackCooldown: 1.5
-  attackDamage: 10
+    m_Bits: 0
+  attackRange: 0
+  attackCooldown: 0
+  attackDamage: 0
   maxHealth: 100
   enablePatrol: 1
-  patrolWaitTime: 2
+  patrolWaitTime: 3
   patrolPointReachedDistance: 0.5
+  chaseSpeedMultiplier: 1
   maxChaseDistance: 10
   loseTargetTime: 3

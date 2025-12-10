@@ -1,4 +1,3 @@
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Events;
 using static InteractableLockedDoor;

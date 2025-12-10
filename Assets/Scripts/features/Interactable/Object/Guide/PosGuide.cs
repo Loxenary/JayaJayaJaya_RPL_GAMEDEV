@@ -9,11 +9,10 @@ public class PosGuide : MonoBehaviour
 {
     [Header("Guide Configuration")]
     [Tooltip("The guide data to show when player enters this zone")]
-    [SerializeField] private GuideData guideData;
+    [SerializeField] protected GuideData guideData;
 
     [Header("Debug")]
-    [ReadOnly]
-    [SerializeField] private bool hasTriggered = false;
+    [SerializeField] protected bool hasTriggered = false;
 
     private Collider triggerCollider;
 
@@ -59,7 +58,11 @@ public class PosGuide : MonoBehaviour
             Debug.LogError($"[PosGuide] {gameObject.name}: GuideData is not assigned!", this);
             return;
         }
+        PublishGuide();
+    }
 
+    protected virtual void PublishGuide()
+    {
         // Mark as triggered (once only)
         hasTriggered = true;
 
@@ -70,6 +73,7 @@ public class PosGuide : MonoBehaviour
         });
 
         Debug.Log($"[PosGuide] Player entered guide zone: {gameObject.name}. Guide content: {guideData.Content}");
+
     }
 
     /// <summary>
