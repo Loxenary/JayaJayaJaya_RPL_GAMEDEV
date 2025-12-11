@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b2408149469b5a418989552d999761b, type: 3}
+  m_Name: LakshaAwal
+  m_EditorClassIdentifier: 
+  content: Ruangan ini dulu adalah tempatku menumpahkan tangis yang tak pernah terdengar.
+    Jangan melangkah terlalu jauh, karena saksi bisu itu bersembunyi sangat dekat.
+    Di antara debu dan kenangan yang membusuk di sini, carilah <b>Buku Merah Darah</b>.
+    Di sanalah aku menuliskan awal mula kehancuranku.

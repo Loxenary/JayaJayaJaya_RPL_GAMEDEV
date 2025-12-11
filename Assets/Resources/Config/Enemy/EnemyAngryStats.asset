@@ -15,13 +15,17 @@ MonoBehaviour:
   enemyRecords:
   - enemyStats: {fileID: 11400000, guid: e828f2cdbf0a6ba4d822630546756684, type: 2}
     level: 0
+    enemyIncreaseSfx: {fileID: 11400000, guid: cda0c392440e5f54291b2db31b751212, type: 2}
     angryPointBaseline: 0
   - enemyStats: {fileID: 11400000, guid: 0065b15443b7c154d8fcf91201c4ff4b, type: 2}
     level: 1
+    enemyIncreaseSfx: {fileID: 11400000, guid: 16bc18a206aeeb541a15972ff2341d2c, type: 2}
     angryPointBaseline: 25
   - enemyStats: {fileID: 11400000, guid: b15d3d223efe07c4a95f1facd872014c, type: 2}
     level: 2
+    enemyIncreaseSfx: {fileID: 11400000, guid: 634a81f23ba6ae545b8f10438416a86b, type: 2}
     angryPointBaseline: 75
   - enemyStats: {fileID: 11400000, guid: 135c3f3d867a0fd4f916a028bed19780, type: 2}
     level: 3
+    enemyIncreaseSfx: {fileID: 11400000, guid: 416990e9b5118584792f35f22924e499, type: 2}
     angryPointBaseline: 100
