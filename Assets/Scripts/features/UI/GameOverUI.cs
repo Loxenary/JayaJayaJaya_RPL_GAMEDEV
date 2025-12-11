@@ -352,7 +352,9 @@ public class GameOverUI : MonoBehaviour
         var sceneService = ServiceLocator.Get<SceneService>();
         if (sceneService != null)
         {
+            RestartManager.Restart();
             await sceneService.ReloadScene(addTransition: true);
+            ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
         }
         else
         {

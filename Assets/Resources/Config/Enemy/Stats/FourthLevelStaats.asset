@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f6108ed678066e45bc9da680719c7ef, type: 3}
   m_Name: FourthLevelStaats
   m_EditorClassIdentifier: 
-  maxSpeed: 1.5
-  acceleration: 8
+  maxSpeed: 6
+  acceleration: 10
   rotationSpeed: 360
-  detectionRange: 5
+  detectionRange: 20
   detectionAngle: 360
   detectionLayer:
     serializedVersion: 2
     m_Bits: 512
-  attackRange: 2
+  attackRange: 3
   attackCooldown: 1.5
-  attackDamage: 10
+  attackDamage: 200
   maxHealth: 100
   enablePatrol: 1
-  patrolWaitTime: 2
+  patrolWaitTime: 1.5
   patrolPointReachedDistance: 0.5
-  maxChaseDistance: 10
+  chaseSpeedMultiplier: 2
+  maxChaseDistance: 7
   loseTargetTime: 3

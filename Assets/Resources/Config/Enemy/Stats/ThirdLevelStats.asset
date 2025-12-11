@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f6108ed678066e45bc9da680719c7ef, type: 3}
   m_Name: ThirdLevelStats
   m_EditorClassIdentifier: 
-  maxSpeed: 1.5
+  maxSpeed: 4
   acceleration: 8
-  rotationSpeed: 360
-  detectionRange: 5
-  detectionAngle: 360
+  rotationSpeed: 300
+  detectionRange: 15
+  detectionAngle: 270
   detectionLayer:
     serializedVersion: 2
     m_Bits: 512
-  attackRange: 2
-  attackCooldown: 1.5
-  attackDamage: 10
+  attackRange: 2.5
+  attackCooldown: 2
+  attackDamage: 100
   maxHealth: 100
   enablePatrol: 1
-  patrolWaitTime: 2
+  patrolWaitTime: 1.5
   patrolPointReachedDistance: 0.5
+  chaseSpeedMultiplier: 1.6
   maxChaseDistance: 10
   loseTargetTime: 3

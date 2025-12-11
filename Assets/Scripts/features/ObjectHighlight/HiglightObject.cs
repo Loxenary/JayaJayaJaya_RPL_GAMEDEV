@@ -13,12 +13,12 @@ public class HiglightObject : MonoBehaviour, IHighlight
 
         _outline.enabled = firstState;
     }
-    public void Highlight()
+    public virtual void Highlight()
     {
         _outline.enabled = true;
     }
 
-    public void UnHighlight()
+    public virtual void UnHighlight()
     {
         _outline.enabled = false;
     }
