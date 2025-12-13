@@ -77,7 +77,7 @@ public class InteractableSelector : MonoBehaviour
           ClearCurrentObject();
           return;
         }
-                
+
         // New object detected
         if (interactable != currentObject)
         {
