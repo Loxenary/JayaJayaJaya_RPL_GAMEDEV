@@ -19,6 +19,7 @@ public class AdvancedTilePainter : EditorWindow
   [SerializeField] private bool lockY = true;
   [SerializeField] private float lockedY = 0f;
   [SerializeField] private Vector3 placementOffset = Vector3.zero;
+  [SerializeField] private bool ignoreObstructions = true;
   [SerializeField] private bool alignToSurfaceNormal = false;
   [SerializeField] private bool snapRotationY = true;
   [SerializeField] private float rotationStep = 90f;
@@ -42,6 +43,7 @@ public class AdvancedTilePainter : EditorWindow
 
   private const string prefsPaletteKey = "AdvancedTilePainter.PaletteGuids";
   private const string prefsSelectedIndexKey = "AdvancedTilePainter.SelectedIndex";
+  private const string prefsSettingsKey = "AdvancedTilePainter.Settings";
 
   private GameObject ghostInstance;
   private Vector3 lastPlacedPos;
@@ -49,6 +51,7 @@ public class AdvancedTilePainter : EditorWindow
   private const float occupancyTolerance = 0.2f;
   private const string paintedPrefix = "[Painted] ";
   private static readonly Dictionary<Vector3Int, GameObject> paintedLookup = new Dictionary<Vector3Int, GameObject>();
+  private Vector2 scrollPos;
 
   // Rectangle tool state
   private bool isDraggingRect;
@@ -60,6 +63,7 @@ public class AdvancedTilePainter : EditorWindow
 
   private void OnEnable()
   {
+    LoadSettings();
     LoadPalette();
     SceneView.duringSceneGui += OnSceneGUI;
     wantsMouseMove = true; // keep preview responsive while hovering
@@ -75,11 +79,16 @@ public class AdvancedTilePainter : EditorWindow
     paintedLookup.Clear();
     Undo.undoRedoPerformed -= OnUndoRedo;
     SavePalette();
+    SaveSettings();
   }
 
   private void OnGUI()
   {
     int previousIndex = selectedIndex;
+
+    EditorGUI.BeginChangeCheck();
+
+    scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
     EditorGUILayout.LabelField("Palette", EditorStyles.boldLabel);
     int removeIndex = -1;
@@ -122,6 +131,7 @@ public class AdvancedTilePainter : EditorWindow
     {
       lockedY = EditorGUILayout.FloatField("Locked Y", lockedY);
     }
+    ignoreObstructions = EditorGUILayout.Toggle("Ignore Obstructions", ignoreObstructions);
     placementOffset = EditorGUILayout.Vector3Field("Placement Offset", placementOffset);
     alignToSurfaceNormal = EditorGUILayout.Toggle("Align To Surface Normal", alignToSurfaceNormal);
     snapRotationY = EditorGUILayout.Toggle("Snap Rotation Y", snapRotationY);
@@ -153,15 +163,28 @@ public class AdvancedTilePainter : EditorWindow
       SceneView.lastActiveSceneView?.Focus();
     }
 
+    EditorGUILayout.EndScrollView();
+
     if (selectedIndex != previousIndex)
     {
       RefreshGhost();
       SavePalette();
     }
+
+    if (EditorGUI.EndChangeCheck())
+    {
+      SaveSettings();
+    }
   }
 
   private void OnSceneGUI(SceneView sceneView)
   {
+    // If user is manipulating built-in handles/tools, don't consume events
+    if (GUIUtility.hotControl != 0)
+    {
+      return;
+    }
+
     if (palette.Count == 0 || selectedIndex < 0 || selectedIndex >= palette.Count || palette[selectedIndex] == null)
     {
       ClearGhost();
@@ -173,6 +196,18 @@ public class AdvancedTilePainter : EditorWindow
     Event e = Event.current;
     Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
     bool hasHit = Physics.Raycast(ray, out RaycastHit hitInfo, 500f);
+    Vector3 planePos = Vector3.zero;
+    bool hasPlane = false;
+
+    if (lockY && ignoreObstructions)
+    {
+      Plane plane = new Plane(Vector3.up, new Vector3(0f, lockedY, 0f));
+      if (plane.Raycast(ray, out float enterPlane))
+      {
+        planePos = ray.GetPoint(enterPlane);
+        hasPlane = true;
+      }
+    }
 
     // Fallback to locked plane when no collider under cursor
     if (!hasHit && fallbackToLockedPlane)
@@ -186,10 +221,17 @@ public class AdvancedTilePainter : EditorWindow
       }
     }
 
-    if (!hasHit)
+    if (!hasHit && !hasPlane)
     {
       ClearGhost();
       return;
+    }
+
+    if (hasPlane)
+    {
+      hitInfo.point = planePos;
+      hitInfo.normal = Vector3.up;
+      hasHit = true;
     }
 
     Vector3 targetPos = hitInfo.point;
@@ -466,6 +508,97 @@ public class AdvancedTilePainter : EditorWindow
 
     selectedIndex = Mathf.Clamp(EditorPrefs.GetInt(prefsSelectedIndexKey, selectedIndex), 0, Mathf.Max(0, palette.Count - 1));
     RefreshGhost();
+  }
+
+  [System.Serializable]
+  private struct PainterSettings
+  {
+    public float gridSize;
+    public bool lockY;
+    public float lockedY;
+    public Vector3 placementOffset;
+    public bool ignoreObstructions;
+    public bool alignToSurfaceNormal;
+    public bool snapRotationY;
+    public float rotationStep;
+    public float baseRotationY;
+    public Vector2 randomRotationYRange;
+    public Vector2 scaleRange;
+    public float brushRadius;
+    public bool paintOnDrag;
+    public bool eraseMode;
+    public float eraseRadius;
+    public PaintMode paintMode;
+    public bool fallbackToLockedPlane;
+    public bool usePrefabRotation;
+    public bool parentToSelection;
+    public Color ghostColor;
+    public Color brushColor;
+  }
+
+  private void SaveSettings()
+  {
+    PainterSettings data = new PainterSettings
+    {
+      gridSize = gridSize,
+      lockY = lockY,
+      lockedY = lockedY,
+      placementOffset = placementOffset,
+      ignoreObstructions = ignoreObstructions,
+      alignToSurfaceNormal = alignToSurfaceNormal,
+      snapRotationY = snapRotationY,
+      rotationStep = rotationStep,
+      baseRotationY = baseRotationY,
+      randomRotationYRange = randomRotationYRange,
+      scaleRange = scaleRange,
+      brushRadius = brushRadius,
+      paintOnDrag = paintOnDrag,
+      eraseMode = eraseMode,
+      eraseRadius = eraseRadius,
+      paintMode = paintMode,
+      fallbackToLockedPlane = fallbackToLockedPlane,
+      usePrefabRotation = usePrefabRotation,
+      parentToSelection = parentToSelection,
+      ghostColor = ghostColor,
+      brushColor = brushColor
+    };
+
+    string json = JsonUtility.ToJson(data);
+    EditorPrefs.SetString(prefsSettingsKey, json);
+  }
+
+  private void LoadSettings()
+  {
+    if (!EditorPrefs.HasKey(prefsSettingsKey))
+      return;
+
+    string json = EditorPrefs.GetString(prefsSettingsKey, string.Empty);
+    if (string.IsNullOrEmpty(json))
+      return;
+
+    PainterSettings data = JsonUtility.FromJson<PainterSettings>(json);
+
+    gridSize = data.gridSize;
+    lockY = data.lockY;
+    lockedY = data.lockedY;
+    placementOffset = data.placementOffset;
+    ignoreObstructions = data.ignoreObstructions;
+    alignToSurfaceNormal = data.alignToSurfaceNormal;
+    snapRotationY = data.snapRotationY;
+    rotationStep = data.rotationStep;
+    baseRotationY = data.baseRotationY;
+    randomRotationYRange = data.randomRotationYRange;
+    scaleRange = data.scaleRange;
+    brushRadius = data.brushRadius;
+    paintOnDrag = data.paintOnDrag;
+    eraseMode = data.eraseMode;
+    eraseRadius = data.eraseRadius;
+    paintMode = data.paintMode;
+    fallbackToLockedPlane = data.fallbackToLockedPlane;
+    usePrefabRotation = data.usePrefabRotation;
+    parentToSelection = data.parentToSelection;
+    ghostColor = data.ghostColor;
+    brushColor = data.brushColor;
   }
 
   private Vector3Int WorldToCell(Vector3 pos)
