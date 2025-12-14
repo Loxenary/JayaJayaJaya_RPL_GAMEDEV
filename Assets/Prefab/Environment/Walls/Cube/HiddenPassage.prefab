@@ -11146,7 +11146,7 @@ MonoBehaviour:
         m_CallState: 2
   timeMove: 1.25
   rootObject: {fileID: 0}
-  slideOffset: {x: -1.8, y: 0, z: 0}
+  slideOffset: {x: 1.8, y: 0, z: 0}
   useLocalSpace: 1
   OnDoneSlide:
     m_PersistentCalls:
