@@ -40,6 +40,8 @@ public class AdvancedTilePainter : EditorWindow
   private Vector3 lastPlacedPos;
   private bool hasLastPos;
   private const float occupancyTolerance = 0.2f;
+  private const string paintedPrefix = "[Painted] ";
+  private static readonly Dictionary<Vector3Int, GameObject> paintedLookup = new Dictionary<Vector3Int, GameObject>();
 
   [MenuItem("Tools/Advanced Tile Painter")]
   public static void ShowWindow() => GetWindow<AdvancedTilePainter>("Tile Painter");
@@ -49,12 +51,14 @@ public class AdvancedTilePainter : EditorWindow
     SceneView.duringSceneGui += OnSceneGUI;
     EnsureGhost();
     wantsMouseMove = true; // keep preview responsive while hovering
+    RebuildPaintedLookup();
   }
 
   private void OnDisable()
   {
     SceneView.duringSceneGui -= OnSceneGUI;
     DestroyImmediate(ghostInstance);
+    paintedLookup.Clear();
   }
 
   private void OnGUI()
@@ -246,16 +250,10 @@ public class AdvancedTilePainter : EditorWindow
     if (hasLastPos && Vector3.Distance(lastPlacedPos, pos) < Mathf.Max(0.05f, gridSize * 0.25f))
       return;
 
-    // Skip if a painted tile already occupies this spot
-    float occupancyRadius = Mathf.Max(gridSize * 0.45f, occupancyTolerance);
-    Collider[] overlaps = Physics.OverlapSphere(pos, occupancyRadius);
-    foreach (var c in overlaps)
-    {
-      if (c.GetComponentInParent<TilePaintMarker>() != null)
-      {
-        return;
-      }
-    }
+    // Skip if a painted tile already occupies this grid cell
+    Vector3Int cell = WorldToCell(pos);
+    if (paintedLookup.ContainsKey(cell))
+      return;
 
     float extraY = Random.Range(randomRotationYRange.x, randomRotationYRange.y);
     Quaternion finalRot = rot * Quaternion.Euler(0f, extraY, 0f);
@@ -276,10 +274,12 @@ public class AdvancedTilePainter : EditorWindow
     }
     if (chosenParent != null) instance.transform.SetParent(chosenParent);
 
-    if (instance.GetComponent<TilePaintMarker>() == null)
+    if (!instance.name.StartsWith(paintedPrefix))
     {
-      instance.AddComponent<TilePaintMarker>();
+      instance.name = paintedPrefix + instance.name;
     }
+
+    paintedLookup[cell] = instance;
 
     lastPlacedPos = pos;
     hasLastPos = true;
@@ -287,14 +287,22 @@ public class AdvancedTilePainter : EditorWindow
 
   private void EraseAt(Vector3 pos)
   {
-    Collider[] cols = Physics.OverlapSphere(pos, eraseRadius);
-    foreach (var c in cols)
+    List<Vector3Int> toRemove = new List<Vector3Int>();
+    foreach (var kvp in paintedLookup)
     {
-      TilePaintMarker marker = c.GetComponentInParent<TilePaintMarker>();
-      if (marker != null)
+      if (Vector3.Distance(CellToWorld(kvp.Key), pos) <= eraseRadius)
       {
-        Undo.DestroyObjectImmediate(marker.gameObject);
+        if (kvp.Value != null)
+        {
+          Undo.DestroyObjectImmediate(kvp.Value);
+        }
+        toRemove.Add(kvp.Key);
       }
+    }
+
+    foreach (var cell in toRemove)
+    {
+      paintedLookup.Remove(cell);
     }
   }
 
@@ -325,7 +333,39 @@ public class AdvancedTilePainter : EditorWindow
       ghostInstance = null;
     }
   }
-}
 
-[DisallowMultipleComponent]
-public class TilePaintMarker : MonoBehaviour { }
+  private Vector3Int WorldToCell(Vector3 pos)
+  {
+    int x = Mathf.RoundToInt(pos.x / gridSize);
+    int y = lockY ? Mathf.RoundToInt(lockedY / Mathf.Max(0.0001f, gridSize)) : Mathf.RoundToInt(pos.y / gridSize);
+    int z = Mathf.RoundToInt(pos.z / gridSize);
+    return new Vector3Int(x, y, z);
+  }
+
+  private Vector3 CellToWorld(Vector3Int cell)
+  {
+    return new Vector3(cell.x * gridSize, (lockY ? lockedY : cell.y * gridSize), cell.z * gridSize);
+  }
+
+  private void RebuildPaintedLookup()
+  {
+    paintedLookup.Clear();
+    foreach (var root in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+    {
+      Traverse(root.transform);
+    }
+
+    void Traverse(Transform t)
+    {
+      if (t.name.StartsWith(paintedPrefix))
+      {
+        paintedLookup[WorldToCell(t.position)] = t.gameObject;
+      }
+
+      for (int i = 0; i < t.childCount; i++)
+      {
+        Traverse(t.GetChild(i));
+      }
+    }
+  }
+}
