@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7389140240577122349}
   - component: {fileID: 4395093103634719064}
   - component: {fileID: 118111104108036301}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 8062261179575135636}
   - component: {fileID: 1962750119816359984}
   - component: {fileID: 4766713638351307473}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 3679968991775846482}
   - component: {fileID: 7559559472781571374}
   - component: {fileID: 8483163010917991381}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -339,7 +339,7 @@ GameObject:
   - component: {fileID: 2538626872831389182}
   - component: {fileID: 64731476535433061}
   - component: {fileID: 2590688280822492958}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -448,7 +448,7 @@ GameObject:
   - component: {fileID: 2263683102221233222}
   - component: {fileID: 5699904422086183914}
   - component: {fileID: 1349579983592842389}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -557,7 +557,7 @@ GameObject:
   - component: {fileID: 352088957062773491}
   - component: {fileID: 2620612628308884850}
   - component: {fileID: 1605648165761142695}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -666,7 +666,7 @@ GameObject:
   - component: {fileID: 2243640646075245297}
   - component: {fileID: 6377020218248786225}
   - component: {fileID: 400243173934296993}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_10 - Key Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -776,7 +776,7 @@ GameObject:
   - component: {fileID: 3279481540280083951}
   - component: {fileID: 872663886380204347}
   - component: {fileID: 7588378497918476754}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -885,7 +885,7 @@ GameObject:
   - component: {fileID: 1564065131922955261}
   - component: {fileID: 508287631688944771}
   - component: {fileID: 4821284911237154502}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -994,7 +994,7 @@ GameObject:
   - component: {fileID: 9184165737679955598}
   - component: {fileID: 6004815856927835416}
   - component: {fileID: 2832703281605641361}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1119,8 +1119,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2147279877776339789}
   - {fileID: 4252814033425793005}
@@ -1399,7 +1399,7 @@ GameObject:
   - component: {fileID: 8249358312360116919}
   - component: {fileID: 6884186460070059686}
   - component: {fileID: 2778680254318200100}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1561,7 +1561,7 @@ GameObject:
   - component: {fileID: 1959273359259545532}
   - component: {fileID: 5398532657666291696}
   - component: {fileID: 7404191603827268259}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1670,7 +1670,7 @@ GameObject:
   - component: {fileID: 3415730538122505428}
   - component: {fileID: 1598638374079626735}
   - component: {fileID: 884090715227225794}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SheetRackCase_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
