@@ -477,7 +477,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 0
+        m_CallState: 2
       - m_Target: {fileID: 3517005467247066477}
         m_TargetAssemblyTypeName: UnityEngine.Collider, UnityEngine
         m_MethodName: set_enabled
@@ -502,8 +502,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  isInteract: 0
-  collider: {fileID: 535544564898395539}
   timeRotate: 1.5
   rootObject: {fileID: 6939946052666047028}
   targetRotation: {x: 0, y: 95, z: 0}
@@ -522,10 +520,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-  wait: 0
   keyID: 102
   highlight: {fileID: 2784692873651031059}
-  isUnlock: 0
   OnWrongKeys:
     m_PersistentCalls:
       m_Calls:

@@ -20,6 +20,9 @@ public class PlayerInputHandler : MonoBehaviour
 
     // Input events
     public event Action OnJumpPerformed;
+    public event Action OnWalkPerformed;
+    public event Action OnRunPerformed;
+    public event Action OnStopMovePerformed;
     public event Action OnAttackPerformed;
     public event Action OnInteractPerformed;
     public event Action OnFlashlightPerformed;
@@ -98,6 +101,22 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
+
+        if (moveInput != Vector2.zero)
+        {
+            if (sprintInput)
+            {
+                OnRunPerformed?.Invoke();
+            }
+            else
+            {
+                OnWalkPerformed?.Invoke();
+            }
+        }
+        else
+        {
+            OnStopMovePerformed?.Invoke();
+        }
     }
 
     private void OnLook(InputAction.CallbackContext context)

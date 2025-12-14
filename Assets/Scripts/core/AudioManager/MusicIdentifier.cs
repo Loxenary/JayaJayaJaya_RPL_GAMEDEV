@@ -9,6 +9,7 @@ public enum MusicIdentifier
     Empty = 6,
     Empty2 = 7,
     Empty3 = 8,
-    Ending_Bad = 9
+    Ending_Bad = 9,
+    Null = 10
 }
 
