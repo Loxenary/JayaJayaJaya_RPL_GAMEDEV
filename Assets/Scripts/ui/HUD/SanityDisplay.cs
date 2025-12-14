@@ -43,19 +43,56 @@ public class SanityDisplay : MonoBehaviour
   [Tooltip("Speed of the smooth transition")]
   [SerializeField] private float transitionSpeed = 5f;
 
+  [Header("Blink Settings")]
+  [Tooltip("Enable blinking when sanity is critically low")]
+  [SerializeField] private bool blinkWhenLow = true;
+
+  [Tooltip("Sanity level to start blinking (0-1)")]
+  [SerializeField] private float criticalSanityThreshold = 0.15f;
+
+  [Tooltip("Blink speed (times per second)")]
+  [SerializeField] private float blinkSpeed = 2f;
+
+  [Range(0f, 1f)]
+  [Tooltip("Minimum alpha during blink (0=invisible, 1=fully visible)")]
+  [SerializeField] private float blinkMinAlpha = 0.6f;
+
   [Header("Display Format")]
   [Tooltip("Format for sanity text. Use {0} for percentage")]
   [SerializeField] private string sanityTextFormat = "{0:0.0}%";
 
+  [Tooltip("Text color for better contrast")]
+  [SerializeField] private Color textColor = Color.white;
+
+  [Tooltip("Enable text outline for better readability")]
+  [SerializeField] private bool textOutline = true;
+
+  [Tooltip("Outline color for text")]
+  [SerializeField] private Color outlineColor = Color.black;
+
   private float targetFillAmount;
   private float currentFillAmount;
+  private float blinkTimer;
+  private bool isBlinkVisible = true;
 
   private void Awake()
   {
     ValidateComponents();
-    // Initialize fill amount
-    currentFillAmount = 1f;
-    targetFillAmount = 1f;
+    // Ensure fill image is configured to respond to fillAmount changes
+    if (sanityBarFill != null)
+    {
+      sanityBarFill.type = Image.Type.Filled;
+      sanityBarFill.fillMethod = Image.FillMethod.Horizontal;
+      sanityBarFill.fillOrigin = (int)Image.OriginHorizontal.Left;
+      currentFillAmount = sanityBarFill.fillAmount;
+      targetFillAmount = currentFillAmount;
+    }
+    else
+    {
+      // Initialize fill amount when no image assigned (avoid NaN in Update)
+      currentFillAmount = 1f;
+      targetFillAmount = 1f;
+    }
   }
 
   private void Start()
@@ -67,10 +104,16 @@ public class SanityDisplay : MonoBehaviour
       sanityBarFill.color = highSanityColor;
     }
 
-    // Update text to show 100%
+    // Apply text styling
     if (sanityText != null)
     {
       sanityText.text = string.Format(sanityTextFormat, 100f);
+      sanityText.color = textColor;
+      if (textOutline)
+      {
+        sanityText.outlineWidth = 0.2f;
+        sanityText.outlineColor = outlineColor;
+      }
     }
   }
 
@@ -104,10 +147,57 @@ public class SanityDisplay : MonoBehaviour
 
   private void Update()
   {
-    if (smoothTransition && sanityBarFill != null)
+    if (sanityBarFill != null)
     {
-      currentFillAmount = Mathf.Lerp(currentFillAmount, targetFillAmount, Time.deltaTime * transitionSpeed);
+      if (smoothTransition)
+      {
+        // MoveTowards avoids asymptotic lerp and keeps animating even when timeScale is 0
+        float step = transitionSpeed > 0f ? transitionSpeed * Time.unscaledDeltaTime : 1f;
+        currentFillAmount = Mathf.MoveTowards(currentFillAmount, targetFillAmount, step);
+      }
+      else
+      {
+        currentFillAmount = targetFillAmount;
+      }
+
       sanityBarFill.fillAmount = currentFillAmount;
+    }
+
+    // Handle blinking when sanity is critically low (but not empty)
+    if (blinkWhenLow && currentFillAmount > 0f && currentFillAmount <= criticalSanityThreshold)
+    {
+      blinkTimer += Time.deltaTime * blinkSpeed;
+      // Use sine wave to fade between blinkMinAlpha and 1.0
+      float alpha = Mathf.Lerp(blinkMinAlpha, 1f, (Mathf.Sin(blinkTimer * Mathf.PI * 2f) + 1f) * 0.5f);
+
+      if (sanityBarFill != null)
+      {
+        Color barCol = sanityBarFill.color;
+        barCol.a = alpha;
+        sanityBarFill.color = barCol;
+      }
+      if (sanityText != null)
+      {
+        Color textCol = sanityText.color;
+        textCol.a = alpha;
+        sanityText.color = textCol;
+      }
+    }
+    else
+    {
+      // Ensure full visibility when not in critical state
+      if (sanityBarFill != null)
+      {
+        Color barCol = sanityBarFill.color;
+        barCol.a = 1f;
+        sanityBarFill.color = barCol;
+      }
+      if (sanityText != null)
+      {
+        Color textCol = sanityText.color;
+        textCol.a = 1f;
+        sanityText.color = textCol;
+      }
     }
   }
 
