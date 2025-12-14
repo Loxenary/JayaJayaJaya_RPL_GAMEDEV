@@ -18,6 +18,7 @@ public class AdvancedTilePainter : EditorWindow
   [SerializeField] private float gridSize = 1f;
   [SerializeField] private bool lockY = true;
   [SerializeField] private float lockedY = 0f;
+  [SerializeField] private Vector3 placementOffset = Vector3.zero;
   [SerializeField] private bool alignToSurfaceNormal = false;
   [SerializeField] private bool snapRotationY = true;
   [SerializeField] private float rotationStep = 90f;
@@ -25,16 +26,22 @@ public class AdvancedTilePainter : EditorWindow
   [SerializeField] private Vector2 randomRotationYRange = new Vector2(0f, 0f);
   [SerializeField] private Vector2 scaleRange = Vector2.one;
 
-  [Header("Brush")]
+  private enum PaintMode { Brush, Rectangle }
+
+  [Header("Brush/Shape")]
   [SerializeField] private float brushRadius = 0.5f;
   [SerializeField] private bool paintOnDrag = true;
   [SerializeField] private bool eraseMode = false;
   [SerializeField] private float eraseRadius = 0.6f;
+  [SerializeField] private PaintMode paintMode = PaintMode.Brush;
 
   [Header("Visuals")]
   [SerializeField] private Color ghostColor = new Color(0f, 1f, 1f, 0.35f);
   [SerializeField] private Color brushColor = new Color(0f, 1f, 1f, 0.35f);
   [SerializeField] private bool fallbackToLockedPlane = true; // allow preview even when ray misses colliders
+
+  private const string prefsPaletteKey = "AdvancedTilePainter.PaletteGuids";
+  private const string prefsSelectedIndexKey = "AdvancedTilePainter.SelectedIndex";
 
   private GameObject ghostInstance;
   private Vector3 lastPlacedPos;
@@ -43,14 +50,21 @@ public class AdvancedTilePainter : EditorWindow
   private const string paintedPrefix = "[Painted] ";
   private static readonly Dictionary<Vector3Int, GameObject> paintedLookup = new Dictionary<Vector3Int, GameObject>();
 
+  // Rectangle tool state
+  private bool isDraggingRect;
+  private Vector3 rectStartWorld;
+  private Vector3 rectEndWorld;
+
   [MenuItem("Tools/Advanced Tile Painter")]
   public static void ShowWindow() => GetWindow<AdvancedTilePainter>("Tile Painter");
 
   private void OnEnable()
   {
+    LoadPalette();
     SceneView.duringSceneGui += OnSceneGUI;
-    EnsureGhost();
     wantsMouseMove = true; // keep preview responsive while hovering
+    Undo.undoRedoPerformed += OnUndoRedo;
+    EnsureGhost();
     RebuildPaintedLookup();
   }
 
@@ -59,16 +73,30 @@ public class AdvancedTilePainter : EditorWindow
     SceneView.duringSceneGui -= OnSceneGUI;
     DestroyImmediate(ghostInstance);
     paintedLookup.Clear();
+    Undo.undoRedoPerformed -= OnUndoRedo;
+    SavePalette();
   }
 
   private void OnGUI()
   {
+    int previousIndex = selectedIndex;
+
     EditorGUILayout.LabelField("Palette", EditorStyles.boldLabel);
     int removeIndex = -1;
     for (int i = 0; i < palette.Count; i++)
     {
       EditorGUILayout.BeginHorizontal();
-      palette[i] = (GameObject)EditorGUILayout.ObjectField(palette[i], typeof(GameObject), false);
+      GameObject newObj = (GameObject)EditorGUILayout.ObjectField(palette[i], typeof(GameObject), false);
+      if (newObj != palette[i])
+      {
+        palette[i] = newObj;
+        if (selectedIndex == i)
+        {
+          RefreshGhost();
+        }
+        SavePalette();
+      }
+
       if (GUILayout.Toggle(selectedIndex == i, "Use", GUILayout.Width(50))) selectedIndex = i;
       if (GUILayout.Button("X", GUILayout.Width(24))) removeIndex = i;
       EditorGUILayout.EndHorizontal();
@@ -77,8 +105,14 @@ public class AdvancedTilePainter : EditorWindow
     {
       palette.RemoveAt(removeIndex);
       selectedIndex = Mathf.Clamp(selectedIndex, 0, palette.Count - 1);
+      RefreshGhost();
+      SavePalette();
     }
-    if (GUILayout.Button("+ Add Prefab")) palette.Add(null);
+    if (GUILayout.Button("+ Add Prefab"))
+    {
+      palette.Add(null);
+      SavePalette();
+    }
 
     EditorGUILayout.Space();
     EditorGUILayout.LabelField("Placement", EditorStyles.boldLabel);
@@ -88,6 +122,7 @@ public class AdvancedTilePainter : EditorWindow
     {
       lockedY = EditorGUILayout.FloatField("Locked Y", lockedY);
     }
+    placementOffset = EditorGUILayout.Vector3Field("Placement Offset", placementOffset);
     alignToSurfaceNormal = EditorGUILayout.Toggle("Align To Surface Normal", alignToSurfaceNormal);
     snapRotationY = EditorGUILayout.Toggle("Snap Rotation Y", snapRotationY);
     if (snapRotationY)
@@ -99,7 +134,8 @@ public class AdvancedTilePainter : EditorWindow
     scaleRange = EditorGUILayout.Vector2Field("Uniform Scale Range", scaleRange);
 
     EditorGUILayout.Space();
-    EditorGUILayout.LabelField("Brush", EditorStyles.boldLabel);
+    EditorGUILayout.LabelField("Brush / Shape", EditorStyles.boldLabel);
+    paintMode = (PaintMode)EditorGUILayout.EnumPopup("Mode", paintMode);
     brushRadius = Mathf.Max(0.05f, EditorGUILayout.FloatField("Brush Radius", brushRadius));
     paintOnDrag = EditorGUILayout.Toggle("Paint On Drag", paintOnDrag);
     eraseMode = EditorGUILayout.Toggle("Erase Mode", eraseMode);
@@ -115,6 +151,12 @@ public class AdvancedTilePainter : EditorWindow
     if (GUILayout.Button("Focus Scene View"))
     {
       SceneView.lastActiveSceneView?.Focus();
+    }
+
+    if (selectedIndex != previousIndex)
+    {
+      RefreshGhost();
+      SavePalette();
     }
   }
 
@@ -177,28 +219,59 @@ public class AdvancedTilePainter : EditorWindow
     // Ghost preview
     PositionGhost(targetPos, targetRot);
 
-    // Brush visuals
+    // Brush/shape visuals
     Handles.color = brushColor;
-    Handles.DrawWireDisc(targetPos, Vector3.up, brushRadius);
+    if (paintMode == PaintMode.Brush)
+    {
+      Handles.DrawWireDisc(targetPos, Vector3.up, brushRadius);
+    }
+    else if (paintMode == PaintMode.Rectangle && isDraggingRect)
+    {
+      DrawRectanglePreview(targetPos);
+    }
 
     // Interaction
-    bool leftClick = e.type == EventType.MouseDown && e.button == 0 && !e.alt;
-    bool dragPaint = paintOnDrag && e.type == EventType.MouseDrag && e.button == 0 && !e.alt;
-    bool action = leftClick || dragPaint;
+    bool leftDown = e.type == EventType.MouseDown && e.button == 0 && !e.alt;
+    bool leftDrag = e.type == EventType.MouseDrag && e.button == 0 && !e.alt;
+    bool leftUp = e.type == EventType.MouseUp && e.button == 0 && !e.alt;
 
-    if (action)
+    if (paintMode == PaintMode.Brush)
     {
-      if (eraseMode)
+      bool action = leftDown || (paintOnDrag && leftDrag);
+      if (action)
       {
-        EraseAt(targetPos);
+        if (eraseMode)
+          EraseAt(targetPos);
+        else
+          PlaceAt(targetPos, targetRot, bypassSpacing: false, bypassRadius: false);
+
+        e.Use();
       }
-      else
-      {
-        PlaceAt(targetPos, targetRot);
-      }
-      e.Use();
     }
-    else if (e.type == EventType.MouseMove)
+    else if (paintMode == PaintMode.Rectangle)
+    {
+      if (leftDown)
+      {
+        isDraggingRect = true;
+        rectStartWorld = targetPos;
+        rectEndWorld = targetPos;
+        e.Use();
+      }
+      else if (leftDrag && isDraggingRect)
+      {
+        rectEndWorld = targetPos;
+        e.Use();
+      }
+      else if (leftUp && isDraggingRect)
+      {
+        rectEndWorld = targetPos;
+        ApplyRectangle(targetRot);
+        isDraggingRect = false;
+        e.Use();
+      }
+    }
+
+    if (e.type == EventType.MouseMove)
     {
       SceneView.RepaintAll(); // keep ghost following cursor smoothly
     }
@@ -206,8 +279,10 @@ public class AdvancedTilePainter : EditorWindow
 
   private void SnapToGrid(ref Vector3 pos)
   {
-    pos.x = Mathf.Round(pos.x / gridSize) * gridSize;
-    pos.z = Mathf.Round(pos.z / gridSize) * gridSize;
+    Vector3 p = pos - placementOffset;
+    p.x = Mathf.Round(p.x / gridSize) * gridSize;
+    p.z = Mathf.Round(p.z / gridSize) * gridSize;
+    pos = p + placementOffset;
   }
 
   private void PositionGhost(Vector3 pos, Quaternion rot)
@@ -240,20 +315,29 @@ public class AdvancedTilePainter : EditorWindow
     }
   }
 
-  private void PlaceAt(Vector3 pos, Quaternion rot)
+  private void PlaceAt(Vector3 pos, Quaternion rot, bool bypassSpacing, bool bypassRadius)
   {
     if (palette.Count == 0 || selectedIndex < 0 || selectedIndex >= palette.Count) return;
     GameObject prefab = palette[selectedIndex];
     if (prefab == null) return;
 
-    // Avoid double placement at the same spot when dragging quickly
-    if (hasLastPos && Vector3.Distance(lastPlacedPos, pos) < Mathf.Max(0.05f, gridSize * 0.25f))
-      return;
+    // Optional spacing throttle removed to avoid patterned gaps; grid/cell occupancy handles duplicates
 
     // Skip if a painted tile already occupies this grid cell
     Vector3Int cell = WorldToCell(pos);
-    if (paintedLookup.ContainsKey(cell))
-      return;
+    if (paintedLookup.TryGetValue(cell, out GameObject existing))
+    {
+      if (existing == null)
+      {
+        paintedLookup.Remove(cell); // stale entry from undo
+      }
+      else
+      {
+        return;
+      }
+    }
+
+    // Radius overlap check removed; grid occupancy is authoritative
 
     float extraY = Random.Range(randomRotationYRange.x, randomRotationYRange.y);
     Quaternion finalRot = rot * Quaternion.Euler(0f, extraY, 0f);
@@ -290,12 +374,16 @@ public class AdvancedTilePainter : EditorWindow
     List<Vector3Int> toRemove = new List<Vector3Int>();
     foreach (var kvp in paintedLookup)
     {
-      if (Vector3.Distance(CellToWorld(kvp.Key), pos) <= eraseRadius)
+      GameObject go = kvp.Value;
+      if (go == null)
       {
-        if (kvp.Value != null)
-        {
-          Undo.DestroyObjectImmediate(kvp.Value);
-        }
+        toRemove.Add(kvp.Key);
+        continue;
+      }
+
+      if (Vector3.Distance(go.transform.position, pos) <= eraseRadius)
+      {
+        Undo.DestroyObjectImmediate(go);
         toRemove.Add(kvp.Key);
       }
     }
@@ -334,17 +422,94 @@ public class AdvancedTilePainter : EditorWindow
     }
   }
 
+  private void RefreshGhost()
+  {
+    ClearGhost();
+    EnsureGhost();
+    SceneView.RepaintAll();
+  }
+
+  private void SavePalette()
+  {
+    List<string> guids = new List<string>();
+    foreach (var obj in palette)
+    {
+      string guid = obj != null ? AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(obj)) : string.Empty;
+      guids.Add(guid);
+    }
+    string payload = string.Join("|", guids);
+    EditorPrefs.SetString(prefsPaletteKey, payload);
+    EditorPrefs.SetInt(prefsSelectedIndexKey, selectedIndex);
+  }
+
+  private void LoadPalette()
+  {
+    if (!EditorPrefs.HasKey(prefsPaletteKey))
+      return;
+
+    string payload = EditorPrefs.GetString(prefsPaletteKey, string.Empty);
+    string[] guids = payload.Split('|');
+    palette.Clear();
+    foreach (var guid in guids)
+    {
+      if (string.IsNullOrEmpty(guid))
+      {
+        palette.Add(null);
+      }
+      else
+      {
+        string path = AssetDatabase.GUIDToAssetPath(guid);
+        var obj = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        palette.Add(obj);
+      }
+    }
+
+    selectedIndex = Mathf.Clamp(EditorPrefs.GetInt(prefsSelectedIndexKey, selectedIndex), 0, Mathf.Max(0, palette.Count - 1));
+    RefreshGhost();
+  }
+
   private Vector3Int WorldToCell(Vector3 pos)
   {
-    int x = Mathf.RoundToInt(pos.x / gridSize);
-    int y = lockY ? Mathf.RoundToInt(lockedY / Mathf.Max(0.0001f, gridSize)) : Mathf.RoundToInt(pos.y / gridSize);
-    int z = Mathf.RoundToInt(pos.z / gridSize);
+    Vector3 p = pos - placementOffset;
+    int x = Mathf.RoundToInt(p.x / gridSize);
+    int y = lockY ? Mathf.RoundToInt(lockedY / Mathf.Max(0.0001f, gridSize)) : Mathf.RoundToInt(p.y / gridSize);
+    int z = Mathf.RoundToInt(p.z / gridSize);
     return new Vector3Int(x, y, z);
   }
 
   private Vector3 CellToWorld(Vector3Int cell)
   {
-    return new Vector3(cell.x * gridSize, (lockY ? lockedY : cell.y * gridSize), cell.z * gridSize);
+    return new Vector3(cell.x * gridSize, (lockY ? lockedY : cell.y * gridSize), cell.z * gridSize) + placementOffset;
+  }
+
+  private void ApplyRectangle(Quaternion baseRot)
+  {
+    Vector3 a = rectStartWorld;
+    Vector3 b = rectEndWorld;
+
+    float minX = Mathf.Min(a.x, b.x);
+    float maxX = Mathf.Max(a.x, b.x);
+    float minZ = Mathf.Min(a.z, b.z);
+    float maxZ = Mathf.Max(a.z, b.z);
+
+    for (float x = minX; x <= maxX + 0.001f; x += gridSize)
+    {
+      for (float z = minZ; z <= maxZ + 0.001f; z += gridSize)
+      {
+        Vector3 pos = new Vector3(x, lockY ? lockedY : a.y, z);
+        SnapToGrid(ref pos);
+        PlaceAt(pos, baseRot, bypassSpacing: true, bypassRadius: true);
+      }
+    }
+  }
+
+  private void DrawRectanglePreview(Vector3 currentPos)
+  {
+    Vector3 a = rectStartWorld;
+    Vector3 b = currentPos;
+    Vector3 c = new Vector3(a.x, a.y, b.z);
+    Vector3 d = new Vector3(b.x, a.y, a.z);
+    Handles.DrawPolyLine(a, c, b, d, a);
   }
 
   private void RebuildPaintedLookup()
@@ -367,5 +532,11 @@ public class AdvancedTilePainter : EditorWindow
         Traverse(t.GetChild(i));
       }
     }
+  }
+
+  private void OnUndoRedo()
+  {
+    RebuildPaintedLookup();
+    SceneView.RepaintAll();
   }
 }
