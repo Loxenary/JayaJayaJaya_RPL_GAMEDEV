@@ -11,17 +11,24 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     {
 
     }
-
+    struct MappingJournal
+    {
+        public string Id;
+        public int Number;
+    }
     [Header("Configuration")]
 
     [SerializeField] private JournalDatabaseConfig journalDatabaseConfig;
     [SerializeField] private int guideTimerDuration = 25;
 
 
-    private int currentTrackedCollectible = 0;
+    private int currentTrackedCollectible = -1;
     private Coroutine currentTimerCoroutine;
     private readonly HashSet<string> interactedPuzzle = new();
     private readonly HashSet<GuideData> interactedGuides = new();
+
+    //List<MappingJournal> mapping = new List<MappingJournal>();
+    Dictionary<string,int> mapping = new Dictionary<string,int>();
 
     private GuideData lastGuideData = null;
 
@@ -48,17 +55,18 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     // Called when player interacts with a puzzle (but hasn't collected it yet)
     private void OnPuzzleInteracted(PuzzleInteracted evt)
     {
-        HandleJournal();
-
         if (!interactedPuzzle.Contains(evt.puzzleId))
         {
             interactedPuzzle.Add(evt.puzzleId);
             currentTrackedCollectible++;
+
+            mapping.Add(evt.puzzleId, currentTrackedCollectible);
             EventBus.Publish(new InteractedPuzzleCount()
             {
                 puzzleCount = currentTrackedCollectible
             });
         }
+        HandleJournal(mapping[evt.puzzleId]);
     }
 
     // Called when player interacts with a guide interactable
@@ -92,11 +100,12 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
         currentTimerCoroutine = StartCoroutine(StartGuideTimerCoroutine());
     }
 
-    private void HandleJournal()
+    private void HandleJournal(int key)
     {
         EventBus.Publish(new JournalUI.OpenJournalUI()
         {
-            content = journalDatabaseConfig.Journals[currentTrackedCollectible]
+            content = journalDatabaseConfig.Journals[key]
+            //content = journalDatabaseConfig.Journals[currentTrackedCollectible]
         });
     }
 

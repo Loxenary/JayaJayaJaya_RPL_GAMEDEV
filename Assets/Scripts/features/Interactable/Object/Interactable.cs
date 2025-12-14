@@ -28,7 +28,9 @@ public class Interactable : MonoBehaviour
 
     private void OnValidate()
     {
+#if UNITY_EDITOR
         SetupInteractable();
+#endif
     }
 
     private void Awake()

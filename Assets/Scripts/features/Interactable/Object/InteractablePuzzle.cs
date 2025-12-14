@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class InteractablePuzzle : Interactable
 {
-
+    [SerializeField]
     private string _randomGUID = Guid.NewGuid().ToString();
 
     private CollectibleType type => CollectibleType.Puzzle;
