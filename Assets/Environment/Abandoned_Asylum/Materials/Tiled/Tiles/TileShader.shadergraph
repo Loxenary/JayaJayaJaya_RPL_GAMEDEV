@@ -1156,8 +1156,8 @@
     "m_ObjectId": "1eb912570d5e45129b3088fe0ba09ca4",
     "m_Title": "Specular",
     "m_Position": {
-        "x": -890.9999389648438,
-        "y": 4.0001220703125
+        "x": -891.0,
+        "y": 4.0
     }
 }
 
@@ -1543,7 +1543,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.30000001192092898,
+    "m_Value": 1.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -2594,7 +2594,7 @@
     "m_ObjectId": "60860fcfdae047238ad61771793271cc",
     "m_Title": "Base Color",
     "m_Position": {
-        "x": -980.9999389648438,
+        "x": -981.0,
         "y": -464.0
     }
 }
@@ -2620,7 +2620,7 @@
     "m_ObjectId": "6256f2caa6b147af915e79297d655a81",
     "m_Title": "Normal Map",
     "m_Position": {
-        "x": -953.9999389648438,
+        "x": -954.0,
         "y": 430.0
     }
 }
@@ -5154,7 +5154,7 @@
     "m_ObjectId": "e5729328735d44ea93b5c753972d2e20",
     "m_Title": "Height Map",
     "m_Position": {
-        "x": -2966.000244140625,
+        "x": -2966.0,
         "y": 450.0
     }
 }
