@@ -19,10 +19,10 @@ MonoBehaviour:
   detectionAngle: 90
   detectionLayer:
     serializedVersion: 2
-    m_Bits: 0
-  attackRange: 0
-  attackCooldown: 0
-  attackDamage: 0
+    m_Bits: 512
+  attackRange: 2
+  attackCooldown: 4
+  attackDamage: 20
   maxHealth: 100
   enablePatrol: 1
   patrolWaitTime: 3
