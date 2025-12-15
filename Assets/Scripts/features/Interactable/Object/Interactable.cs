@@ -6,51 +6,45 @@ using UnityEngine.Events;
 /// </summary>
 public class Interactable : MonoBehaviour
 {
-  [Header("Event")]
-  public UnityEvent onInteract;
+    [Header("Event")]
+    public UnityEvent onInteract;
 
 #if UNITY_EDITOR
 
-  [Header("Debugging Section")]
-  [ReadOnly]
-  [SerializeField] private bool _isInteract => isInteract;
+    [Header("Debugging Section")]
+    [ReadOnly]
+    [SerializeField] private bool _isInteract => isInteract;
 
 #endif
 
-  protected bool isInteract;
+    protected bool isInteract;
 
-  // Child InteractableZone handles collider + layer. No setup needed here.
+    // Child InteractableZone handles collider + layer. No setup needed here.
 
-  /// <summary>
-  /// Indicates whether this object should still show interaction prompt.
-  /// </summary>
-  public virtual bool IsInteractable => !isInteract;
+    /// <summary>
+    /// Indicates whether this object should still show interaction prompt.
+    /// </summary>
+    public virtual bool IsInteractable => !isInteract;
 
-  public virtual void InteractObject()
-  {
-    if (isInteract)
-      return;
-    private void OnValidate()
+    public virtual void InteractObject()
     {
-#if UNITY_EDITOR
-        SetupInteractable();
-#endif
+        if (isInteract)
+            return;
+
+        isInteract = true;
+        onInteract?.Invoke();
     }
 
-    isInteract = true;
-    onInteract?.Invoke();
-  }
+    /// <summary>
+    /// Reset interaction state (useful for reusable objects)
+    /// </summary>
+    public virtual void ResetInteraction()
+    {
+        isInteract = false;
+    }
 
-  /// <summary>
-  /// Reset interaction state (useful for reusable objects)
-  /// </summary>
-  public virtual void ResetInteraction()
-  {
-    isInteract = false;
-  }
-
-  /// <summary>
-  /// Check if object has already been interacted with
-  /// </summary>
-  public bool HasBeenInteracted => isInteract;
+    /// <summary>
+    /// Check if object has already been interacted with
+    /// </summary>
+    public bool HasBeenInteracted => isInteract;
 }

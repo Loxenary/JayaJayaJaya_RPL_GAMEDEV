@@ -101,7 +101,7 @@ public class InteractableEndGameDoor : InteractableLockedDoor
     isClosingInProgress = true;
 
     // Close the door (rotate to closed position)
-    DoRotate(Vector3.zero, false);
+    DoRotate(Vector3.zero);
 
     // Play lock sound
     PlayLockSound();

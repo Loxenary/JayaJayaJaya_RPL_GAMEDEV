@@ -4,16 +4,9 @@ using UnityEngine.Events;
 
 public class InteractableHintObject : InteractableRotate
 {
-  [Header("Interactable Hint Object Section")]
-  public UnityEvent OnSecondInteract;
+    [Header("Interactable Hint Object Section")]
+    public UnityEvent OnSecondInteract;
 
-  public override void InteractObject()
-  {
-    // If already opened once, trigger secondary action only
-    if (isInteract)
-    {
-      OnSecondInteract?.Invoke();
-      return;
     public delegate void CheckIsFirstPuzzle();
     public static event CheckIsFirstPuzzle onCheckIsFirst;
 
@@ -46,8 +39,4 @@ public class InteractableHintObject : InteractableRotate
         //    onDelayedCall?.Invoke();
         //});
     }
-
-    // Use base rotate logic (interruptible) to open
-    base.InteractObject();
-  }
 }
