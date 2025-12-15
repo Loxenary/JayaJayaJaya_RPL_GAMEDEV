@@ -41,6 +41,16 @@ public class InventoryUI : MonoBehaviour
   [Tooltip("Prefab for inventory item slot")]
   [SerializeField] private GameObject itemSlotPrefab;
 
+  [Header("Layout & Scroll")]
+  [Tooltip("Optional viewport RectTransform for scrolling. If empty, parent of itemContainer will be used.")]
+  [SerializeField] private RectTransform containerViewport;
+
+  [Tooltip("Maximum height of the inventory list before enabling vertical scroll")]
+  [SerializeField] private float maxContainerHeight = 380f;
+
+  [Tooltip("Limit the container height and enable scrolling when exceeded")]
+  [SerializeField] private bool limitContainerHeight = true;
+
   [Tooltip("Text to display selected item's name")]
   [SerializeField] private TextMeshProUGUI selectedItemNameText;
 
@@ -137,6 +147,8 @@ public class InventoryUI : MonoBehaviour
   {
     if (itemContainer == null) return;
 
+    EnsureViewportAndScroll();
+
     // Ensure vertical layout
     var layoutGroup = itemContainer.GetComponent<VerticalLayoutGroup>();
     if (layoutGroup == null)
@@ -158,6 +170,8 @@ public class InventoryUI : MonoBehaviour
       sizeFitter = itemContainer.gameObject.AddComponent<ContentSizeFitter>();
       sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
     }
+
+    ClampContainerHeight();
   }
 
   /// <summary>
@@ -248,6 +262,8 @@ public class InventoryUI : MonoBehaviour
     // Animate entry
     slotObj.transform.localScale = Vector3.zero;
     slotObj.transform.DOScale(Vector3.one, animDuration).SetEase(Ease.OutBack);
+
+    ClampContainerHeight();
   }
 
   /// <summary>
@@ -359,6 +375,9 @@ public class InventoryUI : MonoBehaviour
 
     // Update name display
     UpdateSelectedItemName();
+
+    // Move selected label near the selected slot
+    PositionSelectedLabel();
   }
 
   /// <summary>
@@ -372,6 +391,33 @@ public class InventoryUI : MonoBehaviour
     {
       selectedItemNameText.text = collectedItems[selectedIndex].itemName;
     }
+  }
+
+  /// <summary>
+  /// Position the selected item label near the selected slot (align Y).
+  /// </summary>
+  private void PositionSelectedLabel()
+  {
+    if (selectedItemNameText == null) return;
+    if (selectedIndex < 0 || selectedIndex >= itemSlots.Count) return;
+
+    var slot = itemSlots[selectedIndex];
+    var slotRT = slot.GetComponent<RectTransform>();
+    var labelRT = selectedItemNameText.rectTransform;
+
+    if (slotRT == null || labelRT == null) return;
+
+    // Compute world center of slot regardless of pivot/anchors
+    Vector3 slotLocalCenter = new Vector3(
+      (0.5f - slotRT.pivot.x) * slotRT.rect.width,
+      (0.5f - slotRT.pivot.y) * slotRT.rect.height,
+      0f);
+
+    Vector3 slotWorldCenter = slotRT.TransformPoint(slotLocalCenter);
+
+    var labelWorldPos = labelRT.position;
+    labelWorldPos.y = slotWorldCenter.y;
+    labelRT.position = labelWorldPos;
   }
 
   /// <summary>
@@ -401,6 +447,80 @@ public class InventoryUI : MonoBehaviour
       {
         selectedItemNameText.gameObject.SetActive(false);
       });
+    }
+  }
+
+  /// <summary>
+  /// Ensure viewport, scrollrect, and mask exist when limiting height.
+  /// </summary>
+  private void EnsureViewportAndScroll()
+  {
+    if (!limitContainerHeight || maxContainerHeight <= 0f) return;
+
+    // Try to resolve viewport
+    if (containerViewport == null && itemContainer != null && itemContainer.parent != null)
+    {
+      containerViewport = itemContainer.parent as RectTransform;
+    }
+
+    if (containerViewport == null) return;
+
+    // If parent already has a ScrollRect, reuse it
+    var existingScroll = containerViewport.GetComponent<ScrollRect>();
+
+    // Add RectMask2D to clip overflowing content
+    var mask = containerViewport.GetComponent<RectMask2D>();
+    if (mask == null)
+    {
+      mask = containerViewport.gameObject.AddComponent<RectMask2D>();
+    }
+
+    // Add or configure ScrollRect on viewport
+    var scroll = existingScroll != null ? existingScroll : containerViewport.gameObject.AddComponent<ScrollRect>();
+
+    scroll.horizontal = false;
+    scroll.vertical = true;
+    scroll.content = itemContainer as RectTransform;
+    scroll.viewport = containerViewport;
+    scroll.scrollSensitivity = 15f;
+    scroll.movementType = ScrollRect.MovementType.Clamped;
+
+    // Ensure content anchors/pivot are top-left for vertical scrolling
+    var contentRT = itemContainer as RectTransform;
+    if (contentRT != null)
+    {
+      contentRT.anchorMin = new Vector2(0f, 1f);
+      contentRT.anchorMax = new Vector2(1f, 1f);
+      contentRT.pivot = new Vector2(0.5f, 1f);
+      contentRT.anchoredPosition = Vector2.zero;
+    }
+
+    // Optional: make viewport respect max height via LayoutElement
+    var le = containerViewport.GetComponent<LayoutElement>();
+    if (le == null)
+    {
+      le = containerViewport.gameObject.AddComponent<LayoutElement>();
+    }
+    le.preferredHeight = maxContainerHeight;
+    le.flexibleHeight = 0f;
+  }
+
+  /// <summary>
+  /// Clamp the container height to maxContainerHeight while keeping preferred height for layout.
+  /// </summary>
+  private void ClampContainerHeight()
+  {
+    if (!limitContainerHeight || maxContainerHeight <= 0f) return;
+
+    // Limit the VIEWPORT height; keep content preferred height so scrolling works
+    if (containerViewport != null)
+    {
+      containerViewport.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, maxContainerHeight);
+
+      var le = containerViewport.GetComponent<LayoutElement>();
+      if (le == null) le = containerViewport.gameObject.AddComponent<LayoutElement>();
+      le.preferredHeight = maxContainerHeight;
+      le.flexibleHeight = 0f;
     }
   }
 
