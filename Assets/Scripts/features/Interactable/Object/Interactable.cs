@@ -30,6 +30,12 @@ public class Interactable : MonoBehaviour
   {
     if (isInteract)
       return;
+    private void OnValidate()
+    {
+#if UNITY_EDITOR
+        SetupInteractable();
+#endif
+    }
 
     isInteract = true;
     onInteract?.Invoke();
