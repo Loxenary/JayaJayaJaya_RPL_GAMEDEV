@@ -92,6 +92,10 @@ public class PlayerController : MonoBehaviour
     {
         if (inputHandler == null) return;
 
+        // Don't process regular movement while on a ladder
+        // LadderZone handles its own movement
+        if (LadderZone.IsAnyLadderActive) return;
+
         // Get input
         Vector2 moveInput = inputHandler.MoveInput;
         bool sprint = inputHandler.IsSprintHeld;
@@ -112,6 +116,9 @@ public class PlayerController : MonoBehaviour
 
     private void HandleJump()
     {
+        // Don't allow jumping while on a ladder
+        if (LadderZone.IsAnyLadderActive) return;
+
         movementHandler.Jump();
     }
 
