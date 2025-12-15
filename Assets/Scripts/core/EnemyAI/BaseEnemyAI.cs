@@ -86,6 +86,16 @@ namespace EnemyAI
         [SerializeField] private SfxClipData[] fleeSfxs;
         [SerializeField] private SfxClipData[] lostSfxs;
 
+        [Header("Animation Settings")]
+        [Tooltip("Name of the walk animation state")]
+        [SerializeField] protected string walkAnimationName = "Walk";
+        [Tooltip("Name of the attack animation state")]
+        [SerializeField] protected string attackAnimationName = "Attack";
+        [Tooltip("Use crossfade for smoother transitions")]
+        [SerializeField] protected bool useAnimationCrossFade = true;
+        [Tooltip("Crossfade duration in seconds")]
+        [SerializeField] protected float animationCrossFadeDuration = 0.15f;
+
 
         protected StateMachine<EnemyState, StateDriverUnity> fsm;
         protected AIPath aiPath;
@@ -402,6 +412,9 @@ namespace EnemyAI
 
             SetNextPatrolPoint();
 
+            // Play walk animation
+            PlayWalkAnimation();
+
             // Play patrol sound
             PlayPatrolSound();
         }
@@ -525,6 +538,9 @@ namespace EnemyAI
                     Log("Reached end of patrol points, looping back to start");
                     currentPatrolIndex = 0;
                     SetNextPatrolPoint();
+
+                    // Play patrol sound when reaching a new patrol point
+                    PlayPatrolSound();
                 }
                 else
                 {
@@ -535,6 +551,9 @@ namespace EnemyAI
             else
             {
                 SetNextPatrolPoint();
+
+                // Play patrol sound when reaching a new patrol point
+                PlayPatrolSound();
             }
         }
 
@@ -550,6 +569,9 @@ namespace EnemyAI
             targetLostTime = 0f;
             seenStateTimer = 0f;
             seenSlowPhaseComplete = false;
+
+            // Play walk animation
+            PlayWalkAnimation();
 
             // Play seen sound
             PlaySeenSound();
@@ -647,6 +669,9 @@ namespace EnemyAI
             {
                 lastKnownTargetPosition = currentTarget.position;
             }
+
+            // Play walk animation
+            PlayWalkAnimation();
 
             // Play looping chasing sound
             PlayChasingSound();
@@ -780,6 +805,9 @@ namespace EnemyAI
         protected virtual void PerformAttack()
         {
             Log($"Attacking target for {stats.attackDamage} damage!");
+
+            // Play attack animation
+            PlayAttackAnimation();
 
             EventBus.Publish(new DamageVisualFeedback.TriggerPulseEvent());
 
@@ -996,6 +1024,81 @@ namespace EnemyAI
                 audioProvider.PlayRandomSfxOnce(lostSfxs);
                 Log("Playing lost sound");
             }
+        }
+
+        #endregion
+
+        #region Animation
+
+        /// <summary>
+        /// Plays the walk animation.
+        /// </summary>
+        protected virtual void PlayWalkAnimation()
+        {
+            if (string.IsNullOrEmpty(walkAnimationName))
+            {
+                return;
+            }
+
+            if (useAnimationCrossFade)
+            {
+                EventBus.Publish(EnemyAnimationPlay.WithCrossFade(walkAnimationName, animationCrossFadeDuration));
+            }
+            else
+            {
+                EventBus.Publish(EnemyAnimationPlay.Simple(walkAnimationName));
+            }
+
+            Log($"Playing walk animation: {walkAnimationName}");
+        }
+
+        /// <summary>
+        /// Plays the attack animation.
+        /// </summary>
+        protected virtual void PlayAttackAnimation()
+        {
+            if (string.IsNullOrEmpty(attackAnimationName))
+            {
+                return;
+            }
+
+            if (useAnimationCrossFade)
+            {
+                EventBus.Publish(EnemyAnimationPlay.WithCrossFade(attackAnimationName, animationCrossFadeDuration));
+            }
+            else
+            {
+                EventBus.Publish(EnemyAnimationPlay.Simple(attackAnimationName));
+            }
+
+            Log($"Playing attack animation: {attackAnimationName}");
+        }
+
+        /// <summary>
+        /// Sets a bool parameter on the animator.
+        /// </summary>
+        protected virtual void SetAnimationBool(string parameterName, bool value)
+        {
+            EventBus.Publish(EnemyAnimationBool.Create(parameterName, value));
+            Log($"Set animation bool: {parameterName} = {value}");
+        }
+
+        /// <summary>
+        /// Sets a float parameter on the animator (e.g., speed).
+        /// </summary>
+        protected virtual void SetAnimationFloat(string parameterName, float value)
+        {
+            EventBus.Publish(EnemyAnimationFloat.Create(parameterName, value));
+            Log($"Set animation float: {parameterName} = {value}");
+        }
+
+        /// <summary>
+        /// Triggers an animator trigger.
+        /// </summary>
+        protected virtual void TriggerAnimation(string triggerName)
+        {
+            EventBus.Publish(EnemyAnimationTrigger.Create(triggerName));
+            Log($"Triggered animation: {triggerName}");
         }
 
         #endregion
