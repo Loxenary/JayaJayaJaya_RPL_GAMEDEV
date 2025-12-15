@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6756628069305417119}
   - component: {fileID: 8316569198038701299}
   - component: {fileID: 2784692873651031059}
-  - component: {fileID: 4425729449050104188}
   - component: {fileID: 8641438631065415323}
   - component: {fileID: 8011339443600456632}
   m_Layer: 0
@@ -69,28 +68,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstState: 0
   isDiable: 0
---- !u!64 &4425729449050104188
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1226410917348268120}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300002, guid: 30a37ce794ca1c94192e4d8721b12940, type: 3}
 --- !u!33 &8641438631065415323
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -499,6 +476,7 @@ GameObject:
   - component: {fileID: 7863782803071841634}
   - component: {fileID: 2579567261458960639}
   - component: {fileID: 2701619169996515741}
+  - component: {fileID: 8232611062453592946}
   m_Layer: 0
   m_Name: Locked Door
   m_TagString: Untagged
@@ -684,3 +662,25 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!64 &8232611062453592946
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8857841566760509017}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
