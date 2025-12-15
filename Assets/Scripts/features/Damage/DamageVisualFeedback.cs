@@ -28,6 +28,14 @@ public class DamageVisualFeedback : MonoBehaviour
         public float duration;
     }
 
+    /// <summary>
+    /// Event for triggering a red damage flash with optional hurt sound
+    /// </summary>
+    public struct TriggerDamageFlashEvent
+    {
+        public bool playHurtSound;
+    }
+
 
     [Header("Volume Setup")]
     [Tooltip("The URP Volume component (auto-assigned if not set)")]
@@ -60,6 +68,16 @@ public class DamageVisualFeedback : MonoBehaviour
     [Tooltip("How fast the pulse fades out")]
     [SerializeField] private float pulseFadeSpeed = 3f;
 
+    [Header("Damage Flash Settings")]
+    [Tooltip("Red flash intensity for trap/ghost damage")]
+    [SerializeField] private float damageFlashIntensity = 0.6f;
+
+    [Tooltip("Duration of the red damage flash (in seconds)")]
+    [SerializeField] private float damageFlashDuration = 0.5f;
+
+    [Tooltip("Color for damage flash (bright red)")]
+    [SerializeField] private Color damageFlashColor = new Color(0.8f, 0.0f, 0.0f, 1f); // Bright red
+
     [Header("Vignette Color")]
     [Tooltip("Color of the vignette at low sanity")]
     [SerializeField] private Color vignetteColor = new Color(0.1f, 0.0f, 0.0f, 1f); // Dark red
@@ -79,6 +97,8 @@ public class DamageVisualFeedback : MonoBehaviour
     private float targetFilmGrainIntensity = 0f;
     private float currentPulseIntensity = 0f;
     private bool isPulsing = false;
+    private bool isDamageFlashing = false;
+    private Color originalVignetteColor;
 
     private void Awake()
     {
@@ -104,6 +124,7 @@ public class DamageVisualFeedback : MonoBehaviour
         PlayerAttributes.onSanityUpdate += OnSanityChanged;
         EventBus.Subscribe<TriggerPulseEvent>(OnPulseEventTrigger);
         EventBus.Subscribe<TriggerPulseEventWithParam>(OnSpecialEvent);
+        EventBus.Subscribe<TriggerDamageFlashEvent>(OnDamageFlashEvent);
     }
 
     private void OnDisable()
@@ -111,6 +132,7 @@ public class DamageVisualFeedback : MonoBehaviour
         PlayerAttributes.onSanityUpdate -= OnSanityChanged;
         EventBus.Unsubscribe<TriggerPulseEvent>(OnPulseEventTrigger);
         EventBus.Unsubscribe<TriggerPulseEventWithParam>(OnSpecialEvent);
+        EventBus.Unsubscribe<TriggerDamageFlashEvent>(OnDamageFlashEvent);
     }
 
     private void Update()
@@ -160,6 +182,7 @@ public class DamageVisualFeedback : MonoBehaviour
         // Set vignette color
         vignette.color.overrideState = true;
         vignette.color.value = vignetteColor;
+        originalVignetteColor = vignetteColor;
 
         // Initialize intensities
         vignette.intensity.overrideState = true;
@@ -283,6 +306,72 @@ public class DamageVisualFeedback : MonoBehaviour
     public void OnSpecialEvent(TriggerPulseEventWithParam param)
     {
         TriggerPulse(param.intensity, param.duration);
+    }
+
+    /// <summary>
+    /// Handle damage flash event (for trap/ghost damage)
+    /// </summary>
+    private void OnDamageFlashEvent(TriggerDamageFlashEvent evt)
+    {
+        TriggerDamageFlash(evt.playHurtSound);
+    }
+
+    /// <summary>
+    /// Trigger a red damage flash effect (for trap/ghost damage)
+    /// </summary>
+    public void TriggerDamageFlash(bool playHurtSound = true)
+    {
+        StopAllCoroutines();
+        StartCoroutine(DamageFlashCoroutine(playHurtSound));
+        Log($"Triggered damage flash: playSound={playHurtSound}");
+    }
+
+    /// <summary>
+    /// Coroutine to handle red damage flash effect
+    /// </summary>
+    private IEnumerator DamageFlashCoroutine(bool playHurtSound)
+    {
+        isDamageFlashing = true;
+
+        // Change vignette to bright red
+        vignette.color.value = damageFlashColor;
+        currentPulseIntensity = damageFlashIntensity;
+
+        // Play hurt sound if requested
+        if (playHurtSound)
+        {
+            var audioManager = ServiceLocator.Get<AudioManager>();
+            if (audioManager != null)
+            {
+                audioManager.PlaySfx(SFXIdentifier.Player_Hurt);
+            }
+        }
+
+        // Hold the flash for the specified duration
+        yield return new WaitForSeconds(damageFlashDuration);
+
+        // Fade out the flash
+        float fadeTimer = 0f;
+        float fadeDuration = 0.3f;
+        Color startColor = damageFlashColor;
+        float startIntensity = currentPulseIntensity;
+
+        while (fadeTimer < fadeDuration)
+        {
+            fadeTimer += Time.deltaTime;
+            float t = fadeTimer / fadeDuration;
+
+            // Lerp color back to original
+            vignette.color.value = Color.Lerp(startColor, originalVignetteColor, t);
+            currentPulseIntensity = Mathf.Lerp(startIntensity, 0f, t);
+
+            yield return null;
+        }
+
+        // Ensure final values
+        vignette.color.value = originalVignetteColor;
+        currentPulseIntensity = 0f;
+        isDamageFlashing = false;
     }
 
     private void Log(string message)

@@ -23,5 +23,9 @@ public enum SFXIdentifier
     Light_Off = 19,
     Endgame_DoorLocked = 20,
     SFX_Hover = 21,
-    SFX_Click = 22
+    SFX_Click = 22,
+
+    // New SFX for damage feedback
+    Player_Hurt = 23,
+    Death_Jumpscare_Cry = 24
 }

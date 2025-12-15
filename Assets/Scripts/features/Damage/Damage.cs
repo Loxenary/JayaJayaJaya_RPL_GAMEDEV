@@ -34,7 +34,8 @@ public class Damage : MonoBehaviour
 
   private void TriggerVisual()
   {
-    EventBus.Publish(new DamageVisualFeedback.TriggerPulseEvent());
+    // Trigger red damage flash with hurt sound (for trap/ghost damage)
+    EventBus.Publish(new DamageVisualFeedback.TriggerDamageFlashEvent { playHurtSound = true });
   }
 
   private void OnTriggerEnter(Collider other)

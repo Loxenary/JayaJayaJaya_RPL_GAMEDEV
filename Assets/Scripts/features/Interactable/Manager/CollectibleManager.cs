@@ -26,16 +26,25 @@ public class CollectibleManager : MonoBehaviour
                 counting.IncrementKey();
                 break;
             case CollectibleType.Puzzle:
-                counting.IncrementPuzzle();
-                if(counting.GetPuzzleCount() == 0)
+                // Check if first puzzle pickup BEFORE incrementing
+                if (counting.GetPuzzleCount() == 0)
                 {
                     firstPuzzlePickup?.Invoke();
+                    // Publish event for other systems (like SanityTimerSystem)
+                    EventBus.Publish(new FirstPuzzleCollectedEvent());
                 }
+                counting.IncrementPuzzle();
                 break;
             default:
                 break;
         }
     }
+
+    /// <summary>
+    /// Event published when the first puzzle piece is collected
+    /// </summary>
+    public struct FirstPuzzleCollectedEvent { }
+
     [Serializable]
     public class CollectibleCount
     {
@@ -52,7 +61,8 @@ public class CollectibleManager : MonoBehaviour
         {
             puzzle++;
         }
-        public int GetPuzzleCount() {  return key; }
+        public int GetPuzzleCount() { return puzzle; }
+        public int GetKeyCount() { return key; }
     }
 
 }
