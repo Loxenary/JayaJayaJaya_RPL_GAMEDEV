@@ -20,6 +20,9 @@ public class AdvancedTilePainter : EditorWindow
   [SerializeField] private float lockedY = 0f;
   [SerializeField] private Vector3 placementOffset = Vector3.zero;
   [SerializeField] private bool ignoreObstructions = true;
+  [SerializeField] private float ySnapStep = 1f;
+  [SerializeField] private float minHeightDifference = 0.25f;
+  [SerializeField] private float lockedYStackStep = 1f;
   [SerializeField] private bool alignToSurfaceNormal = false;
   [SerializeField] private bool snapRotationY = true;
   [SerializeField] private float rotationStep = 90f;
@@ -130,6 +133,17 @@ public class AdvancedTilePainter : EditorWindow
     using (new EditorGUI.DisabledScope(!lockY))
     {
       lockedY = EditorGUILayout.FloatField("Locked Y", lockedY);
+    }
+
+    using (new EditorGUI.DisabledScope(lockY))
+    {
+      ySnapStep = Mathf.Max(0.01f, EditorGUILayout.FloatField("Y Snap Step", ySnapStep));
+      minHeightDifference = Mathf.Max(0.01f, EditorGUILayout.FloatField("Min Height Difference", minHeightDifference));
+    }
+
+    using (new EditorGUI.DisabledScope(!lockY))
+    {
+      lockedYStackStep = Mathf.Max(0.01f, EditorGUILayout.FloatField("Locked Y Stack Step", lockedYStackStep));
     }
     ignoreObstructions = EditorGUILayout.Toggle("Ignore Obstructions", ignoreObstructions);
     placementOffset = EditorGUILayout.Vector3Field("Placement Offset", placementOffset);
@@ -324,6 +338,14 @@ public class AdvancedTilePainter : EditorWindow
     Vector3 p = pos - placementOffset;
     p.x = Mathf.Round(p.x / gridSize) * gridSize;
     p.z = Mathf.Round(p.z / gridSize) * gridSize;
+    if (!lockY)
+    {
+      p.y = Mathf.Round(p.y / ySnapStep) * ySnapStep;
+    }
+    else
+    {
+      p.y = Mathf.Round(p.y / lockedYStackStep) * lockedYStackStep;
+    }
     pos = p + placementOffset;
   }
 
@@ -518,6 +540,9 @@ public class AdvancedTilePainter : EditorWindow
     public float lockedY;
     public Vector3 placementOffset;
     public bool ignoreObstructions;
+    public float ySnapStep;
+    public float minHeightDifference;
+    public float lockedYStackStep;
     public bool alignToSurfaceNormal;
     public bool snapRotationY;
     public float rotationStep;
@@ -545,6 +570,9 @@ public class AdvancedTilePainter : EditorWindow
       lockedY = lockedY,
       placementOffset = placementOffset,
       ignoreObstructions = ignoreObstructions,
+      ySnapStep = ySnapStep,
+      minHeightDifference = minHeightDifference,
+      lockedYStackStep = lockedYStackStep,
       alignToSurfaceNormal = alignToSurfaceNormal,
       snapRotationY = snapRotationY,
       rotationStep = rotationStep,
@@ -583,6 +611,9 @@ public class AdvancedTilePainter : EditorWindow
     lockedY = data.lockedY;
     placementOffset = data.placementOffset;
     ignoreObstructions = data.ignoreObstructions;
+    ySnapStep = data.ySnapStep;
+    minHeightDifference = data.minHeightDifference;
+    lockedYStackStep = data.lockedYStackStep;
     alignToSurfaceNormal = data.alignToSurfaceNormal;
     snapRotationY = data.snapRotationY;
     rotationStep = data.rotationStep;
@@ -605,14 +636,36 @@ public class AdvancedTilePainter : EditorWindow
   {
     Vector3 p = pos - placementOffset;
     int x = Mathf.RoundToInt(p.x / gridSize);
-    int y = lockY ? Mathf.RoundToInt(lockedY / Mathf.Max(0.0001f, gridSize)) : Mathf.RoundToInt(p.y / gridSize);
     int z = Mathf.RoundToInt(p.z / gridSize);
+
+    int y;
+    if (lockY)
+    {
+      float step = Mathf.Max(lockedYStackStep, minHeightDifference);
+      y = Mathf.RoundToInt(p.y / step);
+    }
+    else
+    {
+      float step = Mathf.Max(ySnapStep, minHeightDifference);
+      y = Mathf.RoundToInt(p.y / step);
+    }
     return new Vector3Int(x, y, z);
   }
 
   private Vector3 CellToWorld(Vector3Int cell)
   {
-    return new Vector3(cell.x * gridSize, (lockY ? lockedY : cell.y * gridSize), cell.z * gridSize) + placementOffset;
+    float yPos;
+    if (lockY)
+    {
+      float step = Mathf.Max(lockedYStackStep, minHeightDifference);
+      yPos = cell.y * step;
+    }
+    else
+    {
+      float step = Mathf.Max(ySnapStep, minHeightDifference);
+      yPos = cell.y * step;
+    }
+    return new Vector3(cell.x * gridSize, yPos, cell.z * gridSize) + placementOffset;
   }
 
   private void ApplyRectangle(Quaternion baseRot)
