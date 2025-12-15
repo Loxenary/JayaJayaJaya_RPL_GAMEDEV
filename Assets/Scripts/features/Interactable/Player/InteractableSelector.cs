@@ -14,6 +14,7 @@ public class InteractableSelector : MonoBehaviour
   [SerializeField] private float interactDistance = 3f;
   [SerializeField] private LayerMask targetLayer = -1;
   [SerializeField] private float raycastBackOffset = 0.2f;
+  [SerializeField] private LayerMask blockingMask = ~0; // Layers that can block interaction (player layer removed at runtime)
 
   private Interactable currentObject;
 
@@ -25,6 +26,13 @@ public class InteractableSelector : MonoBehaviour
   {
     input = new InputSystem_Actions();
     input.Player.Interact.performed += OnPressInteract;
+
+    // Remove player layer from blocker mask so we don't block ourselves
+    int playerLayer = LayerMask.NameToLayer("Player");
+    if (playerLayer >= 0)
+    {
+      blockingMask &= ~(1 << playerLayer);
+    }
 
     // Try to find camera if raycastOrigin not assigned
     if (raycastOrigin == null)
@@ -62,49 +70,35 @@ public class InteractableSelector : MonoBehaviour
     Vector3 origin = raycastOrigin.position - raycastOrigin.forward * raycastBackOffset;
     Ray ray = new Ray(origin, raycastOrigin.forward);
     RaycastHit hit;
-
-    // Debug ray in Scene view
-    Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.green);
-
-    if (Physics.Raycast(ray, out hit, interactDistance, targetLayer))
+    if (!Physics.Raycast(ray, out hit, interactDistance, blockingMask, QueryTriggerInteraction.Collide))
     {
-      Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
-
-      if (interactable != null)
-      {
-        if (!interactable.IsInteractable)
-        {
-          ClearCurrentObject();
-          return;
-        }
-
-        // New object detected
-        if (interactable != currentObject)
-        {
-          // Unhighlight previous object
-          if (currentObject != null)
-          {
-            UnhighlightObject(currentObject.gameObject);
-            EventBus.Publish(InteractEventState.OnExit);
-          }
-
-          // Highlight new object
-          currentObject = interactable;
-          previousObject = interactable;
-          HighlightObject(currentObject.gameObject);
-          EventBus.Publish(InteractEventState.OnEnter);
-        }
-      }
-      else
-      {
-        // Hit something but not interactable
-        ClearCurrentObject();
-      }
-    }
-    else
-    {
-      // No hit
       ClearCurrentObject();
+      return;
+    }
+
+    // Nearest hit decides: if it's not an interactable, interaction is blocked
+    Interactable interactableHit = hit.collider.GetComponentInParent<Interactable>();
+    if (interactableHit == null || !interactableHit.IsInteractable)
+    {
+      ClearCurrentObject();
+      return;
+    }
+
+    // New object detected
+    if (interactableHit != currentObject)
+    {
+      // Unhighlight previous object
+      if (currentObject != null)
+      {
+        UnhighlightObject(currentObject.gameObject);
+        EventBus.Publish(InteractEventState.OnExit);
+      }
+
+      // Highlight new object
+      currentObject = interactableHit;
+      previousObject = interactableHit;
+      HighlightObject(currentObject.gameObject);
+      EventBus.Publish(InteractEventState.OnEnter);
     }
   }
 

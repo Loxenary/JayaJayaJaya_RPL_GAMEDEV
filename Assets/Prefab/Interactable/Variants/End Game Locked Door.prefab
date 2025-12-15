@@ -43,7 +43,7 @@ PrefabInstance:
     - target: {fileID: 2579567261458960639, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 3192149924013628485}
+      objectReference: {fileID: 0}
     - target: {fileID: 2579567261458960639, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -167,11 +167,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8553253761576418019}
   m_SourcePrefab: {fileID: 100100000, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
---- !u!65 &3192149924013628485 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 535544564898395539, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
-  m_PrefabInstance: {fileID: 3108162694314174934}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5894990334559303567 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8857841566760509017, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
@@ -194,12 +189,12 @@ MonoBehaviour:
       m_Calls: []
   timeRotate: 1.5
   rootObject: {fileID: 0}
-  targetRotation: {x: 0, y: 0, z: 0}
+  targetRotation: {x: 0, y: 95, z: 0}
   playerReference: {fileID: 0}
   OnDoneRotate:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3192149924013628485}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UnityEngine.Collider, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
