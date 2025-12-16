@@ -58,9 +58,9 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
         if (!interactedPuzzle.Contains(evt.puzzleId))
         {
             interactedPuzzle.Add(evt.puzzleId);
-            currentTrackedCollectible++;
 
             mapping.Add(evt.puzzleId, currentTrackedCollectible);
+            currentTrackedCollectible++;
             EventBus.Publish(new InteractedPuzzleCount()
             {
                 puzzleCount = currentTrackedCollectible
