@@ -131417,7 +131417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40abc607ef06be4091f5e454d941c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicEventData: {fileID: 11400000, guid: a0082d57ff77fb44ca4c354ad74f1df1, type: 2}
+  musicEventData: {fileID: 11400000, guid: c87eae6f7919e2f41af0b8dbac33ebd5, type: 2}
   defaultFadeDuration: 1
   defaultTransitionCurve: 4
   silenceDuration: 0
