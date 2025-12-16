@@ -68,6 +68,14 @@ public class InteractableRotate : Interactable
         {
           isInteract = openState;
           OnDoneRotate?.Invoke();
+          wait = false;
         });
   }
+    protected void DoRotate(Vector3 target)
+    {
+        rotateTween = rootObject.DOLocalRotate(target, timeRotate).OnComplete(() => {
+            OnDoneRotate?.Invoke();
+            wait = false;
+        });
+    }
 }
