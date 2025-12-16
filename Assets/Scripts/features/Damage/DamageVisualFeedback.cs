@@ -46,12 +46,12 @@ public class DamageVisualFeedback : MonoBehaviour
   [SerializeField]
   private SanityVisualThreshold[] sanityThresholds = new SanityVisualThreshold[]
   {
-        new SanityVisualThreshold { sanityThreshold = 1.0f, vignetteIntensity = 0.0f, chromaticAberrationIntensity = 0.0f, filmGrainIntensity = 0.0f },
-        new SanityVisualThreshold { sanityThreshold = 0.7f, vignetteIntensity = 0.2f, chromaticAberrationIntensity = 0.0f, filmGrainIntensity = 0.1f },
-        new SanityVisualThreshold { sanityThreshold = 0.5f, vignetteIntensity = 0.35f, chromaticAberrationIntensity = 0.2f, filmGrainIntensity = 0.3f },
+        new SanityVisualThreshold { sanityThreshold = 1.0f, vignetteIntensity = 0.2f, chromaticAberrationIntensity = 0.0f, filmGrainIntensity = 0.0f },
+        new SanityVisualThreshold { sanityThreshold = 0.7f, vignetteIntensity = 0.3f, chromaticAberrationIntensity = 0.0f, filmGrainIntensity = 0.1f },
+        new SanityVisualThreshold { sanityThreshold = 0.5f, vignetteIntensity = 0.4f, chromaticAberrationIntensity = 0.2f, filmGrainIntensity = 0.3f },
         new SanityVisualThreshold { sanityThreshold = 0.3f, vignetteIntensity = 0.5f, chromaticAberrationIntensity = 0.4f, filmGrainIntensity = 0.5f },
-        new SanityVisualThreshold { sanityThreshold = 0.2f, vignetteIntensity = 0.65f, chromaticAberrationIntensity = 0.6f, filmGrainIntensity = 0.7f },
-        new SanityVisualThreshold { sanityThreshold = 0.0f, vignetteIntensity = 0.8f, chromaticAberrationIntensity = 0.8f, filmGrainIntensity = 1.0f }
+        new SanityVisualThreshold { sanityThreshold = 0.2f, vignetteIntensity = 0.75f, chromaticAberrationIntensity = 0.6f, filmGrainIntensity = 0.7f },
+        new SanityVisualThreshold { sanityThreshold = 0.0f, vignetteIntensity = 0.9f, chromaticAberrationIntensity = 0.8f, filmGrainIntensity = 1.0f }
   };
 
   [Header("Smooth Transition")]
