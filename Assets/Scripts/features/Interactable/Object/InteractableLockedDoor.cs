@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
-using static InteractableLockedDoor;
+//using static InteractableLockedDoor;
 
 public class InteractableLockedDoor : InteractableDoor, IHighlight
 {
@@ -11,8 +11,11 @@ public class InteractableLockedDoor : InteractableDoor, IHighlight
     [ReadOnly]
     [SerializeField] bool isKeyUnlock => isUnlock;
 #endif
-
-    bool isUnlock;
+#if UNITY_EDITOR
+    [ReadOnly]
+#endif
+    [SerializeField]
+    protected bool isUnlock;
 
     public UnityEvent OnWrongKeys;
 
@@ -46,12 +49,16 @@ public class InteractableLockedDoor : InteractableDoor, IHighlight
         }
         else
         {
-            OnWrongKeys?.Invoke();
-            onWrongKey?.Invoke();
-            Debug.Log("Masih Terkunci");
+            OnWrongKey();
         }
     }
 
+    protected void OnWrongKey()
+    {
+        OnWrongKeys?.Invoke();
+        onWrongKey?.Invoke();
+        Debug.Log("Masih Terkunci");
+    }
 
     public void Highlight()
     {

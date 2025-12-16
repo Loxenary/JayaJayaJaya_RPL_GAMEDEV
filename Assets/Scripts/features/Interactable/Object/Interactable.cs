@@ -16,8 +16,8 @@ public class Interactable : MonoBehaviour
   [SerializeField] private bool _isInteract => isInteract;
 
 #endif
-
-  protected bool isInteract;
+    [SerializeField]
+    protected bool isInteract;
 
   // Child InteractableZone handles collider + layer. No setup needed here.
 

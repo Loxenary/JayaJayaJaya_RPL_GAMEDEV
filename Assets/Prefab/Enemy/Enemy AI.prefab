@@ -586,16 +586,36 @@ MonoBehaviour:
   showStateInInspector: 1
   audioProvider: {fileID: 5307555136844876363}
   attackSfxs:
-  - {fileID: 11400000, guid: e41740ba4fd75d74fa2c40b6d84fe6ab, type: 2}
-  chasingSfxs: []
+    playType: 0
+    loop: 0
+    audioClips:
+    - {fileID: 11400000, guid: e41740ba4fd75d74fa2c40b6d84fe6ab, type: 2}
+  chasingSfxs:
+    playType: 0
+    loop: 0
+    audioClips:
+    - {fileID: 11400000, guid: cbeabe64eea384a4a8c4abda026b64a5, type: 2}
   seenSfxs:
-  - {fileID: 11400000, guid: f97a9e5e371241d4f914c6fb0f51ae40, type: 2}
+    playType: 0
+    loop: 0
+    audioClips:
+    - {fileID: 11400000, guid: f97a9e5e371241d4f914c6fb0f51ae40, type: 2}
   patrolSfxs:
-  - {fileID: 11400000, guid: 5c7c1d596af57c34badd0cc64c140572, type: 2}
+    playType: 0
+    loop: 1
+    audioClips:
+    - {fileID: 11400000, guid: cda0c392440e5f54291b2db31b751212, type: 2}
   fleeSfxs:
-  - {fileID: 11400000, guid: 891928f4669b9184dbbe99f1af561eb9, type: 2}
+    playType: 1
+    loop: 0
+    audioClips:
+    - {fileID: 11400000, guid: 949a6050c1b9112408bcf3b7430c4cda, type: 2}
+    - {fileID: 11400000, guid: f516d26f4c30a92498ef92763ba65110, type: 2}
   lostSfxs:
-  - {fileID: 11400000, guid: f516d26f4c30a92498ef92763ba65110, type: 2}
+    playType: 0
+    loop: 0
+    audioClips:
+    - {fileID: 11400000, guid: 891928f4669b9184dbbe99f1af561eb9, type: 2}
   walkAnimationName: Walk
   attackAnimationName: Attack
   useAnimationCrossFade: 1
