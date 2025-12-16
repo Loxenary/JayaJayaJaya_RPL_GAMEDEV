@@ -41607,6 +41607,7 @@ MonoBehaviour:
       m_Calls: []
   keyID: 102
   highlight: {fileID: 1931628511}
+  isUnlock: 0
   OnWrongKeys:
     m_PersistentCalls:
       m_Calls: []
@@ -58322,6 +58323,7 @@ MonoBehaviour:
         m_CallState: 2
   keyID: 105
   highlight: {fileID: 700336944}
+  isUnlock: 0
   OnWrongKeys:
     m_PersistentCalls:
       m_Calls: []
@@ -82657,9 +82659,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1042977008}
-  - component: {fileID: 1042977007}
-  - component: {fileID: 1042977006}
-  - component: {fileID: 1042977005}
+  - component: {fileID: 1042977010}
+  - component: {fileID: 1042977009}
   m_Layer: 0
   m_Name: AmbienceMusicProvider
   m_TagString: Untagged
@@ -82667,52 +82668,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1042977005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1042977004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bfe399984b51304a8ae58731cc2b0ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  configuration: {fileID: 11400000, guid: c823bb771b5cc7d41b0ced3b8e3f180d, type: 2}
-  crossFadeDuration: 2
-  tensionLayerVolumeMultiplier: 0.4
-  showDebugLogs: 0
---- !u!114 &1042977006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1042977004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 419c293192eaaf64284f753ad321949b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ambienceProvider: {fileID: 1042977005}
-  showDebugLogs: 1
---- !u!114 &1042977007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1042977004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 110422a77b5949c4ba9fbb88db76b436, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ambienceProvider: {fileID: 1042977005}
-  lowSanityThreshold: 0.3
-  veryLowSanityThreshold: 0.15
-  showDebugLogs: 0
 --- !u!4 &1042977008
 Transform:
   m_ObjectHideFlags: 0
@@ -82728,6 +82683,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1042977009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1042977004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b40abc607ef06be4091f5e454d941c04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicEventData: {fileID: 11400000, guid: a0082d57ff77fb44ca4c354ad74f1df1, type: 2}
+  defaultFadeDuration: 1
+  defaultTransitionCurve: 4
+  silenceDuration: 0
+  backgroundLayerMultiplier: 0.395
+  showDebugLogs: 0
+--- !u!114 &1042977010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1042977004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a4444f27f33424fa03d0047cd31bc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicManager: {fileID: 1042977009}
+  showDebugLogs: 1
 --- !u!1001 &1042993105
 PrefabInstance:
   m_ObjectHideFlags: 0

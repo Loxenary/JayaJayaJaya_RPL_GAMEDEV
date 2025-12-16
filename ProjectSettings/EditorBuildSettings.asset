@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InGame/In Game UI.unity
     guid: bf9f0f41877f3c9428584f4c5bb99aa2
+  - enabled: 1
+    path: Assets/Scenes/MainMenu/MainMenuUI Add Narrative.unity
+    guid: bdc48c0574480734191c7d4910da4f72
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: f255a36946f5c8a4cabc197476d84d6d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

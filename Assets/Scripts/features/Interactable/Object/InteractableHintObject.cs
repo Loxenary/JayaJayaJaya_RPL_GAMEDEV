@@ -18,23 +18,25 @@ public class InteractableHintObject : InteractableRotate
   {
     if (wait) return;
 
-    onInteract?.Invoke();
+    //onInteract?.Invoke();
     if (isInteract)
     {
-      base.InteractObject();
-      OnSecondInteract?.Invoke();
+
+
+
+            OnSecondInteract?.Invoke();
       return;
     }
-
     else
     {
-      wait = true;
-      DoRotate(targetRotation, !isInteract);
-    }
+            isInteract = true;
+            onCheckIsFirst?.Invoke();
+            onInteract?.Invoke();
+            wait = true;
+            DoRotate(targetRotation);
+        }
 
-    isInteract = true;
-
-    onCheckIsFirst?.Invoke();
+ 
 
     //DOTween.Sequence().SetDelay(delayCollider).OnComplete(() => {
     //    onDelayedCall?.Invoke();

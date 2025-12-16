@@ -14,15 +14,15 @@ public class InteractableFirstPuzzle : InteractablePuzzle, IRestartable
 
     }
 
-    //public void TriggerFirstPuzzle()
-    //{
-    //    if (_isFirstPuzzle)
-    //    {
-    //        _isFirstPuzzle = false;
-    //        EventBus.Publish(new FirstPuzzleEvent());
-    //    }
+    public void TriggerFirstPuzzle()
+    {
+        if (_isFirstPuzzle)
+        {
+            _isFirstPuzzle = false;
+            EventBus.Publish(new FirstPuzzleEvent());
+        }
 
-    //}
+    }
 
     private void Awake()
     {
