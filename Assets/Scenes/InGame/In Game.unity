@@ -31511,6 +31511,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 989156983715006675, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1687374653}
+    - targetCorrespondingSourceObject: {fileID: 989156983715006675, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1687374654}
   m_SourcePrefab: {fileID: 100100000, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
 --- !u!1 &373871136 stripped
 GameObject:
@@ -41553,6 +41556,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7955278004877889140, guid: ac79ca38b1466b94ba5bc9b613563ba8, type: 3}
   m_PrefabInstance: {fileID: 8108597839951400185}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &486903085 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2718269637800294197, guid: ac79ca38b1466b94ba5bc9b613563ba8, type: 3}
+  m_PrefabInstance: {fileID: 8108597839951400185}
+  m_PrefabAsset: {fileID: 0}
 --- !u!82 &486903087 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 5631966944298204087, guid: ac79ca38b1466b94ba5bc9b613563ba8, type: 3}
@@ -41573,18 +41581,6 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 486903087}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1931628511}
         m_TargetAssemblyTypeName: HiglightObjectPlus, Assembly-CSharp
         m_MethodName: SetDisable
@@ -41598,18 +41594,43 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   isInteract: 0
-  timeRotate: 1.5
-  rootObject: {fileID: 0}
-  targetRotation: {x: 0, y: 0, z: 0}
+  timeRotate: 0.75
+  rootObject: {fileID: 486903085}
+  targetRotation: {x: 1.3, y: 0, z: -0.55}
   playerReference: {fileID: 0}
   OnDoneRotate:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1931628511}
+        m_TargetAssemblyTypeName: HiglightObjectPlus, Assembly-CSharp
+        m_MethodName: UnHighlight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   keyID: 102
   highlight: {fileID: 1931628511}
+  isUnlock: 0
   OnWrongKeys:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 486903087}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &487824526 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6873387218773723365, guid: 1f2f53f040eb8bd4aa2eaf59d243db85, type: 3}
@@ -58322,6 +58343,7 @@ MonoBehaviour:
         m_CallState: 2
   keyID: 105
   highlight: {fileID: 700336944}
+  isUnlock: 0
   OnWrongKeys:
     m_PersistentCalls:
       m_Calls: []
@@ -135633,6 +135655,10 @@ PrefabInstance:
       propertyPath: m_ExcludeLayers.m_Bits
       value: 2048
       objectReference: {fileID: 0}
+    - target: {fileID: 7926145230892854183, guid: aaa78d0678de2c44c98fd3e6ebdd0c70, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7966489646688561827, guid: aaa78d0678de2c44c98fd3e6ebdd0c70, type: 3}
       propertyPath: m_ExcludeLayers.m_Bits
       value: 2048
@@ -136305,6 +136331,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpscareDelay: 0
   useRandomCrySound: 1
+--- !u!114 &1687374654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373871136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f63164450fec7e4e800755a54b193f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walk: {fileID: 11400000, guid: cccaaabc5fb9ec443ba6d944ddb81c8c, type: 2}
+  run: {fileID: 11400000, guid: 47aa2a78f5120fb48967b831f4e16e38, type: 2}
 --- !u!1001 &1687580525
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -154672,8 +154712,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0.3461274, g: 1, b: 0, a: 1}
-  outlineWidth: 5
+  outlineColor: {r: 0.98039216, g: 1, b: 0.3254902, a: 1}
+  outlineWidth: 1.5
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -174881,6 +174921,10 @@ PrefabInstance:
       propertyPath: m_ExcludeLayers.m_Bits
       value: 2048
       objectReference: {fileID: 0}
+    - target: {fileID: 2718269637800294197, guid: ac79ca38b1466b94ba5bc9b613563ba8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.34
+      objectReference: {fileID: 0}
     - target: {fileID: 2792995292050456813, guid: ac79ca38b1466b94ba5bc9b613563ba8, type: 3}
       propertyPath: m_ExcludeLayers.m_Bits
       value: 2048
@@ -175277,7 +175321,8 @@ PrefabInstance:
       propertyPath: m_ExcludeLayers.m_Bits
       value: 2048
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3129316103463232249, guid: ac79ca38b1466b94ba5bc9b613563ba8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
