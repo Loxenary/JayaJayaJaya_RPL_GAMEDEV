@@ -1,9 +1,9 @@
 using UnityEngine;
-using System.Collections;
 using MonsterLove.StateMachine;
 using Pathfinding;
-using Unity.VisualScripting;
 using System.Collections.Generic;
+using Ambience;
+using System;
 
 namespace EnemyAI
 {
@@ -31,6 +31,60 @@ namespace EnemyAI
             Chase,
             Attack,
             Flee,
+        }
+
+        public enum AudioPlayType
+        {
+            Random,
+            Sequential,
+        }
+
+        [Serializable]
+        public class AudioStateRecords
+        {
+            public AudioPlayType playType = AudioPlayType.Random;
+            public bool loop = false;
+            public SfxClipData[] audioClips;
+
+            public int Length => audioClips.Length;
+
+            public void PlayRandom(EnemyAudioProvider audioProvider)
+            {
+                if (loop)
+                {
+                    audioProvider.PlayRandomSfxLooping(audioClips);
+                }
+            }
+
+            public void PlaySFX(EnemyAudioProvider audioProvider)
+            {
+                switch (playType)
+                {
+                    case AudioPlayType.Random:
+                        if (loop)
+                        {
+                            audioProvider.PlayRandomSfxLooping(audioClips);
+                        }
+                        else
+                        {
+                            audioProvider.PlayRandomSfxOnce(audioClips);
+                        }
+                        break;
+                    case AudioPlayType.Sequential:
+                        if (loop)
+                        {
+                            audioProvider.PlaySequentialSfxLooping(audioClips);
+                        }
+                        else
+                        {
+                            // For non-looping sequential, just play the first one
+                            audioProvider.PlayRandomSfxOnce(audioClips);
+                        }
+                        break;
+                }
+            }
+
+
         }
 
         [Header("Configuration")]
@@ -78,13 +132,13 @@ namespace EnemyAI
 
         [Header("Audio Config")]
         [SerializeField] private EnemyAudioProvider audioProvider;
-        [SerializeField] private SfxClipData[] attackSfxs;
-        [SerializeField] private SfxClipData[] chasingSfxs;
-        [SerializeField] private SfxClipData[] seenSfxs;
-        [SerializeField] private SfxClipData[] patrolSfxs;
+        [SerializeField] private AudioStateRecords attackSfxs;
+        [SerializeField] private AudioStateRecords chasingSfxs;
+        [SerializeField] private AudioStateRecords seenSfxs;
+        [SerializeField] private AudioStateRecords patrolSfxs;
 
-        [SerializeField] private SfxClipData[] fleeSfxs;
-        [SerializeField] private SfxClipData[] lostSfxs;
+        [SerializeField] private AudioStateRecords fleeSfxs;
+        [SerializeField] private AudioStateRecords lostSfxs;
 
         [Header("Animation Settings")]
         [Tooltip("Name of the walk animation state")]
@@ -95,7 +149,6 @@ namespace EnemyAI
         [SerializeField] protected bool useAnimationCrossFade = true;
         [Tooltip("Crossfade duration in seconds")]
         [SerializeField] protected float animationCrossFadeDuration = 0.15f;
-
 
         protected StateMachine<EnemyState, StateDriverUnity> fsm;
         protected AIPath aiPath;
@@ -231,7 +284,7 @@ namespace EnemyAI
 
         protected virtual void ChooseRandomBehavior()
         {
-            if (patrolPoints != null && patrolPoints.Count > 0 && Random.value <= patrolChance)
+            if (patrolPoints != null && patrolPoints.Count > 0 && UnityEngine.Random.value <= patrolChance)
             {
                 fsm.ChangeState(EnemyState.Patrol);
             }
@@ -363,7 +416,7 @@ namespace EnemyAI
             Log("Entering Idle state");
             aiPath.canMove = false;
             currentTarget = null;
-            currentIdleWaitTime = Random.Range(idleWaitTimeMin, idleWaitTimeMax);
+            currentIdleWaitTime = UnityEngine.Random.Range(idleWaitTimeMin, idleWaitTimeMax);
             idleWaitTimer = 0f;
         }
 
@@ -575,6 +628,8 @@ namespace EnemyAI
 
             // Play seen sound
             PlaySeenSound();
+
+
         }
 
         protected virtual void Seen_Update()
@@ -938,30 +993,29 @@ namespace EnemyAI
         #region Audio Methods
 
         /// <summary>
-        /// Plays a random attack sound once.
+        /// Plays attack sound based on configuration (random or sequential, looping or once).
         /// </summary>
         protected virtual void PlayAttackSound()
         {
             if (audioProvider != null && attackSfxs != null && attackSfxs.Length > 0)
             {
-                audioProvider.PlayRandomSfxOnce(attackSfxs);
+                attackSfxs.PlaySFX(audioProvider);
                 Log("Playing attack sound");
             }
         }
 
         /// <summary>
-        /// Plays a random chasing sound in loop mode.
-        /// The sound will keep looping until StopChasingSound is called.
+        /// Plays chasing sound based on configuration (random or sequential, looping or once).
         /// </summary>
         protected virtual void PlayChasingSound()
         {
             if (audioProvider != null && chasingSfxs != null && chasingSfxs.Length > 0)
             {
-                // Only start if not already looping
-                if (!audioProvider.IsLoopingPlaying())
+                // Only start if not already playing
+                if (!audioProvider.IsLoopingPlaying() && !audioProvider.IsSequentialPlaying())
                 {
-                    audioProvider.PlayRandomSfxLooping(chasingSfxs);
-                    Log("Playing chasing sound (looping)");
+                    chasingSfxs.PlaySFX(audioProvider);
+                    Log("Playing chasing sound");
                 }
             }
         }
@@ -979,51 +1033,55 @@ namespace EnemyAI
         }
 
         /// <summary>
-        /// Plays a random seen sound once.
+        /// Plays seen sound based on configuration (random or sequential, looping or once).
         /// </summary>
         protected virtual void PlaySeenSound()
         {
             if (audioProvider != null && seenSfxs != null && seenSfxs.Length > 0)
             {
-                audioProvider.PlayRandomSfxOnce(seenSfxs);
+                seenSfxs.PlaySFX(audioProvider);
                 Log("Playing seen sound");
             }
+
+            EventBus.Publish(new MusicEventRequest(MusicEventType.Enemy_Seen));
         }
 
         /// <summary>
-        /// Plays a random patrol sound once.
+        /// Plays patrol sound based on configuration (random or sequential, looping or once).
         /// </summary>
         protected virtual void PlayPatrolSound()
         {
             if (audioProvider != null && patrolSfxs != null && patrolSfxs.Length > 0)
             {
-                audioProvider.PlayRandomSfxOnce(patrolSfxs);
+                patrolSfxs.PlaySFX(audioProvider);
                 Log("Playing patrol sound");
             }
         }
 
         /// <summary>
-        /// Plays a random flee sound once.
+        /// Plays flee sound based on configuration (random or sequential, looping or once).
         /// </summary>
         protected virtual void PlayFleeSound()
         {
             if (audioProvider != null && fleeSfxs != null && fleeSfxs.Length > 0)
             {
-                audioProvider.PlayRandomSfxOnce(fleeSfxs);
+                fleeSfxs.PlaySFX(audioProvider);
                 Log("Playing flee sound");
             }
         }
 
         /// <summary>
-        /// Plays a random lost sound once (when target is lost).
+        /// Plays lost sound based on configuration (random or sequential, looping or once).
         /// </summary>
         protected virtual void PlayLostSound()
         {
             if (audioProvider != null && lostSfxs != null && lostSfxs.Length > 0)
             {
-                audioProvider.PlayRandomSfxOnce(lostSfxs);
+                lostSfxs.PlaySFX(audioProvider);
                 Log("Playing lost sound");
             }
+
+            EventBus.Publish(new MusicEventEnd(MusicEventType.Enemy_Seen));
         }
 
         #endregion
