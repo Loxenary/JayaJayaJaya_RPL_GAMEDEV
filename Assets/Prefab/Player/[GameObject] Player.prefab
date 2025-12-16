@@ -216,6 +216,7 @@ MonoBehaviour:
   initialTogle: 1
   decrementInterval: 3
   decrementBatteryValue: 1
+  sanityDrainRate: 5
   OnValueSanityUpdate:
     m_PersistentCalls:
       m_Calls: []
