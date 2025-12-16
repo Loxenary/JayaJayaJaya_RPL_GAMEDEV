@@ -24,9 +24,11 @@ public class DialogNarrativeUIMultipleParagraph : DialogNarrativeUI
             if (narrative.IsDone())
             {
                 //base.OnDialogFinishedShowing();
-                blackPanel.DOFade(1, .35f).OnComplete(() => {
-                    ServiceLocator.Get<FlowManager>().PlayGame();
-                });
+                DOVirtual.DelayedCall(delayParagraph + .5f, () => {
+                    blackPanel.DOFade(1, .35f).OnComplete(() => {
+                        ServiceLocator.Get<FlowManager>().PlayGame();
+                    });
+                });                
             }
             else
             {

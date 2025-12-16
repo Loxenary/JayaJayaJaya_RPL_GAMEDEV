@@ -27,12 +27,12 @@ public class PlayNarrative : MonoBehaviour
 
     public bool IsDone()
     {
-        bool isdone = counterNarrative == contents.Length;
+        //bool isdone = counterNarrative == contents.Length;
 
-        if (!isdone)
-        {
-            TryNarrative();
-        }
-        return isdone;
+        //if (!isdone)
+        //{
+        //    TryNarrative();
+        //}
+        return counterNarrative == contents.Length;
     }
 }

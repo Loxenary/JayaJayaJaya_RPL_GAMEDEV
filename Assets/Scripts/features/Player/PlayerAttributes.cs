@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -22,6 +23,10 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   [SerializeField] bool initialTogle = true;
   [SerializeField] float decrementInterval = 3f;
   [SerializeField] int decrementBatteryValue = 1;
+
+  [Header("Sanity Drain (No Flashlight)")]
+  [Tooltip("Sanity lost per second when flashlight is off/dead")]
+  [SerializeField] float sanityDrainRate = 5f;
 
   [Header("Event")]
   public UnityEvent OnValueSanityUpdate;
@@ -49,6 +54,7 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
 
   PlayerInputHandler input;
   private Sequence batteryDrainSequence;
+  private float sanityDrainAccumulator = 0f;
 
   private void Awake()
   {
@@ -67,6 +73,20 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
     float normalizedSanity = (float)currentSanity / maxSanity;
     onSanityUpdate?.Invoke(normalizedSanity);
     onBatteryUpdate?.Invoke(currentBattery);
+  }
+
+  private void Update()
+  {
+    // Drain sanity when flashlight is off/dead
+    if (!flashlight.enabled || currentBattery <= 0)
+    {
+      DrainSanityOverTime();
+    }
+    else
+    {
+      // Reset accumulator when flashlight is on
+      sanityDrainAccumulator = 0f;
+    }
   }
 
   private void OnDestroy()
@@ -117,6 +137,31 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
       return;
     toggleFlashlight = !toggleFlashlight;
     flashlight.enabled = toggleFlashlight;
+
+
+  }
+
+
+  
+  /// <summary>
+  /// Drains sanity over time when flashlight is off/dead (called per frame)
+  /// </summary>
+  private void DrainSanityOverTime()
+  {
+    if (isDead)
+      return;
+
+    // Accumulate drain over time (sanityDrainRate is per second)
+    sanityDrainAccumulator += sanityDrainRate * Time.deltaTime;
+
+    // Only apply drain when accumulated value is >= 1
+    if (sanityDrainAccumulator >= 1f)
+    {
+      int drainAmount = Mathf.FloorToInt(sanityDrainAccumulator);
+      sanityDrainAccumulator -= drainAmount;
+
+      ReduceSanity(drainAmount);
+    }
   }
 
   /// <summary>
