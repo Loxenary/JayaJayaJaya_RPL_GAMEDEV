@@ -15,7 +15,7 @@ public class InteractableLockedDoor : InteractableDoor, IHighlight
     [ReadOnly]
 #endif
     [SerializeField]
-    bool isUnlock;
+    protected bool isUnlock;
 
     public UnityEvent OnWrongKeys;
 
@@ -49,12 +49,16 @@ public class InteractableLockedDoor : InteractableDoor, IHighlight
         }
         else
         {
-            OnWrongKeys?.Invoke();
-            onWrongKey?.Invoke();
-            Debug.Log("Masih Terkunci");
+            OnWrongKey();
         }
     }
 
+    protected void OnWrongKey()
+    {
+        OnWrongKeys?.Invoke();
+        onWrongKey?.Invoke();
+        Debug.Log("Masih Terkunci");
+    }
 
     public void Highlight()
     {
