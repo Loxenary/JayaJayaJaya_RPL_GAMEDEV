@@ -96,7 +96,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   type: 1
-  value: 25
+  value: 15
 --- !u!1 &6235601010507024627
 GameObject:
   m_ObjectHideFlags: 0
