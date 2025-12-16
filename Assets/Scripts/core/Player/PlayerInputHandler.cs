@@ -18,11 +18,14 @@ public class PlayerInputHandler : MonoBehaviour
   // Freeze state
   private bool isFrozen = false;
 
-  // Input events
-  public event Action OnJumpPerformed;
-  public event Action OnAttackPerformed;
-  public event Action OnInteractPerformed;
-  public event Action OnFlashlightPerformed;
+    // Input events
+    public event Action OnJumpPerformed;
+    public event Action OnWalkPerformed;
+    public event Action OnRunPerformed;
+    public event Action OnStopMovePerformed;
+    public event Action OnAttackPerformed;
+    public event Action OnInteractPerformed;
+    public event Action OnFlashlightPerformed;
 
   // Properties to access input values
   public Vector2 MoveInput => isFrozen ? Vector2.zero : moveInput;
@@ -84,7 +87,6 @@ public class PlayerInputHandler : MonoBehaviour
     inputActions.Player.Interact.performed -= OnInteract;
     inputActions.Player.Flashlight.performed -= OnFlashlight;
 
-
     // Disable the Player action map
     inputActions.Player.Disable();
   }
@@ -98,6 +100,22 @@ public class PlayerInputHandler : MonoBehaviour
   private void OnMove(InputAction.CallbackContext context)
   {
     moveInput = context.ReadValue<Vector2>();
+
+    if (moveInput != Vector2.zero)
+    {
+      if (sprintInput)
+      {
+        OnRunPerformed?.Invoke();
+      }
+      else
+      {
+        OnWalkPerformed?.Invoke();
+      }
+    }
+    else
+    {
+      OnStopMovePerformed?.Invoke();
+    }
   }
 
   private void OnLook(InputAction.CallbackContext context)
@@ -138,6 +156,7 @@ public class PlayerInputHandler : MonoBehaviour
     interactInput = true;
     OnInteractPerformed?.Invoke();
   }
+
   private void OnFlashlight(InputAction.CallbackContext context)
   {
     if (isFrozen) return;
