@@ -594,16 +594,17 @@ MonoBehaviour:
     playType: 0
     loop: 0
     audioClips:
-    - {fileID: 11400000, guid: f97a9e5e371241d4f914c6fb0f51ae40, type: 2}
+    - {fileID: 11400000, guid: cbeabe64eea384a4a8c4abda026b64a5, type: 2}
   seenSfxs:
     playType: 0
     loop: 0
-    audioClips: []
+    audioClips:
+    - {fileID: 11400000, guid: f97a9e5e371241d4f914c6fb0f51ae40, type: 2}
   patrolSfxs:
     playType: 0
     loop: 1
     audioClips:
-    - {fileID: 11400000, guid: 634a81f23ba6ae545b8f10438416a86b, type: 2}
+    - {fileID: 11400000, guid: cda0c392440e5f54291b2db31b751212, type: 2}
   fleeSfxs:
     playType: 1
     loop: 0
