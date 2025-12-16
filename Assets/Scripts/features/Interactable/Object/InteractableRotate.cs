@@ -10,6 +10,8 @@ public class InteractableRotate : Interactable
   [SerializeField] protected Vector3 targetRotation;
   [SerializeField] protected Transform playerReference; // optional; falls back to Camera.main
 
+  protected bool wait = false;
+
   public UnityEvent OnDoneRotate;
 
   private Tweener rotateTween;

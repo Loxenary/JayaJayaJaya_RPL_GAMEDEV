@@ -27,5 +27,7 @@ public enum SFXIdentifier
   SFX_PAPER = 23,
   // New SFX for damage feedback
   Player_Hurt = 24,
-  Death_Jumpscare_Cry = 25
+  Death_Jumpscare_Cry = 25,
+  PlayerWalk = 26,
+  PlayerRun = 27,
 }
