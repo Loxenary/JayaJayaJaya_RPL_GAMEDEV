@@ -78558,24 +78558,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contents:
-  - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut neque nunc, ultricies
-    quis eros eget, laoreet sollicitudin libero. Etiam mattis condimentum nunc, non
-    semper nibh auctor nec. Sed eros urna, pellentesque ac tempor vitae, hendrerit
-    vel libero. Donec dictum nisi ac aliquam semper. Proin dapibus, mauris et egestas
-    sodales, nulla sem pharetra turpis, et luctus lorem libero in lorem. Etiam ut
-    euismod nisl. Fusce quis purus vel erat lobortis pretium. Curabitur aliquam felis
-    nec posuere tempor. Donec nunc nunc, semper at ipsum sit amet, viverra vestibulum
-    urna. Quisque mollis posuere leo at convallis. Quisque aliquet elit in lacinia
-    vestibulum. Donec eu nunc vitae nisl porta cursus. Sed dapibus leo id velit molestie
-    lobortis.
-  - Nulla condimentum lorem sit amet turpis venenatis pellentesque. Interdum et malesuada
-    fames ac ante ipsum primis in faucibus. Nam vulputate arcu augue, ut congue elit
-    porttitor a. Sed libero elit, sagittis id commodo a, congue at lorem. Nullam
-    nec maximus metus. Donec pellentesque lacus in feugiat vehicula. Proin bibendum,
-    urna in placerat interdum, dui nulla porta libero, at iaculis quam diam tempus
-    urna. Sed convallis placerat pulvinar. Sed quis elementum eros, laoreet vehicula
-    tellus. Phasellus pretium dui vel ante egestas, at aliquet nulla ullamcorper.
-    Mauris elit turpis, luctus non tempor in, vestibulum et sapien.
+  - "Nama gue Joko\u2026 dan, kalau semuanya berjalan sesuai rencana, video ini harusnya
+    jadi konten horror pertama gue yang beneran niat. Bukan cuma review mie instan
+    jam tiga pagi, bukan cuma reaction jumpscare murahan. Ini\u2026 ini harusnya
+    jadi tiket gue keluar dari hidup gue yang gini-gini aja."
+  - "Gue udah capek banget jadi penonton hidup orang lain. Tiap hari scroll, liat
+    kreator lain naik, viral, dapet sponsor, jalan-jalan\u2026 sementara gue masih
+    stuck di kamar sempit, gaji pas-pasan, pura-pura betah di kerjaan yang tiap Senin
+    rasanya pengen cabut. Kamera murahan, mic pinjeman, dan channel yang bahkan temen
+    sendiri aja males subscribe. Jadi malam ini, gue mutusin satu hal: kalau gue
+    nggak bisa punya hidup menarik, minimal gue rekam sesuatu yang cukup gila\u2026
+    sampai orang nggak bisa ngacangin gue lagi.\r"
+  - "Makanya gue di sini.\r\nIni\u2026 rumahnya. Rumah tua peninggalan Belanda di
+    pinggiran kota, yang dari luar aja udah kayak postcard kolonial yang gosong.
+    Pilar tinggi, jendela besar, cat mengelupas\u2026 dan bau lembab yang nggak ilang
+    walaupun semua jendela kebuka. Katanya dulu ini rumah keluarga Belanda kaya,
+    dan ada satu noni yang\u2026 matinya nggak wajar. Orang cuma bilang \u201Ctragis\u201D,
+    \u201Cnggak tenang\u201D, tapi nggak ada yang bisa cerita utuh. Sisanya cuma
+    gosip, bisik-bisik, dan larangan halus: jangan ke sana malam-malam."
+  - "Dan tentu aja, itu bikin gue makin pengen ke sini. Karena kalau lo pikirin,
+    apa yang lebih laku daripada horror? Tempat angker, rumah bekas kolonial, arwah
+    noni Belanda\u2026 semuanya paket lengkap buat thumbnail, judul clickbait, dan
+    judul video yang lebay. Rencana awalnya simpel: gue masuk, keliling, bercanda-canda
+    dikit, pura-pura sok berani, nyari suara aneh, terus pulang. Edit, upload, beres.
+    Kalau beruntung, algoritma kasihan sama gue."
+  - "Tapi baru beberapa menit gue di dalam, rasanya\u2026 lain.\r\nTadi pintu belakang
+    gue buka sendiri, sekarang\u2026 kayaknya nggak bisa dibuka lagi. HP gue barusan
+    masih ada sinyal dua bar, sekarang tiba-tiba \u201CNo Service\u201D. Kamera sempet
+    ngestuck sepersekian detik barusan, kayak ada sesuatu yang lewat di belakang
+    gue\u2026 padahal gue yakin banget gue masuk sendirian. Rumah ini terlalu sepi.
+    Terlalu dingin. Kayak\u2026 nahan napas nunggu sesuatu."
+  - "Gue lihat sekeliling, tiap ruangan di rumah ini berasa kayak berhenti di satu
+    momen yang nggak pernah kelar.\r\nDi sana ada ruang tamu megah, karpet udah robek
+    tapi lampu gantungnya masih ngegantung kayak nunggu pesta terakhir. Di lantai
+    atas ada lorong panjang dengan pintu-pintu kamar yang kayunya menghitam, kaya
+    nahan rahasia. Di meja, ada foto-foto tua, surat yang nggak pernah terkirim,
+    kunci-kunci tanpa lubang\u2026 kayak potongan puzzle yang disebar biar nggak
+    ada yang bisa ngerti cerita sebenarnya."
+  - "Dan gue mulai ngerasa\u2026 benda-benda ini bukan cuma properti rumah kosong.
+    Mereka kayak jejak. Petunjuk. Semua surat, foto, perhiasan, buku harian\u2026
+    mungkin itu cara noni itu ngomong, cara dia maksa orang buat lihat apa yang bener-bener
+    terjadi sama dia. Mungkin, kalau gue susun semua potongan ini, gue bisa ngerti
+    kenapa dia nggak pernah tenang. Atau kenapa rumah ini kayak nggak mau ngelepas
+    gue."
+  - "Oke\u2026 ini udah lewat dari sekadar konten. Kalau tadi gue cuma pengen view
+    dan subscriber, sekarang taruhannya beda. Gue sendirian di rumah yang bahkan
+    sinyal aja nggak mau masuk. Pintu di belakang terkunci, udara makin berat, dan
+    tiap gue jalan, gue ngerasa ada langkah lain yang coba nyesuaiin ritme sama gue."
+  - "Jadi gini, kalau lo lagi nonton ini entah kapan\u2026 berarti entah gue berhasil
+    keluar dan upload semuanya, atau\u2026 orang lain yang nemuin rekaman ini. Gue
+    harus keluar dari rumah ini hidup-hidup. Dan perasaan gue bilang, satu-satunya
+    cara keluar\u2026 adalah dengan ngebongkar cerita noni Belanda itu sampai tuntas.
+    Sampai dia berenti ngeliatin gue dari gelapnya lorong-lorong ini."
+  - "Oke, Joko. Rekam semuanya. Buka setiap pintu. Ambil setiap petunjuk. Kalau lo
+    pengen hidup\u2026 lo harus ngerti kenapa rumah ini masih hidup."
   counterNarrative: 0
 --- !u!114 &1441890686
 MonoBehaviour:
@@ -78604,7 +78640,7 @@ MonoBehaviour:
       m_Calls: []
   isStopTime: 0
   isShowCursor: 1
-  animationDuration: 0.3
+  animationDuration: 2.5
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -78636,7 +78672,7 @@ MonoBehaviour:
   characterRevealWaitTime: 1
   audioSourcesForTypingSound: {fileID: 1441890683}
   narrative: {fileID: 1441890685}
-  delayParagraph: 2
+  delayParagraph: 3
   blackPanel: {fileID: 964749138}
   OnDoneNarrative:
     m_PersistentCalls:
