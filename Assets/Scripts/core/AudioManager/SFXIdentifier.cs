@@ -30,4 +30,6 @@ public enum SFXIdentifier
   Death_Jumpscare_Cry = 25,
   PlayerWalk = 26,
   PlayerRun = 27,
+
+  Silent = 28
 }
