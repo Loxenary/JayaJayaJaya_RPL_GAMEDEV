@@ -9,6 +9,7 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
   [Header("HUD Components")]
   [SerializeField] private SanityDisplay sanityDisplay;
   [SerializeField] private BatteryDisplay batteryDisplay;
+  [SerializeField] private DiscreteBatteryDisplay discreteBatteryDisplay;
   [SerializeField] private ItemIconsDisplay itemIconsDisplay;
   [SerializeField] private TimerDisplay timerDisplay;
 
@@ -40,6 +41,9 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
     if (batteryDisplay == null)
       batteryDisplay = GetComponentInChildren<BatteryDisplay>();
 
+    if (discreteBatteryDisplay == null)
+      discreteBatteryDisplay = GetComponentInChildren<DiscreteBatteryDisplay>();
+
     if (itemIconsDisplay == null)
       itemIconsDisplay = GetComponentInChildren<ItemIconsDisplay>();
 
@@ -52,8 +56,8 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
     if (sanityDisplay == null)
       Debug.LogWarning("[HUDManager] SanityDisplay not assigned or found.", this);
 
-    if (batteryDisplay == null)
-      Debug.LogWarning("[HUDManager] BatteryDisplay not assigned or found.", this);
+    if (batteryDisplay == null && discreteBatteryDisplay == null)
+      Debug.LogWarning("[HUDManager] No battery display (BatteryDisplay or DiscreteBatteryDisplay) assigned or found.", this);
 
     if (itemIconsDisplay == null)
       Debug.LogWarning("[HUDManager] ItemIconsDisplay not assigned or found.", this);
@@ -93,7 +97,7 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
   #region Public API - Battery
 
   /// <summary>
-  /// Updates the battery display.
+  /// Updates the battery display. Works with both BatteryDisplay and DiscreteBatteryDisplay.
   /// </summary>
   /// <param name="currentBattery">Current battery value</param>
   /// <param name="maxBattery">Maximum battery value</param>
@@ -103,10 +107,12 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
     {
       batteryDisplay.UpdateBattery(currentBattery, maxBattery);
     }
+    // DiscreteBatteryDisplay subscribes to PlayerAttributes.onBatteryUpdate directly
+    // No need to call it manually here
   }
 
   /// <summary>
-  /// Updates battery with a single normalized value (0-1).
+  /// Updates battery with a single normalized value (0-1). Works with both battery display types.
   /// </summary>
   public void UpdateBatteryNormalized(float normalizedBattery)
   {
@@ -114,6 +120,8 @@ public class HUDManager : FadeShowHideProceduralWithEventBus<HUDManager>
     {
       batteryDisplay.UpdateBatteryNormalized(normalizedBattery);
     }
+    // DiscreteBatteryDisplay subscribes to PlayerAttributes.onBatteryUpdate directly
+    // No need to call it manually here
   }
 
   #endregion

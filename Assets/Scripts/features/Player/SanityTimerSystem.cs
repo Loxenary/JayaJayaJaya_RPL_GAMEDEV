@@ -2,14 +2,15 @@ using UnityEngine;
 
 /// <summary>
 /// System that tracks time and reduces player sanity after a threshold.
-/// Timer starts at 0 and counts up. After 60 seconds, sanity decreases.
+/// Timer starts when first puzzle collectible is picked up.
+/// After 30 seconds from first collectible, sanity decreases.
 /// </summary>
 public class SanityTimerSystem : MonoBehaviour
 {
   [Header("Timer Settings")]
-  [SerializeField] private float sanityThreshold = 60f; // When to start sanity drain
+  [SerializeField] private float sanityThreshold = 30f; // Time after first collectible to start sanity drain
   [SerializeField] private float sanityDrainRate = 10f; // Sanity points per second (1% = 10 points)
-  [SerializeField] private bool autoStart = true; // Auto start for testing
+  [SerializeField] private bool autoStart = false; // No longer auto-start, wait for collectible
 
 # if UNITY_EDITOR
   [Header("Debug")]
@@ -19,11 +20,14 @@ public class SanityTimerSystem : MonoBehaviour
   [SerializeField] private bool _isRunning => isRunning;
   [ReadOnly]
   [SerializeField] private bool _isDrainingStarted => isDrainingStarted;
+  [ReadOnly]
+  [SerializeField] private bool _hasFirstCollectible => hasFirstCollectible;
 #endif
 
   private float currentTime = 0f;
   private bool isRunning = false;
   private bool isDrainingStarted = false;
+  private bool hasFirstCollectible = false;
 
   private PlayerAttributes playerAttributes;
   private float lastDrainTime = 0f;
@@ -44,12 +48,35 @@ public class SanityTimerSystem : MonoBehaviour
     }
   }
 
+  private void OnEnable()
+  {
+    // Subscribe to first puzzle collectible event
+    EventBus.Subscribe<CollectibleManager.FirstPuzzleCollectedEvent>(OnFirstPuzzleCollected);
+  }
+
+  private void OnDisable()
+  {
+    EventBus.Unsubscribe<CollectibleManager.FirstPuzzleCollectedEvent>(OnFirstPuzzleCollected);
+  }
+
   private void Start()
   {
     if (autoStart)
     {
       StartTimer();
     }
+  }
+
+  /// <summary>
+  /// Called when the first puzzle piece is collected
+  /// </summary>
+  private void OnFirstPuzzleCollected(CollectibleManager.FirstPuzzleCollectedEvent evt)
+  {
+    if (hasFirstCollectible) return; // Only trigger once
+
+    hasFirstCollectible = true;
+    StartTimer();
+    Debug.Log("[SanityTimer] First puzzle collected! Timer started. Sanity drain will begin in " + sanityThreshold + " seconds.");
   }
 
   private void Update()

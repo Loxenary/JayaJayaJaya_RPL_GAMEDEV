@@ -46,7 +46,7 @@ public class DialogNarrativeUI : FadeShowHideProcedural
         StartCoroutine(TextAnimationHelper.RevealTextWithTypingSound(contentTextDialog, evt.content, characterRevealSpeed, typingSfx, audioSourcesForTypingSound, audioManager, 2, OnDialogFinishedShowing));
     }
 
-    private void OnDialogFinishedShowing()
+    protected virtual void OnDialogFinishedShowing()
     {
         StartCoroutine(WaitForDialogToFinishShowing());
     }

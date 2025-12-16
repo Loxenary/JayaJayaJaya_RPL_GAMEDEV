@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &978118428742916602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6356429255450914533}
+  - component: {fileID: 8739777970648877272}
+  m_Layer: 3
+  m_Name: InteractableZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6356429255450914533
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978118428742916602}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.05, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8862385147289367235}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8739777970648877272
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978118428742916602}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 0.53, z: 2.1}
+  m_Center: {x: -0.12, y: -0.1, z: 0}
 --- !u!1 &1007484034496448128
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,9 +64,9 @@ GameObject:
   - component: {fileID: 8283898979933873078}
   - component: {fileID: 2443783865427357441}
   - component: {fileID: 1587246621663328577}
-  - component: {fileID: 9094668835063062846}
+  - component: {fileID: 556383031579360913}
   m_Layer: 0
-  m_Name: Chest.001
+  m_Name: Lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,12 +80,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1007484034496448128}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.659, y: 0.078, z: -0.008690357}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.017380597, y: 1.182, z: 0.21799994}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 417092854706010291}
+  m_Children:
+  - {fileID: 3040936030432511214}
+  m_Father: {fileID: 3709069949019328068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2443783865427357441
 MeshFilter:
@@ -88,8 +142,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &9094668835063062846
-MeshCollider:
+--- !u!65 &556383031579360913
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -106,11 +160,10 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -7004650277348446958, guid: 9eab7833b4515d8408e93a700a16cdac, type: 3}
---- !u!1 &1097242942892074119
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 0.22, z: 2}
+  m_Center: {x: -0.28, y: 0.03, z: 0.028}
+--- !u!1 &2626338769910425439
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,30 +171,51 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 417092854706010291}
-  m_Layer: 0
-  m_Name: top
+  - component: {fileID: 3040936030432511214}
+  - component: {fileID: 2423457726113267829}
+  m_Layer: 3
+  m_Name: InteractableZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &417092854706010291
+--- !u!4 &3040936030432511214
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1097242942892074119}
+  m_GameObject: {fileID: 2626338769910425439}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.55, y: 0.183, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 8283898979933873078}
-  m_Father: {fileID: 8862385147289367235}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8283898979933873078}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2423457726113267829
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2626338769910425439}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 0.25, z: 2.1}
+  m_Center: {x: -0.28, y: 0, z: 0.028}
 --- !u!1 &3508192220756153933
 GameObject:
   m_ObjectHideFlags: 0
@@ -732,7 +806,7 @@ GameObject:
   - component: {fileID: 8783457300711938421}
   - component: {fileID: 6241446355878877829}
   m_Layer: 0
-  m_Name: Mesh
+  m_Name: Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -751,7 +825,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 417092854706010291}
+  - {fileID: 6356429255450914533}
   m_Father: {fileID: 3709069949019328068}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!33 &1311130457939443063
@@ -981,7 +1055,7 @@ GameObject:
   - component: {fileID: 3709069949019328068}
   - component: {fileID: 4774115947402299717}
   - component: {fileID: 1182913879612398592}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Wooden Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1002,6 +1076,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1527912288289025947}
+  - {fileID: 8283898979933873078}
   - {fileID: 8862385147289367235}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1053,11 +1128,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  isInteract: 0
-  collider: {fileID: 4774115947402299717}
   timeRotate: 1.5
-  rootObject: {fileID: 417092854706010291}
+  rootObject: {fileID: 0}
   targetRotation: {x: 0, y: 0, z: 85}
+  playerReference: {fileID: 0}
   OnDoneRotate:
     m_PersistentCalls:
       m_Calls: []

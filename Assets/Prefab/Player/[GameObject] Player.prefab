@@ -167,8 +167,8 @@ MonoBehaviour:
     enableCameraShake: 1
     sprintShakeInterval: 0.4
     sprintShakeForce: 0.15
-    walkShakeInterval: 0.6
-    walkShakeForce: 0.08
+    walkShakeInterval: 0.5
+    walkShakeForce: 0.06
   useCameraRelativeMovement: 1
 --- !u!114 &4412940989870676345
 MonoBehaviour:
@@ -236,10 +236,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   raycastOrigin: {fileID: 0}
-  interactDistance: 2
+  interactDistance: 4
   targetLayer:
     serializedVersion: 2
     m_Bits: 8
+  raycastBackOffset: 2
+  blockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &5607267691951340174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,8 +290,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.29511744
       - serializedVersion: 3
-        time: 0.20205241
-        value: -0.65138215
+        time: 0.28760844
+        value: -0.6222684
         inSlope: -0.06723683
         outSlope: -0.06723683
         tangentMode: 0
@@ -295,14 +299,14 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 1
       - serializedVersion: 3
-        time: 0.4877389
-        value: 0.6574229
-        inSlope: 2.7968535
-        outSlope: 2.7968535
+        time: 0.69883156
+        value: 0.4619882
+        inSlope: 1.0867618
+        outSlope: 1.0867618
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.11471516
-        outWeight: 0.07882587
+        outWeight: 0.1618589
       - serializedVersion: 3
         time: 1
         value: 0.0061836243
@@ -360,7 +364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sanityThreshold: 60
-  sanityDrainRate: 0.1
+  sanityDrainRate: 1
   autoStart: 1
 --- !u!1 &1461355363414621340
 GameObject:
