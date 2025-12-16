@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55b6e6bfc7a35984bbdcd95adbf05b46, type: 3}
+  m_Name: MusicEvent
+  m_EditorClassIdentifier: 
+  eventConfigs:
+  - eventType: 20
+    priority: 50
+    musicTracks: 0b000000050000000b000000060000000b00000008000000
+    loopMusic: 1
+    interruptCurrent: 0
+    customFadeInDuration: 0
+    customFadeOutDuration: 0.5
+  - eventType: 10
+    priority: 0
+    musicTracks: 0a000000
+    loopMusic: 1
+    interruptCurrent: 0
+    customFadeInDuration: 0
+    customFadeOutDuration: 0.5
+  - eventType: 21
+    priority: 0
+    musicTracks: 03000000
+    loopMusic: 1
+    interruptCurrent: 0
+    customFadeInDuration: 0
+    customFadeOutDuration: 0.5
+  - eventType: 22
+    priority: 0
+    musicTracks: 02000000
+    loopMusic: 1
+    interruptCurrent: 0
+    customFadeInDuration: 0
+    customFadeOutDuration: 0.5
+  - eventType: 30
+    priority: 0
+    musicTracks: 01000000
+    loopMusic: 1
+    interruptCurrent: 1
+    customFadeInDuration: 0
+    customFadeOutDuration: 0.5
+  defaultMusicSequence: 
+  loopDefaultSequence: 0
+  shuffleDefaultSequence: 0
