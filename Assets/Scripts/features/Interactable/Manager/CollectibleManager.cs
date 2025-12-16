@@ -36,6 +36,8 @@ public class CollectibleManager : MonoBehaviour
                   firstPuzzlePickup?.Invoke();
                   // Publish event for other systems (like SanityTimerSystem)
                   EventBus.Publish(new FirstPuzzleCollectedEvent());
+                  EventBus.Publish(new FirstPuzzleEvent());
+
                 }        
                 counting.IncrementPuzzle();
 

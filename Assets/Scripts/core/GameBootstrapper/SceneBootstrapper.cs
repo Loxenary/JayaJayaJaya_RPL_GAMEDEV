@@ -2,9 +2,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
+[DefaultExecutionOrder(-1000)]
 public class SceneBootstrapper : MonoBehaviour
 {
-    
+
 
     private async void Awake()
     {

@@ -78558,24 +78558,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contents:
-  - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut neque nunc, ultricies
-    quis eros eget, laoreet sollicitudin libero. Etiam mattis condimentum nunc, non
-    semper nibh auctor nec. Sed eros urna, pellentesque ac tempor vitae, hendrerit
-    vel libero. Donec dictum nisi ac aliquam semper. Proin dapibus, mauris et egestas
-    sodales, nulla sem pharetra turpis, et luctus lorem libero in lorem. Etiam ut
-    euismod nisl. Fusce quis purus vel erat lobortis pretium. Curabitur aliquam felis
-    nec posuere tempor. Donec nunc nunc, semper at ipsum sit amet, viverra vestibulum
-    urna. Quisque mollis posuere leo at convallis. Quisque aliquet elit in lacinia
-    vestibulum. Donec eu nunc vitae nisl porta cursus. Sed dapibus leo id velit molestie
-    lobortis.
-  - Nulla condimentum lorem sit amet turpis venenatis pellentesque. Interdum et malesuada
-    fames ac ante ipsum primis in faucibus. Nam vulputate arcu augue, ut congue elit
-    porttitor a. Sed libero elit, sagittis id commodo a, congue at lorem. Nullam
-    nec maximus metus. Donec pellentesque lacus in feugiat vehicula. Proin bibendum,
-    urna in placerat interdum, dui nulla porta libero, at iaculis quam diam tempus
-    urna. Sed convallis placerat pulvinar. Sed quis elementum eros, laoreet vehicula
-    tellus. Phasellus pretium dui vel ante egestas, at aliquet nulla ullamcorper.
-    Mauris elit turpis, luctus non tempor in, vestibulum et sapien.
+  - Nama gue Joko. Ini harusnya jadi konten horror pertama gue yang beneran serius.
+    Bukan sekadar iseng, tapi usaha terakhir gue buat keluar dari hidup yang gini-gini
+    aja. Gue capek ngeliat orang lain sukses sementara gue stuck di kamar sempit,
+    kerjaan yang nggak gue suka, dan channel yang nyaris nggak ada yang peduli.
+  - 'Makanya gue datang ke tempat ini. Rumah tua peninggalan Belanda di pinggiran
+    kota, yang katanya angker. Dulu milik keluarga Belanda kaya, dengan cerita tentang
+    seorang noni yang mati nggak wajar dan arwahnya nggak pernah tenang. Orang-orang
+    cuma bisik-bisik dan selalu bilang: jangan datang malam-malam.'
+  - Awalnya rencana gue simpel. Masuk, keliling, pura-pura berani, dapet konten,
+    lalu pulang. Tapi baru beberapa menit di dalam, semuanya berubah. Pintu belakang
+    nggak bisa dibuka, sinyal HP hilang, dan rumah ini terasa terlalu sepi, terlalu
+    dingin, seolah lagi nunggu sesuatu.
+  - Setiap ruangan kayak berhenti di masa lalu. Foto-foto tua, surat-surat, benda-benda
+    aneh terasa seperti petunjuk. Seolah noni itu masih ada, pengen ceritanya dibongkar,
+    pengen seseorang ngerti apa yang sebenarnya terjadi padanya.
+  - "Sekarang ini bukan soal konten lagi. Gue sendirian, terjebak, dan gue ngerasa
+    rumah ini nggak bakal ngelepas gue kalau gue cuma datang lalu pergi. Kalau lo
+    nonton video ini, entah gue berhasil keluar\u2026 atau orang lain yang nemuin
+    rekaman ini."
+  - 'Satu hal yang gue yakin: <b>kalau gue mau hidup, gue harus ngungkap cerita noni
+    Belanda itu sampai tuntas.</b>'
   counterNarrative: 0
 --- !u!114 &1441890686
 MonoBehaviour:
@@ -78604,7 +78607,7 @@ MonoBehaviour:
       m_Calls: []
   isStopTime: 0
   isShowCursor: 1
-  animationDuration: 0.3
+  animationDuration: 2.5
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -78636,7 +78639,7 @@ MonoBehaviour:
   characterRevealWaitTime: 1
   audioSourcesForTypingSound: {fileID: 1441890683}
   narrative: {fileID: 1441890685}
-  delayParagraph: 2
+  delayParagraph: 3
   blackPanel: {fileID: 964749138}
   OnDoneNarrative:
     m_PersistentCalls:

@@ -22,13 +22,13 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     [SerializeField] private int guideTimerDuration = 25;
 
 
-    private int currentTrackedCollectible = -1;
+    private int currentTrackedCollectible = 0;
     private Coroutine currentTimerCoroutine;
     private readonly HashSet<string> interactedPuzzle = new();
     private readonly HashSet<GuideData> interactedGuides = new();
 
     //List<MappingJournal> mapping = new List<MappingJournal>();
-    Dictionary<string,int> mapping = new Dictionary<string,int>();
+    Dictionary<string, int> mapping = new Dictionary<string, int>();
 
     private GuideData lastGuideData = null;
 
