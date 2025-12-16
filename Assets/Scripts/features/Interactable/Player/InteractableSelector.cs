@@ -70,7 +70,7 @@ public class InteractableSelector : MonoBehaviour
     Vector3 origin = raycastOrigin.position - raycastOrigin.forward * raycastBackOffset;
     Ray ray = new Ray(origin, raycastOrigin.forward);
     RaycastHit hit;
-    if (!Physics.Raycast(ray, out hit, interactDistance, blockingMask, QueryTriggerInteraction.Collide))
+    if (!Physics.Raycast(ray, out hit, interactDistance, targetLayer, QueryTriggerInteraction.Collide))
     {
       ClearCurrentObject();
       return;
