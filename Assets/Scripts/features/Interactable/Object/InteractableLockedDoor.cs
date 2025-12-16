@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
-using static InteractableLockedDoor;
+//using static InteractableLockedDoor;
 
 public class InteractableLockedDoor : InteractableDoor, IHighlight
 {
@@ -11,7 +11,10 @@ public class InteractableLockedDoor : InteractableDoor, IHighlight
     [ReadOnly]
     [SerializeField] bool isKeyUnlock => isUnlock;
 #endif
-
+#if UNITY_EDITOR
+    [ReadOnly]
+#endif
+    [SerializeField]
     bool isUnlock;
 
     public UnityEvent OnWrongKeys;
