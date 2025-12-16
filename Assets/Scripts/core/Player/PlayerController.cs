@@ -8,123 +8,130 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Components")]
-    [SerializeField] private CharacterController characterController;
-    [SerializeField] private Camera playerCamera;
+  [Header("Components")]
+  [SerializeField] private CharacterController characterController;
+  [SerializeField] private Camera playerCamera;
 
-    [Header("Handlers")]
-    [SerializeField] private PlayerMovementHandler movementHandler;
+  [Header("Handlers")]
+  [SerializeField] private PlayerMovementHandler movementHandler;
 
-    [Header("Camera-Relative Movement")]
-    [Tooltip("If enabled, movement will be relative to camera direction")]
-    [SerializeField] private bool useCameraRelativeMovement = true;
+  [Header("Camera-Relative Movement")]
+  [Tooltip("If enabled, movement will be relative to camera direction")]
+  [SerializeField] private bool useCameraRelativeMovement = true;
 
-    private PlayerInputHandler inputHandler;
-    private CameraRelativeDirectionProvider directionProvider;
+  private PlayerInputHandler inputHandler;
+  private CameraRelativeDirectionProvider directionProvider;
 
-    private void Awake()
+  private void Awake()
+  {
+    // Get or add input handler
+    inputHandler = GetComponent<PlayerInputHandler>();
+    if (inputHandler == null)
     {
-        // Get or add input handler
-        inputHandler = GetComponent<PlayerInputHandler>();
-        if (inputHandler == null)
-        {
-            inputHandler = gameObject.AddComponent<PlayerInputHandler>();
-        }
-
-        // Validate character controller
-        if (characterController == null)
-        {
-            characterController = GetComponent<CharacterController>();
-            if (characterController == null)
-            {
-                Debug.LogError($"CharacterController is missing on {name}");
-            }
-        }
-
-        // Setup camera-relative direction provider if enabled
-        if (useCameraRelativeMovement)
-        {
-            directionProvider = GetComponent<CameraRelativeDirectionProvider>();
-            if (directionProvider == null)
-            {
-                directionProvider = gameObject.AddComponent<CameraRelativeDirectionProvider>();
-
-                BetterLogger.Log("Addding Camera Relative direction for Player Controlller");
-
-                // Set camera reference
-                if (playerCamera != null)
-                {
-                    directionProvider.SetCamera(playerCamera);
-                }
-            }
-        }
-
-        // Lock cursor at start
-        inputHandler.SetCursorState(true);
-        movementHandler.SetCharacterController(characterController);
+      inputHandler = gameObject.AddComponent<PlayerInputHandler>();
     }
 
-    private void OnEnable()
+    // Validate character controller
+    if (characterController == null)
     {
-        // Subscribe to input events
-        if (inputHandler != null)
+      characterController = GetComponent<CharacterController>();
+      if (characterController == null)
+      {
+        Debug.LogError($"CharacterController is missing on {name}");
+      }
+    }
+
+    // Setup camera-relative direction provider if enabled
+    if (useCameraRelativeMovement)
+    {
+      directionProvider = GetComponent<CameraRelativeDirectionProvider>();
+      if (directionProvider == null)
+      {
+        directionProvider = gameObject.AddComponent<CameraRelativeDirectionProvider>();
+
+        BetterLogger.Log("Addding Camera Relative direction for Player Controlller");
+
+        // Set camera reference
+        if (playerCamera != null)
         {
-            inputHandler.OnJumpPerformed += HandleJump;
+          directionProvider.SetCamera(playerCamera);
         }
+      }
     }
 
-    private void OnDisable()
+    // Lock cursor at start
+    inputHandler.SetCursorState(true);
+    movementHandler.SetCharacterController(characterController);
+  }
+
+  private void OnEnable()
+  {
+    // Subscribe to input events
+    if (inputHandler != null)
     {
-        // Unsubscribe from input events
-        if (inputHandler != null)
-        {
-            inputHandler.OnJumpPerformed -= HandleJump;
-        }
+      inputHandler.OnJumpPerformed += HandleJump;
     }
+  }
 
-    private void Update()
+  private void OnDisable()
+  {
+    // Unsubscribe from input events
+    if (inputHandler != null)
     {
-        HandleMovement();
-        // HandleCamera();
+      inputHandler.OnJumpPerformed -= HandleJump;
     }
+  }
 
-    private void HandleMovement()
+  private void Update()
+  {
+    HandleMovement();
+    // HandleCamera();
+  }
+
+  private void HandleMovement()
+  {
+    if (inputHandler == null) return;
+
+    // Don't process regular movement while on a ladder
+    // LadderZone handles its own movement
+    if (LadderZone.IsAnyLadderActive) return;
+
+    // Get input
+    Vector2 moveInput = inputHandler.MoveInput;
+    bool sprint = inputHandler.IsSprintHeld;
+    bool crouch = inputHandler.IsCrouchHeld;
+
+    // Convert input to world-space direction if camera-relative movement is enabled
+    if (useCameraRelativeMovement && directionProvider != null)
     {
-        if (inputHandler == null) return;
-
-        // Get input
-        Vector2 moveInput = inputHandler.MoveInput;
-        bool sprint = inputHandler.IsSprintHeld;
-        bool crouch = inputHandler.IsCrouchHeld;
-
-        // Convert input to world-space direction if camera-relative movement is enabled
-        if (useCameraRelativeMovement && directionProvider != null)
-        {
-            Vector3 worldDirection = directionProvider.GetCameraRelativeDirection(moveInput);
-            movementHandler.Move(moveInput, sprint, crouch, worldDirection);
-        }
-        else
-        {
-            // Use default world-space movement
-            movementHandler.Move(moveInput, sprint, crouch);
-        }
+      Vector3 worldDirection = directionProvider.GetCameraRelativeDirection(moveInput);
+      movementHandler.Move(moveInput, sprint, crouch, worldDirection);
     }
-
-    private void HandleJump()
+    else
     {
-        movementHandler.Jump();
+      // Use default world-space movement
+      movementHandler.Move(moveInput, sprint, crouch);
     }
+  }
 
-    /// <summary>
-    /// Freeze or unfreeze the player (disables movement)
-    /// </summary>
-    public void SetFrozen(bool frozen)
+  private void HandleJump()
+  {
+    // Don't allow jumping while on a ladder
+    if (LadderZone.IsAnyLadderActive) return;
+
+    movementHandler.Jump();
+  }
+
+  /// <summary>
+  /// Freeze or unfreeze the player (disables movement)
+  /// </summary>
+  public void SetFrozen(bool frozen)
+  {
+    if (movementHandler != null)
     {
-        if (movementHandler != null)
-        {
-            movementHandler.SetFrozen(frozen);
-        }
+      movementHandler.SetFrozen(frozen);
     }
+  }
 
-    public PlayerInputHandler GetInputHandler() => inputHandler;
+  public PlayerInputHandler GetInputHandler() => inputHandler;
 }

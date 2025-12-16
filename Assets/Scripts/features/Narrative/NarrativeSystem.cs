@@ -95,9 +95,6 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
         {
             content = guideData.Content
         });
-
-        // Start new timer for this guide (will loop)
-        currentTimerCoroutine = StartCoroutine(StartGuideTimerCoroutine());
     }
 
     private void HandleJournal(int key)
@@ -109,24 +106,6 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
         });
     }
 
-    private IEnumerator StartGuideTimerCoroutine()
-    {
-        while (true)
-        {
-            // Wait for 25 seconds (20-30 range)
-            yield return new WaitForSeconds(guideTimerDuration);
-
-            // If we have a last guide, show its content again
-            if (lastGuideData != null)
-            {
-                Debug.Log($"Timer expired! Showing last guide narrative again: {lastGuideData.Content}");
-                EventBus.Publish(new DialogNarrativeUI.OpenDialogNarrtiveUI
-                {
-                    content = lastGuideData.Content
-                });
-            }
-        }
-    }
 
     private void ResetPuzzleTimer(ResetNarrativeTimer evt)
     {

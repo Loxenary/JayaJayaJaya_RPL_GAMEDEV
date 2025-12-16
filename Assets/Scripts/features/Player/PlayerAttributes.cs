@@ -14,6 +14,7 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   // Public property to expose max sanity (single source of truth)
   public int MaxSanity => maxSanity;
   public int CurrentSanity => currentSanity;
+  public bool IsDead => isDead;
 
   [Header("Flashlight Stat")]
   [SerializeField] Light flashlight;
@@ -123,6 +124,9 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   /// </summary>
   void AddSanity(int value)
   {
+    if (isDead)
+      return;
+
     int previousSanity = currentSanity;
     currentSanity = Mathf.Clamp(currentSanity + value, 0, maxSanity);
 
@@ -137,6 +141,9 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   /// </summary>
   void ReduceSanity(int damage)
   {
+    if (isDead)
+      return;
+
     int previousSanity = currentSanity;
     currentSanity = Mathf.Clamp(currentSanity - damage, 0, maxSanity);
 
@@ -207,6 +214,9 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   /// </summary>
   public void TakeDamage(AttributesType type, int value)
   {
+    if (isDead)
+      return;
+
     switch (type)
     {
       case AttributesType.Sanity:

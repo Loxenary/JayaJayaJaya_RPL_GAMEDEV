@@ -8,6 +8,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 42905467774826789, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 42905467774826789, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 42905467774826789, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 42905467774826789, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1226410917348268120, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Name
+      value: DoorFrame
+      objectReference: {fileID: 0}
+    - target: {fileID: 1226410917348268120, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2579567261458960639, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -19,11 +43,11 @@ PrefabInstance:
     - target: {fileID: 2579567261458960639, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 3192149924013628485}
+      objectReference: {fileID: 0}
     - target: {fileID: 2579567261458960639, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 2012124240901936315}
+      objectReference: {fileID: 0}
     - target: {fileID: 2579567261458960639, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: set_enabled
@@ -38,7 +62,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3544052186584190556, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: m_Layer
-      value: 10
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425729449050104188, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4775772935012973413, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Name
+      value: InteractableZone
+      objectReference: {fileID: 0}
+    - target: {fileID: 6355018033905877771, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Height
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6355018033905877771, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Radius
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6355018033905877771, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Center.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7863782803071841634, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: m_LocalScale.x
@@ -96,15 +140,20 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8060578231416589521, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8857841566760509017, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: m_Name
       value: End Game Locked Door
       objectReference: {fileID: 0}
     - target: {fileID: 8857841566760509017, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6355018033905877771, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -118,21 +167,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8553253761576418019}
   m_SourcePrefab: {fileID: 100100000, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
---- !u!64 &2012124240901936315 stripped
-MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 3517005467247066477, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
-  m_PrefabInstance: {fileID: 3108162694314174934}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &3192149924013628485 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 535544564898395539, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
-  m_PrefabInstance: {fileID: 3108162694314174934}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &5435226459348079586 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6939946052666047028, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
-  m_PrefabInstance: {fileID: 3108162694314174934}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5894990334559303567 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8857841566760509017, guid: bb2523081b2fc2b4e9feac7f29a737f1, type: 3}
@@ -153,15 +187,14 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls: []
-  isInteract: 0
-  collider: {fileID: 3192149924013628485}
   timeRotate: 1.5
-  rootObject: {fileID: 5435226459348079586}
-  targetRotation: {x: 0, y: 0, z: 0}
+  rootObject: {fileID: 0}
+  targetRotation: {x: 0, y: 95, z: 0}
+  playerReference: {fileID: 0}
   OnDoneRotate:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3192149924013628485}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UnityEngine.Collider, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
@@ -173,7 +206,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2012124240901936315}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UnityEngine.Collider, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
@@ -185,13 +218,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  wait: 0
   keyID: 0
-  isUnlock: 0
+  highlight: {fileID: 0}
   OnWrongKeys:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2012124240901936315}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UnityEngine.Collider, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
