@@ -31484,6 +31484,10 @@ PrefabInstance:
       propertyPath: logInteractableResolution
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4013178273282516989, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4909404721968805087, guid: f41c8dedb18a12140a14050bd258ddcb, type: 3}
       propertyPath: playerCamera
       value: 
