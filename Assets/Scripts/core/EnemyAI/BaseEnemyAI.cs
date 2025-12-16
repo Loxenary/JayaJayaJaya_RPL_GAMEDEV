@@ -150,9 +150,6 @@ namespace EnemyAI
         [Tooltip("Crossfade duration in seconds")]
         [SerializeField] protected float animationCrossFadeDuration = 0.15f;
 
-
-        private GameMusicManager _musicManager;
-
         protected StateMachine<EnemyState, StateDriverUnity> fsm;
         protected AIPath aiPath;
 
@@ -631,6 +628,8 @@ namespace EnemyAI
 
             // Play seen sound
             PlaySeenSound();
+
+
         }
 
         protected virtual void Seen_Update()
@@ -1043,6 +1042,8 @@ namespace EnemyAI
                 seenSfxs.PlaySFX(audioProvider);
                 Log("Playing seen sound");
             }
+
+            EventBus.Publish(new MusicEventRequest(MusicEventType.Enemy_Seen));
         }
 
         /// <summary>
@@ -1079,6 +1080,8 @@ namespace EnemyAI
                 lostSfxs.PlaySFX(audioProvider);
                 Log("Playing lost sound");
             }
+
+            EventBus.Publish(new MusicEventEnd(MusicEventType.Enemy_Seen));
         }
 
         #endregion

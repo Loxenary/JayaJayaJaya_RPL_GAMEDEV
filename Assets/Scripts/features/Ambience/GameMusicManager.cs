@@ -87,17 +87,15 @@ namespace Ambience
         private MusicIdentifier? currentPrimaryTrack;
         private MusicIdentifier? currentSecondaryTrack;
 
-        private Dictionary<MusicEventType, bool> activeEvents;
-        private MusicEventType? currentPriorityEvent;
+        private MusicEventType? currentEventType;
 
         private int currentSequenceIndex = 0;
         private List<MusicIdentifier> currentSequence;
-        private Coroutine sequenceMonitor;
         private Coroutine silenceCoroutine;
 
         // State stack for interruptions
         private readonly Stack<MusicState> stateStack = new();
-        private bool isPlayingInterruptionMusic = false;
+        private bool isPlayingEventMusic = false;
 
         #endregion
 
@@ -167,14 +165,8 @@ namespace Ambience
 
         private void InitializeState()
         {
-            activeEvents = new Dictionary<MusicEventType, bool>();
             currentSequence = new List<MusicIdentifier>();
-
-            foreach (MusicEventType eventType in Enum.GetValues(typeof(MusicEventType)))
-            {
-                activeEvents[eventType] = false;
-            }
-
+            currentEventType = null;
             Log("State initialized");
         }
 
@@ -197,6 +189,7 @@ namespace Ambience
 
         private void SubscribeToVolumeChanges()
         {
+            audioManager = ServiceLocator.Get<AudioManager>();
             if (audioManager != null)
             {
                 audioManager.OnVolumeChanged += UpdateVolumes;
@@ -205,6 +198,7 @@ namespace Ambience
 
         private void UnsubscribeFromVolumeChanges()
         {
+            audioManager = ServiceLocator.Get<AudioManager>();
             if (audioManager != null)
             {
                 audioManager.OnVolumeChanged -= UpdateVolumes;
@@ -231,57 +225,18 @@ namespace Ambience
                 return;
             }
 
-            activeEvents[request.EventType] = true;
-            EvaluatePriorityEvent();
+            // Simply play the requested music event
+            PlayEventMusic(request.EventType);
         }
 
         private void HandleMusicEventEnd(MusicEventEnd end)
         {
-            if (activeEvents.ContainsKey(end.EventType))
+            Log($"Ending event: {end.EventType}");
+
+            // If this is the current event, resume
+            if (currentEventType == end.EventType)
             {
-                Log($"Ending event: {end.EventType}");
-                activeEvents[end.EventType] = false;
-                EvaluatePriorityEvent();
-            }
-        }
-
-        private void EvaluatePriorityEvent()
-        {
-            if (musicEventData == null) return;
-
-            var sortedConfigs = musicEventData.GetSortedByPriority();
-            MusicEventType? newPriorityEvent = null;
-
-            foreach (var config in sortedConfigs)
-            {
-                if (activeEvents.TryGetValue(config.eventType, out bool isActive) && isActive)
-                {
-                    newPriorityEvent = config.eventType;
-                    Log($"Priority event: {newPriorityEvent} (Priority: {config.priority})");
-                    break;
-                }
-            }
-
-            if (newPriorityEvent != currentPriorityEvent)
-            {
-                OnPriorityEventChanged(currentPriorityEvent, newPriorityEvent);
-                currentPriorityEvent = newPriorityEvent;
-            }
-        }
-
-        private void OnPriorityEventChanged(MusicEventType? oldEvent, MusicEventType? newEvent)
-        {
-            Log($"Priority event changed: {oldEvent} → {newEvent}");
-
-            if (!newEvent.HasValue || newEvent.Value == MusicEventType.None)
-            {
-                // Resume previous state
                 ResumeFromStack();
-            }
-            else
-            {
-                // Play interruption music (save current state first)
-                PlayInterruptionMusic(newEvent.Value);
             }
         }
 
@@ -329,9 +284,9 @@ namespace Ambience
         private void OnSequenceTrackFinished()
         {
             // Don't auto-progress if an event is active
-            if (isPlayingInterruptionMusic)
+            if (isPlayingEventMusic)
             {
-                Log("Skipping sequence progression - interruption music active");
+                Log("Skipping sequence progression - event music active");
                 return;
             }
 
@@ -387,7 +342,7 @@ namespace Ambience
             }
         }
 
-        private void PlayInterruptionMusic(MusicEventType eventType)
+        private void PlayEventMusic(MusicEventType eventType)
         {
             var config = musicEventData.GetEventConfig(eventType);
             if (!config.HasValue) return;
@@ -399,10 +354,15 @@ namespace Ambience
                 return;
             }
 
-            Log($"Playing interruption music: {track.Value} (Event: {eventType})");
+            Log($"Playing event music: {track.Value} (Event: {eventType})");
 
-            // SAVE CURRENT STATE before interrupting
-            SaveCurrentState(eventType);
+            // If this is an interrupt type, save current state
+            if (config.Value.interruptCurrent)
+            {
+                SaveCurrentState();
+            }
+
+            currentEventType = eventType;
 
             var musicData = GetMusicData(track.Value);
             if (musicData == null) return;
@@ -411,7 +371,7 @@ namespace Ambience
                 ? config.Value.customFadeInDuration
                 : defaultFadeDuration;
 
-            isPlayingInterruptionMusic = true;
+            isPlayingEventMusic = true;
 
             // Stop silence if active
             if (silenceCoroutine != null)
@@ -420,7 +380,8 @@ namespace Ambience
                 silenceCoroutine = null;
             }
 
-            if (config.Value.interruptCurrent && primaryLayer.isPlaying)
+            // Stop current music and play new one
+            if (primaryLayer.isPlaying)
             {
                 // Fade out current, fade in new
                 transitionHelper.Crossfade(
@@ -440,7 +401,7 @@ namespace Ambience
                         {
                             StartCoroutine(MonitorTrackEnd(primaryLayer, track.Value, () =>
                             {
-                                OnInterruptionMusicFinished(eventType);
+                                OnEventMusicFinished(eventType);
                             }));
                         }
                     });
@@ -460,21 +421,21 @@ namespace Ambience
                     {
                         StartCoroutine(MonitorTrackEnd(primaryLayer, track.Value, () =>
                         {
-                            OnInterruptionMusicFinished(eventType);
+                            OnEventMusicFinished(eventType);
                         }));
                     }
                 });
             }
         }
 
-        private void OnInterruptionMusicFinished(MusicEventType eventType)
+        private void OnEventMusicFinished(MusicEventType eventType)
         {
-            Log($"Interruption music finished: {eventType}");
+            Log($"Event music finished: {eventType}");
 
-            activeEvents[eventType] = false;
-            isPlayingInterruptionMusic = false;
+            currentEventType = null;
+            isPlayingEventMusic = false;
 
-            // Resume from stack
+            // Resume from stack if this was an interrupt
             ResumeFromStack();
         }
 
@@ -482,12 +443,12 @@ namespace Ambience
 
         #region State Stack Management
 
-        private void SaveCurrentState(MusicEventType interruptingEvent)
+        private void SaveCurrentState()
         {
             var state = MusicState.Capture(
                 primaryLayer,
                 currentPrimaryTrack,
-                currentPriorityEvent,
+                currentEventType,
                 currentSequence,
                 currentSequenceIndex
             );
@@ -501,6 +462,8 @@ namespace Ambience
             if (stateStack.Count == 0)
             {
                 Log("Stack empty, returning to default music");
+                currentEventType = null;
+                isPlayingEventMusic = false;
                 StartDefaultMusic();
                 return;
             }
@@ -508,7 +471,8 @@ namespace Ambience
             var savedState = stateStack.Pop();
             Log($"Resuming from stack (remaining: {stateStack.Count}): {savedState}");
 
-            isPlayingInterruptionMusic = false;
+            currentEventType = savedState.eventType;
+            isPlayingEventMusic = false;
 
             if (savedState.isSequence)
             {
@@ -698,13 +662,8 @@ namespace Ambience
         {
             Log("Clearing all events");
 
-            foreach (var key in new List<MusicEventType>(activeEvents.Keys))
-            {
-                activeEvents[key] = false;
-            }
-
-            currentPriorityEvent = null;
-            isPlayingInterruptionMusic = false;
+            currentEventType = null;
+            isPlayingEventMusic = false;
             stateStack.Clear();
 
             StartDefaultMusic();

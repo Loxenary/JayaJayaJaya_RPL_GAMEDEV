@@ -15,7 +15,7 @@ MonoBehaviour:
   eventConfigs:
   - eventType: 20
     priority: 50
-    musicTracks: 0b000000050000000b000000060000000b00000008000000
+    musicTracks: 0c000000050000000c000000060000000b00000008000000
     loopMusic: 1
     interruptCurrent: 0
     customFadeInDuration: 0
