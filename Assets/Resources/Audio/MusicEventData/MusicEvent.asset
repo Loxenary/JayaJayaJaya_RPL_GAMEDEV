@@ -41,13 +41,6 @@ MonoBehaviour:
     interruptCurrent: 0
     customFadeInDuration: 0
     customFadeOutDuration: 0.5
-  - eventType: 30
-    priority: 0
-    musicTracks: 01000000
-    loopMusic: 1
-    interruptCurrent: 1
-    customFadeInDuration: 0
-    customFadeOutDuration: 0.5
   defaultMusicSequence: 
   loopDefaultSequence: 0
   shuffleDefaultSequence: 0
