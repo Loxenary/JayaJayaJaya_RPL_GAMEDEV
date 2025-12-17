@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55b6e6bfc7a35984bbdcd95adbf05b46, type: 3}
-  m_Name: MusicEvent
+  m_Name: MusicEvent_bACKTUP
   m_EditorClassIdentifier: 
   eventConfigs:
   - eventType: 20
@@ -39,6 +39,13 @@ MonoBehaviour:
     musicTracks: 02000000
     loopMusic: 1
     interruptCurrent: 0
+    customFadeInDuration: 0
+    customFadeOutDuration: 0.5
+  - eventType: 30
+    priority: 0
+    musicTracks: 01000000
+    loopMusic: 1
+    interruptCurrent: 1
     customFadeInDuration: 0
     customFadeOutDuration: 0.5
   defaultMusicSequence: 

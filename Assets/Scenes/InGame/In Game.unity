@@ -49715,7 +49715,7 @@ PrefabInstance:
     - target: {fileID: 1123052706795324891, guid: d28396ea462361d4c9daa7145925b54d, type: 3}
       propertyPath: hintVisual
       value: 
-      objectReference: {fileID: 21300000, guid: c2198282bc66395419d2600a7eb31067, type: 3}
+      objectReference: {fileID: 21300000, guid: d8ad91836bb652c45b3f2da8fb198ef4, type: 3}
     - target: {fileID: 4115747791511276439, guid: d28396ea462361d4c9daa7145925b54d, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5719037
@@ -58997,6 +58997,30 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2071598606}
         m_TargetAssemblyTypeName: UnityEngine.Collider, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1687580534}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1687580531}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
         m_MethodName: set_enabled
         m_Mode: 6
         m_Arguments:
@@ -89836,7 +89860,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c2198282bc66395419d2600a7eb31067, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d8ad91836bb652c45b3f2da8fb198ef4, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -131837,7 +131861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40abc607ef06be4091f5e454d941c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicEventData: {fileID: 11400000, guid: a0082d57ff77fb44ca4c354ad74f1df1, type: 2}
+  musicEventData: {fileID: 11400000, guid: c87eae6f7919e2f41af0b8dbac33ebd5, type: 2}
   defaultFadeDuration: 1
   defaultTransitionCurve: 4
   silenceDuration: 0
@@ -137346,6 +137370,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1747584278087040381, guid: d727c5fff516e7c4c9d833fbdcacbf35, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1859803280109259810, guid: d727c5fff516e7c4c9d833fbdcacbf35, type: 3}
       propertyPath: m_Camera
       value: 
@@ -137408,6 +137436,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3358265494333026455, guid: d727c5fff516e7c4c9d833fbdcacbf35, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3962070275090963367, guid: d727c5fff516e7c4c9d833fbdcacbf35, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4585064887342433696, guid: d727c5fff516e7c4c9d833fbdcacbf35, type: 3}
@@ -137495,7 +137527,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1687580525}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1687580527}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: acce0def5c74f6c4a8f919901e3eeea8, type: 3}
   m_Name: 
@@ -137513,6 +137545,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _randomGUID: 4b8314ec-530f-429a-9eda-7bb2bd91e6c4
+--- !u!114 &1687580534 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3962070275090963367, guid: d727c5fff516e7c4c9d833fbdcacbf35, type: 3}
+  m_PrefabInstance: {fileID: 1687580525}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687580527}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1687955089
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -139896,7 +139939,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6929577214501542018, guid: 31b1361c360812743978b37874f000b7, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6929577214501542018, guid: 31b1361c360812743978b37874f000b7, type: 3}
+      propertyPath: m_Intensity
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 6929577214501542018, guid: 31b1361c360812743978b37874f000b7, type: 3}
+      propertyPath: m_SpotAngle
+      value: 78.16995
+      objectReference: {fileID: 0}
+    - target: {fileID: 6929577214501542018, guid: 31b1361c360812743978b37874f000b7, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 42.857895
       objectReference: {fileID: 0}
     - target: {fileID: 7617363230231734412, guid: 31b1361c360812743978b37874f000b7, type: 3}
       propertyPath: m_IsActive
