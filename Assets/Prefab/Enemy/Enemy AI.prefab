@@ -470,7 +470,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 5
-  radius: 0.5
+  radius: 1
   height: 2
   canMove: 1
   maxSpeed: 1
@@ -555,7 +555,7 @@ MonoBehaviour:
   detectionOrigin: {fileID: 8557329898316272107}
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 1280
 --- !u!114 &1207791694197137093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -573,6 +573,12 @@ MonoBehaviour:
   useDynamicAngryStats: 1
   patrolGroups: {fileID: 0}
   loopPatrol: 1
+  randomPatrolOrder: 1
+  pathfindingObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 1281
+  maxPatrolPointAttempts: 1
+  validatePatrolPointsOnStart: 1
   patrolChance: 1
   idleWaitTimeMin: 2
   idleWaitTimeMax: 5

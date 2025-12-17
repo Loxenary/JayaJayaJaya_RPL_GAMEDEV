@@ -128,6 +128,14 @@ public class GhostManager : MonoBehaviour
   }
 
   /// <summary>
+  /// Wrapper method for UnityEvent to spawn a ghost.
+  /// </summary>
+  public void SpawnGhostEvent()
+  {
+    SpawnGhost();
+  }
+
+  /// <summary>
   /// Spawn ghost at a custom position (overrides spawn point)
   /// </summary>
   public GameObject SpawnGhostAt(Vector3 position)
