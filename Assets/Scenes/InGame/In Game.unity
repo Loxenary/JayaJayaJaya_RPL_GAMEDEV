@@ -20082,37 +20082,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6873387218773723365, guid: 3f18f8f624256a8459412a4a0f4cf21e, type: 3}
   m_PrefabInstance: {fileID: 275686818}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &240887700
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 240887701}
-  m_Layer: 0
-  m_Name: Point_2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &240887701
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 240887700}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.3000002, y: 0, z: -3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 698257538}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &241027920
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46110,37 +46079,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45e7dc7435ee2d5438ea2419465b3309, type: 3}
---- !u!1 &547865046
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 547865047}
-  m_Layer: 0
-  m_Name: Point_16
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &547865047
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 547865046}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 53.8, y: 0, z: -20.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 698257538}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &549548155 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6873387218773723365, guid: 45e7dc7435ee2d5438ea2419465b3309, type: 3}
@@ -58750,7 +58688,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 186547680}
-  - {fileID: 240887701}
   - {fileID: 1598252053}
   - {fileID: 386774647}
   - {fileID: 689573608}
@@ -58764,7 +58701,6 @@ Transform:
   - {fileID: 5907896}
   - {fileID: 1955990845}
   - {fileID: 2061200972}
-  - {fileID: 547865047}
   - {fileID: 294430344}
   - {fileID: 1476081412}
   - {fileID: 793685253}
