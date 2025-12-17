@@ -577,7 +577,7 @@ MonoBehaviour:
   pathfindingObstacleLayers:
     serializedVersion: 2
     m_Bits: 1281
-  maxPatrolPointAttempts: 5
+  maxPatrolPointAttempts: 1
   validatePatrolPointsOnStart: 1
   patrolChance: 1
   idleWaitTimeMin: 2
