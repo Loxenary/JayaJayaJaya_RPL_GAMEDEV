@@ -15,9 +15,14 @@ public class InteractableRotate : Interactable
   public UnityEvent OnDoneRotate;
 
   private Tweener rotateTween;
-  private bool targetIsOpen; // tracks desired end state even while tweening
+  private bool targetIsOpen = false; // tracks desired end state even while tweening
 
   public override void InteractObject()
+  {
+    Rotate();
+  }
+
+  protected void Rotate()
   {
     // Cancel any ongoing tween so interaction can be interrupted/reversed
     if (rotateTween != null && rotateTween.IsActive())
@@ -71,11 +76,12 @@ public class InteractableRotate : Interactable
           wait = false;
         });
   }
-    protected void DoRotate(Vector3 target)
+  protected void DoRotate(Vector3 target)
+  {
+    rotateTween = rootObject.DOLocalRotate(target, timeRotate).OnComplete(() =>
     {
-        rotateTween = rootObject.DOLocalRotate(target, timeRotate).OnComplete(() => {
-            OnDoneRotate?.Invoke();
-            wait = false;
-        });
-    }
+      OnDoneRotate?.Invoke();
+      wait = false;
+    });
+  }
 }

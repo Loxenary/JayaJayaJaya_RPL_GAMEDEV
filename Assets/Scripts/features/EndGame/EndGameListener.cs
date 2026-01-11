@@ -45,5 +45,4 @@ public class EndGameListener : MonoBehaviour, IRestartable
     {
         _currentPuzzleCount = 0;
     }
-
 }

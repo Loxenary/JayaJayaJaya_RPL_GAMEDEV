@@ -12,18 +12,6 @@ public class SanityTimerSystem : MonoBehaviour
   [SerializeField] private float sanityDrainRate = 10f; // Sanity points per second (1% = 10 points)
   [SerializeField] private bool autoStart = false; // No longer auto-start, wait for collectible
 
-# if UNITY_EDITOR
-  [Header("Debug")]
-  [ReadOnly]
-  [SerializeField] private float _currentTime => currentTime;
-  [ReadOnly]
-  [SerializeField] private bool _isRunning => isRunning;
-  [ReadOnly]
-  [SerializeField] private bool _isDrainingStarted => isDrainingStarted;
-  [ReadOnly]
-  [SerializeField] private bool _hasFirstCollectible => hasFirstCollectible;
-#endif
-
   private float currentTime = 0f;
   private bool isRunning = false;
   private bool isDrainingStarted = false;
