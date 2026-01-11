@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
 {
@@ -19,8 +16,6 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     [Header("Configuration")]
 
     [SerializeField] private JournalDatabaseConfig journalDatabaseConfig;
-    [SerializeField] private int guideTimerDuration = 25;
-
 
     private int currentTrackedCollectible = 0;
     private Coroutine currentTimerCoroutine;
@@ -29,8 +24,6 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
 
     //List<MappingJournal> mapping = new List<MappingJournal>();
     Dictionary<string, int> mapping = new Dictionary<string, int>();
-
-    private GuideData lastGuideData = null;
 
     private void OnEnable()
     {
@@ -50,6 +43,7 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     {
         base.Awake();
         RestartManager.Register(this);
+        
     }
 
     // Called when player interacts with a puzzle (but hasn't collected it yet)
@@ -72,14 +66,16 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     // Called when player interacts with a guide interactable
     private void OnGuideInteracted(GuideInteracted evt)
     {
-
-        // Check if this guide has already been interacted with
-        if (!interactedGuides.Contains(evt.guideData))
+        // Handle no guide exists
+        if (interactedGuides.Contains(evt.guideData))
         {
-            interactedGuides.Add(evt.guideData);
-            lastGuideData = evt.guideData;
-            GuideTimerCoroutine(evt.guideData);
+            Debug.LogError("Guide that are not exist is called", evt.guideData);
+            return;
         }
+
+        // Check if this guide has already been interacted wit    
+        interactedGuides.Add(evt.guideData);
+        GuideTimerCoroutine(evt.guideData);
     }
 
     private void GuideTimerCoroutine(GuideData guideData)
@@ -90,7 +86,7 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
             StopCoroutine(currentTimerCoroutine);
         }
 
-        // Show the dialog immediately for the new interaction
+        // Show the dialog immediately for the new nteraction
         EventBus.Publish(new DialogNarrativeUI.OpenDialogNarrtiveUI
         {
             content = guideData.Content
@@ -124,8 +120,12 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     {
         ResetPuzzleTimer(new());
         currentTrackedCollectible = 0;
+        if (currentTimerCoroutine != null)
+        {
+            StopCoroutine(currentTimerCoroutine);
+            currentTimerCoroutine = null;
+        }
         interactedPuzzle.Clear();
         interactedGuides.Clear();
-        lastGuideData = null;
     }
 }

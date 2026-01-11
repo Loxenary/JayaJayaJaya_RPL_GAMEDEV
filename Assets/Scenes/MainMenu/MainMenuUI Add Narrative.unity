@@ -78602,21 +78602,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contents:
-  - Nama gue Joko. Video ini harusnya jadi konten horror pertama gue yang serius,
-    sekaligus usaha gue buat keluar dari hidup yang gini-gini aja. Gue capek ngeliat
-    orang lain sukses sementara gue masih stuck di kerjaan yang nggak gue suka dan
-    channel yang nggak berkembang. Jadi malam ini gue mutusin buat datang ke tempat
-    yang katanya angker demi sesuatu yang akhirnya bisa bikin orang ngeliat gue.
-  - Gue sekarang ada di rumah tua peninggalan Belanda di pinggiran kota. Dulu rumah
-    ini milik keluarga Belanda kaya, dengan cerita tentang seorang noni yang mati
-    nggak wajar dan arwahnya nggak pernah tenang. Awalnya rencana gue cuma masuk,
-    keliling, ambil konten, lalu pulang. Tapi baru beberapa menit di dalam, pintu
-    nggak bisa dibuka, sinyal HP hilang, dan rumah ini terasa terlalu sepi, dingin,
-    seolah lagi nunggu sesuatu.
-  - Setiap ruangan di rumah ini penuh benda-benda lama yang terasa seperti petunjuk.
-    Seakan noni itu masih ada dan pengen ceritanya dibongkar. Sekarang ini bukan
-    soal konten lagi. Kalau gue mau keluar hidup-hidup, gue harus ngungkap apa yang
-    sebenarnya terjadi di rumah ini sampai tuntas.
+  - Nama gue <b>Joko</b>. Jujur, gue <i>muak</i> hidup gini-gini aja. Channel sepi,
+    kerjaan buntu. Malam ini adalah <color=#FF2A2A><b>taruhan terakhir</b></color>
+    gue. Gue butuh konten horror yang 'pecah' buat ngubah nasib gue.
+  - Lokasinya di rumah tua peninggalan Belanda ini. Rumornya santer banget soal arwah
+    <b>Noni</b> yang <color=#FF2A2A>mati nggak wajar</color> di dalam. Anehnya, pintu
+    depan <i>nggak dikunci sama sekali</i>... seolah-olah memang <b>ngundang tamu</b>
+    buat masuk.
+  - Tapi gue nggak mau cuma keliling doang, itu basi. Riset gue bilang, si Noni baru
+    mau muncul kalau barang-barang kesayangannya disatukan. Ada <color=#FFD700><b>TIGA
+    BENDA</b></color> peninggalan dia yang <b>wajib</b> gue temuin di dalam.
+  - <color=#FFD700><b>Tiga benda</b></color> itu kunci buat bikin video ini <b>VIRAL</b>.
+    Gue <i>nggak bakal pulang</i> sebelum dapet semuanya. Kamera rolling, mental
+    aman... Oke, waktunya kita <color=#FF2A2A>cari tahu kebenaran</color> di dalam.
   counterNarrative: 0
 --- !u!114 &1441890686
 MonoBehaviour:
@@ -78676,6 +78674,7 @@ MonoBehaviour:
   typingSfx: {fileID: 11400000, guid: 69a099f61965e594f9d695ceb7d4bc3f, type: 2}
   characterRevealWaitTime: 1
   audioSourcesForTypingSound: {fileID: 1441890683}
+  characterCountToSound: 5
   narrative: {fileID: 1441890685}
   delayParagraph: 3
   blackPanel: {fileID: 964749138}

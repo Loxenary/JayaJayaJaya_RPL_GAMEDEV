@@ -6,12 +6,8 @@ using UnityEngine.Events;
 /// Unlike InteractableLockedDoor which starts locked and opens with a key,
 /// this door starts open and closes when triggered by a game event.
 /// </summary>
-public class InteractableEndGameDoor : InteractableLockedDoor
+public class InteractableEndGameDoor : InteractableLockedDoor, IRestartable
 {
-  [Header("End Game Door Section")]
-  [Tooltip("If true, the door is permanently locked and cannot be opened")]
-  [SerializeField] private bool isPermanentlyLocked = false;
-
   [Tooltip("Play this sound when door closes and locks")]
   [SerializeField] private SfxClipData doorLockSound;
 
@@ -23,40 +19,35 @@ public class InteractableEndGameDoor : InteractableLockedDoor
   // Event system for triggering door lock
   public delegate void EndGameDoorLockTrigger();
   public static event EndGameDoorLockTrigger onDoorLockTriggered;
-
   private bool isClosingInProgress = false;
-
-
+  private bool _isEndGameLocked = false;
 
   private void Start()
   {
     // Initialize door as OPEN at start
     InitializeDoorAsOpen();
-
-
   }
 
   private void OnEnable()
   {
 
-    // Listen for the door lock trigger event
-    onDoorLockTriggered += OnDoorLockTriggered;
 
     EventBus.Subscribe<FirstPuzzleEvent>(OnFirstPuzzleEvent);
+    EventBus.Subscribe<InteractedPuzzleCount>(OnInteractedPuzzleCount);
   }
 
   private void OnDisable()
   {
 
-    onDoorLockTriggered -= OnDoorLockTriggered;
-
     EventBus.Unsubscribe<FirstPuzzleEvent>(OnFirstPuzzleEvent);
+    EventBus.Unsubscribe<InteractedPuzzleCount>(OnInteractedPuzzleCount);
   }
 
   private void OnFirstPuzzleEvent(FirstPuzzleEvent evt)
   {
     CloseDoorAndLock();
     var audioManager = ServiceLocator.Get<AudioManager>();
+
 
     audioManager.PlaySfx(doorLockSound.SFXId);
   }
@@ -68,24 +59,18 @@ public class InteractableEndGameDoor : InteractableLockedDoor
   {
     // Mark as already interacted (opened)
     isInteract = true;
+    _isEndGameLocked = false;
 
-    // Set the door's rotation to the target (open) position immediately
-    if (rootObject != null)
-    {
-      rootObject.localRotation = Quaternion.Euler(targetRotation);
-    }
+    // Set the door's rotation to the target (open) position immediately    
 
     Debug.Log($"[InteractableEndGameDoor] {gameObject.name} initialized as OPEN");
   }
 
-  /// <summary>
-  /// Called when the door lock event is triggered
-  /// </summary>
-  private void OnDoorLockTriggered()
+  private void OnInteractedPuzzleCount(InteractedPuzzleCount evt)
   {
-    if (!isClosingInProgress && !isPermanentlyLocked)
+    if (evt.puzzleCount > 1)
     {
-      CloseDoorAndLock();
+      UnlockDoor();
     }
   }
 
@@ -94,7 +79,7 @@ public class InteractableEndGameDoor : InteractableLockedDoor
   /// </summary>
   public void CloseDoorAndLock()
   {
-    if (isClosingInProgress || isPermanentlyLocked) return;
+    if (isClosingInProgress) return;
 
     Debug.Log($"[InteractableEndGameDoor] {gameObject.name} is closing and locking!");
 
@@ -106,9 +91,9 @@ public class InteractableEndGameDoor : InteractableLockedDoor
     // Play lock sound
     PlayLockSound();
 
-    // Mark as locked permanently
-    isPermanentlyLocked = true;
+    // Mark as locked     
     isInteract = false;
+    _isEndGameLocked = true;
 
     // Invoke event
     OnDoorClosedAndLocked?.Invoke();
@@ -128,7 +113,7 @@ public class InteractableEndGameDoor : InteractableLockedDoor
   /// </summary>
   public override void InteractObject()
   {
-    if (isPermanentlyLocked)
+    if (_isEndGameLocked)
     {
       // Door is permanently locked, cannot open
       OnWrongKeys?.Invoke();
@@ -137,7 +122,8 @@ public class InteractableEndGameDoor : InteractableLockedDoor
     }
 
     // Otherwise, use the normal locked door behavior (key-based)
-    base.InteractObject();
+    Rotate();
+
   }
 
   /// <summary>
@@ -152,21 +138,15 @@ public class InteractableEndGameDoor : InteractableLockedDoor
   }
 
   /// <summary>
-  /// Public method to manually lock the door without closing animation
-  /// </summary>
-  public void LockDoorImmediately()
-  {
-    isPermanentlyLocked = true;
-    isInteract = false;
-    Debug.Log($"[InteractableEndGameDoor] {gameObject.name} locked immediately!");
-  }
-
-  /// <summary>
   /// Public method to unlock the door (for testing or special scenarios)
   /// </summary>
   public void UnlockDoor()
   {
-    isPermanentlyLocked = false;
-    Debug.Log($"[InteractableEndGameDoor] {gameObject.name} unlocked!");
+    _isEndGameLocked = false;
+  }
+
+  public void Restart()
+  {
+    _isEndGameLocked = false;
   }
 }

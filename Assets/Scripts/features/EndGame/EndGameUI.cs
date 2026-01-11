@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class EndGame : FadeShowHideProcedural
+public class EndGame : FadeShowHideProcedural, IRestartable
 {
     public struct OpenEndGameUI
     {
@@ -17,10 +17,14 @@ public class EndGame : FadeShowHideProcedural
     [SerializeField] private float characterRevealWaitTime = 1f;
     [SerializeField] private AudioSource audioSourcesForTypingSound;
 
+
+    private TextAnimationHelper _textAnimationHelper;
+
     protected override void OnEnable()
     {
         base.OnEnable();
         EventBus.Subscribe<OpenEndGameUI>(OnEndGameShow);
+        _textAnimationHelper = new(contentText);
     }
 
     protected override void OnDisable()
@@ -33,7 +37,7 @@ public class EndGame : FadeShowHideProcedural
     {
         AudioManager audioManager = ServiceLocator.Get<AudioManager>();
 
-        StartCoroutine(TextAnimationHelper.RevealTextWithTypingSound(contentText, evt.content, characterRevealSpeed, typingSfx, audioSourcesForTypingSound, audioManager, 2));
+        StartCoroutine(_textAnimationHelper.RevealTextWithTypingSoundUnscaledTime(evt.content, characterRevealSpeed, typingSfx, audioSourcesForTypingSound, audioManager, 2));
         ShowUI();
     }
 
@@ -51,5 +55,10 @@ public class EndGame : FadeShowHideProcedural
         await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.IN_GAME);
         HideUI();
         ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
+    }
+
+    public void Restart()
+    {
+        StopAllCoroutines();
     }
 }

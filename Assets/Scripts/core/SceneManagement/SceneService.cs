@@ -247,34 +247,27 @@ public class SceneService : MonoBehaviour, IInitializableService
             return;
         }
 
-        if (_currentSceneGroup == null)
-        {
-            Debug.LogError("Cannot reload scene: No current scene group is active.");
 
-            // Fallback: Try to find current scene group from CurrentScene
-            SceneRecord record = SceneRecords.Find(r => r.SceneId == CurrentScene);
-            if (record != null && record.SceneGroupAsset != null)
-            {
-                _currentSceneGroup = record.SceneGroupAsset;
-            }
-            else
-            {
-                Debug.LogError($"[SceneService] No SceneGroup found for current scene: {CurrentScene}");
-                return;
-            }
-        }
 
         await _transitionCoordinator.ExecuteWithTransition(async () =>
         {
-            // Capture scenes to unload BEFORE loading new ones (by handle, not name)
+
             var scenesToUnload = GetAllGameScenes();
 
-            // Load new scenes
-            await LoadSceneGroup(_currentSceneGroup, forceReload: true);
-
-            // Now unload the old scenes (the ones we captured before)
             await UnloadScenes(scenesToUnload);
 
+            await Resources.UnloadUnusedAssets();
+
+            await LoadSceneGroup(_currentSceneGroup, forceReload: true);
+
+            Scene newActiveScene = SceneManager.GetSceneByName(_currentSceneGroup.ActiveScene.SceneName);
+
+            if (newActiveScene.IsValid() && newActiveScene.isLoaded)
+            {
+                SceneManager.SetActiveScene(newActiveScene);
+            }
+
+            DynamicGI.UpdateEnvironment();
             OnSceneChanging?.Invoke(CurrentScene);
         }, addTransition);
     }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class LightingHandler : MonoBehaviour
+public class LightingHandler : MonoBehaviour, IRestartable
 {
     [SerializeField] private SfxClipData lightingSwitchSfx;
 
@@ -35,5 +35,13 @@ public class LightingHandler : MonoBehaviour
     {
         var audioManager = ServiceLocator.Get<AudioManager>();
         audioManager.PlaySfx(lightingSwitchSfx.SFXId);
+    }
+
+    public void Restart()
+    {
+        foreach (var light in turnedOnLights)
+        {
+            light.SetActive(true);
+        }
     }
 }
