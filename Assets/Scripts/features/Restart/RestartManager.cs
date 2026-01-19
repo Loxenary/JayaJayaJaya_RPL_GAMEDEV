@@ -13,6 +13,14 @@ public static class RestartManager
         restartables.Add(restartable);
     }
 
+    public static void Unregister(IRestartable restartable)
+    {
+        if (restartables.Contains(restartable))
+        {
+            restartables.Remove(restartable);
+        }
+    }
+
     public static void Restart()
     {
         foreach (IRestartable restartable in restartables)
@@ -20,4 +28,5 @@ public static class RestartManager
             restartable.Restart();
         }
     }
+    
 }

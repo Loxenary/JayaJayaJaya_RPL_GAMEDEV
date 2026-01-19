@@ -15,11 +15,12 @@ public class CollectibleManager : MonoBehaviour, IRestartable
   private void OnEnable()
   {
     EventBus.Subscribe<CollectibleType>(ListenerCollectible);
+    RestartManager.Register(this);
   }
   private void OnDisable()
   {
     EventBus.Unsubscribe<CollectibleType>(ListenerCollectible);
-
+    RestartManager.Unregister(this);
   }
 
   void ListenerCollectible(CollectibleType type)
@@ -40,7 +41,7 @@ public class CollectibleManager : MonoBehaviour, IRestartable
 
         }
         counting.IncrementPuzzle();
-        
+
 
         if (numberCollectible == counting.GetPuzzleCount())
         {

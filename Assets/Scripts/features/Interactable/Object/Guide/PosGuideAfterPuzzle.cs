@@ -8,11 +8,13 @@ public class PosGuideAfterPuzzle : PosGuide, IRestartable
     private void OnEnable()
     {
         EventBus.Subscribe<FirstPuzzleEvent>(OnPuzzleSolved);
+        RestartManager.Register(this);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<FirstPuzzleEvent>(OnPuzzleSolved);
+        RestartManager.Unregister(this);
     }
 
     private void OnPuzzleSolved(FirstPuzzleEvent evt)

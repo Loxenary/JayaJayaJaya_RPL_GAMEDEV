@@ -5,6 +5,10 @@ using System.Collections.Generic;
 public class TimeService : ServiceBase<TimeService>
 {
     private static int _t_stop_counter = 0;
+
+#if UNITY_EDITOR
+    [ReadOnly]
+#endif
     private float time_counter = 0;
 
     private static Queue<object> _stopperQueue = new();
@@ -37,9 +41,14 @@ public class TimeService : ServiceBase<TimeService>
     {
         _t_stop_counter--;
 
-        if (_stopperQueue.Count > 0 && _stopperQueue.TryDequeue(out var resumer) && !resumer.Equals(requesterObject))
+        if (_t_stop_counter > 0)
         {
-            BetterLogger.LogError($"The object that requested resume time {requesterObject.GetType().Name} is not the same as the object that requested stop time {resumer.GetType().Name}", BetterLogger.LogCategory.System);
+            BetterLogger.Log("Stay paused due to time stopper still > 0", BetterLogger.LogCategory.System);
+            return;
+        }
+        else if (_stopperQueue.TryDequeue(out var resumer) && resumer == null)
+        {
+            BetterLogger.LogError($"The object that requested resume time {requesterObject} is not in the queue", BetterLogger.LogCategory.System);
             return;
         }
 
@@ -52,6 +61,7 @@ public class TimeService : ServiceBase<TimeService>
         Time.timeScale = 1f;
         _t_stop_counter = 0;
         time_counter = 0;
+        HandleTimeInternal();
     }
 
     [ContextMenu("Log Stop Queue")]

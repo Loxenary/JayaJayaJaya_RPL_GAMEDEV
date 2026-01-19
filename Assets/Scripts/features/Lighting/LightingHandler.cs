@@ -11,11 +11,13 @@ public class LightingHandler : MonoBehaviour, IRestartable
     private void OnEnable()
     {
         EventBus.Subscribe<FirstPuzzleEvent>(OnFirstPuzzleEvent);
+        RestartManager.Register(this);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<FirstPuzzleEvent>(OnFirstPuzzleEvent);
+        RestartManager.Unregister(this);
     }
 
 

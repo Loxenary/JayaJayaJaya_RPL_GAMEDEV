@@ -210,8 +210,6 @@ public abstract class ShowHideBase : MonoBehaviour
         {
             ServiceLocator.Get<TimeService>().RequestResumeTime(this);
         }
-
-
     }
 
     /// <summary>

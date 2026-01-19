@@ -22,6 +22,7 @@ public class EndGameListener : MonoBehaviour, IRestartable
     private void OnDisable()
     {
         EventBus.Unsubscribe<InteractedPuzzleCount>(OnPuzzleCountChange);
+        RestartManager.Unregister(this);
     }
 
     private void OnTriggerEnter(Collider other)
