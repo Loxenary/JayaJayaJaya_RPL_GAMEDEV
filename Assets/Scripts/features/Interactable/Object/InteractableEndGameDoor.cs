@@ -34,6 +34,7 @@ public class InteractableEndGameDoor : InteractableLockedDoor, IRestartable
 
     EventBus.Subscribe<FirstPuzzleEvent>(OnFirstPuzzleEvent);
     EventBus.Subscribe<InteractedPuzzleCount>(OnInteractedPuzzleCount);
+    RestartManager.Register(this);
   }
 
   private void OnDisable()
@@ -41,6 +42,7 @@ public class InteractableEndGameDoor : InteractableLockedDoor, IRestartable
 
     EventBus.Unsubscribe<FirstPuzzleEvent>(OnFirstPuzzleEvent);
     EventBus.Unsubscribe<InteractedPuzzleCount>(OnInteractedPuzzleCount);
+    RestartManager.Unregister(this);
   }
 
   private void OnFirstPuzzleEvent(FirstPuzzleEvent evt)

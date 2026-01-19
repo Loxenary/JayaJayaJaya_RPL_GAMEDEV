@@ -22,6 +22,7 @@ public class EndGame : FadeShowHideProcedural, IRestartable
 
     protected override void OnEnable()
     {
+        RestartManager.Register(this);
         base.OnEnable();
         EventBus.Subscribe<OpenEndGameUI>(OnEndGameShow);
         _textAnimationHelper = new(contentText);
@@ -31,6 +32,7 @@ public class EndGame : FadeShowHideProcedural, IRestartable
     {
         base.OnDisable();
         EventBus.Unsubscribe<OpenEndGameUI>(OnEndGameShow);
+        RestartManager.Unregister(this);
     }
 
     private void OnEndGameShow(OpenEndGameUI evt)

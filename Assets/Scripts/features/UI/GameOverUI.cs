@@ -388,6 +388,7 @@ public class GameOverUI : MonoBehaviour
             {
                 await sceneService.LoadScene(SceneEnum.MAIN_MENU, true);
             }
+            ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
             return;
         }
 

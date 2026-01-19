@@ -20,7 +20,7 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   [Header("Flashlight Stat")]
   [SerializeField] Light flashlight;
   [SerializeField] int initalBatteryValue = 100;
-  [SerializeField] bool initialTogle = true;
+  [SerializeField] bool initialTogle = false;
   [SerializeField] float decrementInterval = 3f;
   [SerializeField] int decrementBatteryValue = 1;
 
@@ -37,7 +37,7 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   private bool isDead;
   private int currentSanity;
   private int currentBattery;
-  private bool toggleFlashlight;
+  private bool toggleFlashlight = false;
 
 
   //C# Event - Sanity: 1000 = full health (100%), 0 = dead (0%)
@@ -137,12 +137,10 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
       return;
     toggleFlashlight = !toggleFlashlight;
     flashlight.enabled = toggleFlashlight;
-
-
   }
 
 
-  
+
   /// <summary>
   /// Drains sanity over time when flashlight is off/dead (called per frame)
   /// </summary>

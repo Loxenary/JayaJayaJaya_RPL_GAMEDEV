@@ -30,6 +30,7 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
         EventBus.Subscribe<PuzzleInteracted>(OnPuzzleInteracted);
         EventBus.Subscribe<GuideInteracted>(OnGuideInteracted);
         EventBus.Subscribe<ResetNarrativeTimer>(ResetPuzzleTimer);
+        RestartManager.Register(this);
     }
 
     private void OnDisable()
@@ -37,13 +38,12 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
         EventBus.Unsubscribe<PuzzleInteracted>(OnPuzzleInteracted);
         EventBus.Unsubscribe<GuideInteracted>(OnGuideInteracted);
         EventBus.Unsubscribe<ResetNarrativeTimer>(ResetPuzzleTimer);
+        RestartManager.Unregister(this);
     }
 
     protected override void Awake()
     {
-        base.Awake();
-        RestartManager.Register(this);
-        
+        base.Awake();        
     }
 
     // Called when player interacts with a puzzle (but hasn't collected it yet)
