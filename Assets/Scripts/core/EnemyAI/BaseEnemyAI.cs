@@ -101,7 +101,7 @@ namespace EnemyAI
     [SerializeField] protected Transform patrolGroups;
 
 #if UNITY_EDITOR
-    [SerializeField, ReadOnly] protected List<Transform> _patrolPoints => patrolPoints;
+    [ReadOnly] protected List<Transform> _patrolPoints => patrolPoints;
 #endif
 
     protected List<Transform> patrolPoints = new();

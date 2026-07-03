@@ -12,8 +12,7 @@ public class Interactable : MonoBehaviour
 #if UNITY_EDITOR
 
   [Header("Debugging Section")]
-  [ReadOnly]
-  [SerializeField] private bool _isInteract => isInteract;
+  [ReadOnly] private bool _isInteract => isInteract;
 
 #endif
     [SerializeField]

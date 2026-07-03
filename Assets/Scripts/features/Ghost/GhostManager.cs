@@ -38,10 +38,8 @@ public class GhostManager : MonoBehaviour
 
 #if UNITY_EDITOR
   [Header("Debug Info")]
-  [ReadOnly]
-  [SerializeField] private GameObject ghostDetected => currentGhost;
-  [ReadOnly]
-  [SerializeField] private bool _hasGhost => hasGhost;
+  [ReadOnly] private GameObject ghostDetected => currentGhost;
+  [ReadOnly] private bool _hasGhost => hasGhost;
 #endif
   private GameObject currentGhost;
 

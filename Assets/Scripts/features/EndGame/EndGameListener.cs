@@ -8,7 +8,7 @@ public class EndGameListener : MonoBehaviour, IRestartable
 #endif
     private int _currentPuzzleCount = 0;
 #if UNITY_EDITOR
-    [SerializeField, ReadOnly]
+    [ReadOnly]
     //private int puzzleCount => _currentPuzzleCount;
 #endif
     private int puzzleCount => _currentPuzzleCount;

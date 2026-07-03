@@ -12,8 +12,7 @@ public class InteractableDamager : Interactable
 
 #if UNITY_EDITOR
 
-    [ReadOnly]
-    [SerializeField] private int _currentCount => currentCount;
+    [ReadOnly] private int _currentCount => currentCount;
 #endif
 
     private int currentCount = 0;

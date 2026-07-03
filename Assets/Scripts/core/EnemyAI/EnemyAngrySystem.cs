@@ -33,11 +33,11 @@ public class EnemyAngrySystem : MonoBehaviour
 
 #if UNITY_EDITOR
   [Header("Runtime Info (Read Only)")]
-  [SerializeField][ReadOnly] private float _currentAngryPoints => currentAngryPoints;
-  [SerializeField][ReadOnly] private EnemyLevel _currentLevel => currentLevel;
-  [SerializeField][ReadOnly] private float _currentSanityValue => currentSanityValue;
-  [SerializeField][ReadOnly] private int _currentItemsTaken => currentItemsTaken;
-  [SerializeField][ReadOnly] private float _maxSanityValue => maxSanityValue;
+  [ReadOnly] private float _currentAngryPoints => currentAngryPoints;
+  [ReadOnly] private EnemyLevel _currentLevel => currentLevel;
+  [ReadOnly] private float _currentSanityValue => currentSanityValue;
+  [ReadOnly] private int _currentItemsTaken => currentItemsTaken;
+  [ReadOnly] private float _maxSanityValue => maxSanityValue;
 
 #endif
 

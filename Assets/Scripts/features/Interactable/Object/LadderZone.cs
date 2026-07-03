@@ -28,8 +28,7 @@ public class LadderZone : MonoBehaviour
 
 #if UNITY_EDITOR
   [Header("Debug")]
-  [ReadOnly]
-  [SerializeField] private bool _isPlayerOnLadder => isPlayerOnLadder;
+  [ReadOnly] private bool _isPlayerOnLadder => isPlayerOnLadder;
 #endif
 
   private bool isPlayerOnLadder = false;

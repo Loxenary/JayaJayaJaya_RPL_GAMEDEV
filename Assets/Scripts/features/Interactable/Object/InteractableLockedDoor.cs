@@ -8,8 +8,7 @@ public class InteractableLockedDoor : InteractableDoor, IHighlight
     [SerializeField] int keyID;
     [SerializeField] HiglightObjectPlus highlight;
 #if UNITY_EDITOR
-    [ReadOnly]
-    [SerializeField] bool isKeyUnlock => isUnlock;
+    [ReadOnly] bool isKeyUnlock => isUnlock;
 #endif
 #if UNITY_EDITOR
     [ReadOnly]
