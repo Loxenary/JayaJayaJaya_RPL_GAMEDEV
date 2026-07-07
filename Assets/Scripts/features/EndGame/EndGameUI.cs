@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -43,7 +44,9 @@ public class EndGame : FadeShowHideProcedural, IRestartable
         ShowUI();
     }
 
-    public async void ExitToMainMenu()
+    public void ExitToMainMenu() => ExitToMainMenuAsync().Forget(nameof(ExitToMainMenu));
+
+    private async Task ExitToMainMenuAsync()
     {
         RestartManager.Restart();
         await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.MAIN_MENU);
@@ -51,7 +54,9 @@ public class EndGame : FadeShowHideProcedural, IRestartable
         ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
     }
 
-    public async void RestartGame()
+    public void RestartGame() => RestartGameAsync().Forget(nameof(RestartGame));
+
+    private async Task RestartGameAsync()
     {
         RestartManager.Restart();
         await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.IN_GAME);

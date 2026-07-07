@@ -11,7 +11,15 @@ public class SaveLoadManager
 {
     public static readonly object _fileLock = new();
 
+    // Serialisasi operasi I/O async — tulis & baca file tidak boleh tumpang
+    // tindih (race korupsi save, B-14). lock() tidak bisa dipakai lintas await.
+    private static readonly System.Threading.SemaphoreSlim _ioLock = new(1, 1);
+
     private static readonly bool UseEncryption = true;
+
+    // CATATAN: key hardcoded = obfuscation agar save tidak bisa diedit kasual,
+    // BUKAN keamanan sungguhan (siapa pun yang decompile bisa membacanya).
+    // Untuk save game single-player ini cukup — jangan over-engineer.
     private static readonly string EncryptionKey = "mySecureKey12345"; // 16 chars for AES-128
 
     // Save data asynchronously with optional encryption
@@ -26,35 +34,27 @@ public class SaveLoadManager
         string filePath = GetFilePath(data.FileName);
         string backupPath = filePath + ".bak";
 
-        string json;
-        lock (_fileLock)
-        {
-            try
-            {
-                json = JsonUtility.ToJson(data, prettyPrint: true);
-
-                if (UseEncryption)
-                    json = Encrypt(json);
-
-                // Backup the old file before saving
-                if (File.Exists(filePath))
-                    File.Copy(filePath, backupPath, true);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error saving {typeof(T).Name} to {filePath}: {ex.Message}");
-                return;
-            }
-        }
-
+        await _ioLock.WaitAsync();
         try
         {
-            await File.WriteAllTextAsync(filePath, json);
+            string json = JsonUtility.ToJson(data, prettyPrint: true);
 
+            if (UseEncryption)
+                json = Encrypt(json);
+
+            // Backup the old file before saving
+            if (File.Exists(filePath))
+                File.Copy(filePath, backupPath, true);
+
+            await File.WriteAllTextAsync(filePath, json);
         }
         catch (Exception ex)
         {
             Debug.LogError($"Error saving {typeof(T).Name} to {filePath}: {ex.Message}");
+        }
+        finally
+        {
+            _ioLock.Release();
         }
     }
 
@@ -64,29 +64,36 @@ public class SaveLoadManager
         T data = new();
         string filePath = GetFilePath(data.FileName);
 
+        await _ioLock.WaitAsync();
         try
         {
             if (File.Exists(filePath))
             {
                 string json = await File.ReadAllTextAsync(filePath);
 
-                lock (_fileLock)
-                {
-                    if (UseEncryption)
-                        json = Decrypt(json);
+                if (UseEncryption)
+                    json = Decrypt(json);
 
-                    data = JsonUtility.FromJson<T>(json);
-                }
-
+                data = JsonUtility.FromJson<T>(json);
             }
             else
             {
                 Debug.LogWarning($"File not found at {filePath}. Returning default data.");
             }
         }
+        catch (Exception ex) when (ex is CryptographicException || ex is FormatException)
+        {
+            // Save korup / format lama (pra-IV) — mulai fresh, jangan crash (B-14)
+            Debug.LogWarning($"Save {typeof(T).Name} korup atau format lama ({ex.GetType().Name}). Memulai dengan data default. Path: {filePath}");
+            data = new();
+        }
         catch (Exception ex)
         {
             Debug.LogError($"Error loading {typeof(T).Name} from {filePath}: {ex.Message}");
+        }
+        finally
+        {
+            _ioLock.Release();
         }
 
         return data;
@@ -282,35 +289,53 @@ public class SaveLoadManager
         return Path.Combine(Application.persistentDataPath, fileName);
     }
 
-    // Encryption method using AES
+    // Encryption method using AES — IV acak per save, di-prepend ke ciphertext.
+    // IV nol membuat enkripsi deterministik (dua save identik = ciphertext
+    // identik) dan melemahkan AES-CBC (B-14).
     private static string Encrypt(string plainText)
     {
         using (Aes aes = Aes.Create())
         {
             aes.Key = System.Text.Encoding.UTF8.GetBytes(EncryptionKey);
-            aes.IV = new byte[16];
-            using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+            aes.GenerateIV();
+
             using (var ms = new MemoryStream())
-            using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-            using (var writer = new StreamWriter(cs))
             {
-                writer.Write(plainText);
-                writer.Flush();
-                cs.FlushFinalBlock();
+                // 16 byte pertama payload = IV
+                ms.Write(aes.IV, 0, aes.IV.Length);
+
+                using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+                using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                using (var writer = new StreamWriter(cs))
+                {
+                    writer.Write(plainText);
+                }
+                // StreamWriter/CryptoStream dispose = flush final block
+
                 return Convert.ToBase64String(ms.ToArray());
             }
         }
     }
 
-    // Decryption method using AES
+    // Decryption method using AES — baca IV dari 16 byte pertama payload.
     private static string Decrypt(string cipherText)
     {
+        byte[] payload = Convert.FromBase64String(cipherText);
+        if (payload.Length <= 16)
+        {
+            throw new CryptographicException("Save data terlalu pendek — file korup atau bukan format save yang dikenal.");
+        }
+
         using (Aes aes = Aes.Create())
         {
             aes.Key = System.Text.Encoding.UTF8.GetBytes(EncryptionKey);
-            aes.IV = new byte[16];
+
+            byte[] iv = new byte[16];
+            Array.Copy(payload, 0, iv, 0, 16);
+            aes.IV = iv;
+
             using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
-            using (var ms = new MemoryStream(Convert.FromBase64String(cipherText)))
+            using (var ms = new MemoryStream(payload, 16, payload.Length - 16))
             using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
             using (var reader = new StreamReader(cs))
             {

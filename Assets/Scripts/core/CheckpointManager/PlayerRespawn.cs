@@ -15,7 +15,7 @@ public class PlayerRespawn : MonoBehaviour
     [SerializeField] private float deathHeight = -50f;
 
     private CheckpointManager checkpointManager;
-    private IPlayerHealth playerHealth;
+    private PlayerAttributes playerAttributes;
     private bool isDead = false;
 
     private void Start()
@@ -35,8 +35,8 @@ public class PlayerRespawn : MonoBehaviour
             Debug.LogError($"[PlayerRespawn] Failed to get CheckpointManager: {e.Message}");
         }
 
-        // Try to get player health component (optional)
-        playerHealth = GetComponent<IPlayerHealth>();
+        // Player memakai PlayerAttributes, bukan IPlayerHealth (B-07)
+        playerAttributes = GetComponent<PlayerAttributes>();
 
         // Respawn ke checkpoint terakhir jika ada
         if (respawnOnStart && checkpointManager != null)
@@ -71,10 +71,10 @@ public class PlayerRespawn : MonoBehaviour
             Die("Fell out of world");
         }
 
-        // Check 2: Respawn jika health <= 0
-        if (playerHealth != null && playerHealth.GetCurrentHealth() <= healthThreshold)
+        // Check 2: Respawn jika sanity <= threshold
+        if (playerAttributes != null && playerAttributes.CurrentSanity <= healthThreshold)
         {
-            Die("Health depleted");
+            Die("Sanity depleted");
         }
 
         // Example: Press R to respawn (for testing)
@@ -147,10 +147,10 @@ public class PlayerRespawn : MonoBehaviour
         // - Play respawn animation
         // - Reset player state
 
-        // Reset player health (if available)
-        if (playerHealth != null)
+        // Reset player sanity (if available)
+        if (playerAttributes != null)
         {
-            playerHealth.ResetHealth();
+            playerAttributes.ResetToFull();
         }
     }
 

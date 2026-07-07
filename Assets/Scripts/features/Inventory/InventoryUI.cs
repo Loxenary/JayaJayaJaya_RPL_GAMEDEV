@@ -59,7 +59,7 @@ public class InventoryUI : MonoBehaviour
   [SerializeField] private Sprite defaultKeyIcon;
 
   [Tooltip("Key name prefix (e.g., 'Key #')")]
-  [SerializeField] private string keyNamePrefix = "Kunci #";
+  [SerializeField] private string keyNamePrefix = GameStrings.KeyNamePrefix;
 
   [Header("Visual Settings")]
   [Tooltip("Size of each item slot")]

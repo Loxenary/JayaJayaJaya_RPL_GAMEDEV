@@ -134,13 +134,21 @@ namespace Ambience
 
         private void InitializeAudioSources()
         {
-            primaryLayer = gameObject.AddComponent<AudioSource>();
+            // Reuse bila sudah ada — AddComponent buta tiap Awake menumpuk
+            // AudioSource pada scene reload (B-21)
+            if (primaryLayer == null)
+            {
+                primaryLayer = gameObject.AddComponent<AudioSource>();
+            }
             primaryLayer.playOnAwake = false;
             primaryLayer.loop = false;
             primaryLayer.spatialBlend = 0f;
             primaryLayer.priority = 64;
 
-            secondaryLayer = gameObject.AddComponent<AudioSource>();
+            if (secondaryLayer == null)
+            {
+                secondaryLayer = gameObject.AddComponent<AudioSource>();
+            }
             secondaryLayer.playOnAwake = false;
             secondaryLayer.loop = false;
             secondaryLayer.spatialBlend = 0f;

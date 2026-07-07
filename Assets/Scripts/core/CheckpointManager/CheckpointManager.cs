@@ -44,8 +44,7 @@ public class CheckpointManager : MonoBehaviour, IInitializableService
     {
         try
         {
-            await Task.Yield(); // Membuat method async
-            LoadCheckpointData();
+            await LoadCheckpointDataAsync();
 
             if (debugMode)
             {
@@ -127,7 +126,7 @@ public class CheckpointManager : MonoBehaviour, IInitializableService
 
             if (autoSaveOnCheckpoint)
             {
-                SaveCheckpointData();
+                SaveCheckpointDataAsync().Forget(nameof(SaveCheckpointDataAsync));
             }
 
             if (debugMode)
@@ -171,22 +170,26 @@ public class CheckpointManager : MonoBehaviour, IInitializableService
         // Teleport player
         if (player != null)
         {
-            player.transform.position = currentCheckpoint.position;
-            player.transform.rotation = currentCheckpoint.rotation;
+            // Player memakai CharacterController — teleport WAJIB menonaktifkan
+            // CC dulu, kalau tidak posisi langsung di-overwrite balik (B-07).
+            var cc = player.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
 
-            // Reset player state (jika ada interface IPlayerHealth)
-            var playerHealth = player.GetComponent<IPlayerHealth>();
-            if (playerHealth != null)
+            player.transform.SetPositionAndRotation(
+                currentCheckpoint.position, currentCheckpoint.rotation);
+
+            if (cc != null) cc.enabled = true;
+
+            // Player memakai PlayerAttributes (IDamageable), bukan IPlayerHealth —
+            // pencarian interface lama membuat restore jadi no-op diam-diam (B-07).
+            var attributes = player.GetComponent<PlayerAttributes>();
+            if (attributes != null)
             {
-                playerHealth.ResetHealth();
+                attributes.ResetToFull();
             }
-
-            // Reset rigidbody velocity jika ada
-            var rb = player.GetComponent<Rigidbody>();
-            if (rb != null)
+            else
             {
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+                Debug.LogError($"[CheckpointManager] PlayerAttributes tidak ditemukan pada '{player.name}' — sanity tidak di-restore saat respawn.");
             }
 
             OnPlayerRespawned?.Invoke(currentCheckpoint);
@@ -268,7 +271,8 @@ public class CheckpointManager : MonoBehaviour, IInitializableService
         }
     }
 
-    private async void SaveCheckpointData()
+    // async Task (bukan async void) — exception tidak boleh hilang diam-diam (B-15)
+    private async Task SaveCheckpointDataAsync()
     {
         if (currentCheckpoint != null)
         {
@@ -297,7 +301,7 @@ public class CheckpointManager : MonoBehaviour, IInitializableService
         }
     }
 
-    private async void LoadCheckpointData()
+    private async Task LoadCheckpointDataAsync()
     {
         try
         {
@@ -344,13 +348,5 @@ public class CheckpointManager : MonoBehaviour, IInitializableService
     }
 }
 
-/// <summary>
-/// Interface untuk player health system (optional)
-/// Implementasikan interface ini di player health script Anda
-/// </summary>
-public interface IPlayerHealth
-{
-    void ResetHealth();
-    void TakeDamage(float amount);
-    float GetCurrentHealth();
-}
+// Interface IPlayerHealth DIHAPUS (B-07): tidak pernah diimplementasikan siapa pun
+// dan membuat respawn jadi no-op diam-diam. Player memakai PlayerAttributes.

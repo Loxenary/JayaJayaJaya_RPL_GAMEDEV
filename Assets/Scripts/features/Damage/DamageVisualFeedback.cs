@@ -252,6 +252,10 @@ public class DamageVisualFeedback : MonoBehaviour
     filmGrain.intensity.value = Mathf.Lerp(filmGrain.intensity.value, targetFilmGrainIntensity, Time.deltaTime * transitionSpeed);
   }
 
+  // Handle per-efek — pulse dan damage-flash tidak boleh saling membatalkan (B-10).
+  private Coroutine pulseRoutine;
+  private Coroutine damageFlashRoutine;
+
   /// <summary>
   /// Trigger a vignette pulse (for damage or special events)
   /// </summary>
@@ -265,8 +269,11 @@ public class DamageVisualFeedback : MonoBehaviour
   /// </summary>
   public void TriggerPulse(float intensity, float duration)
   {
-    StopAllCoroutines();
-    StartCoroutine(PulseCoroutine(intensity, duration));
+    if (pulseRoutine != null)
+    {
+      StopCoroutine(pulseRoutine);
+    }
+    pulseRoutine = StartCoroutine(PulseCoroutine(intensity, duration));
     Log($"Triggered pulse: intensity={intensity:F2}, duration={duration:F2}");
   }
 
@@ -321,8 +328,11 @@ public class DamageVisualFeedback : MonoBehaviour
   /// </summary>
   public void TriggerDamageFlash(bool playHurtSound = true)
   {
-    StopAllCoroutines();
-    StartCoroutine(DamageFlashCoroutine(playHurtSound));
+    if (damageFlashRoutine != null)
+    {
+      StopCoroutine(damageFlashRoutine);
+    }
+    damageFlashRoutine = StartCoroutine(DamageFlashCoroutine(playHurtSound));
     Log($"Triggered damage flash: playSound={playHurtSound}");
   }
 

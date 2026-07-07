@@ -61,7 +61,13 @@ public class CollectibleManager : MonoBehaviour, IRestartable
   }
 
   /// <summary>
-  /// Event published when the first puzzle piece is collected
+  /// Event published when the first puzzle piece is collected.
+  ///
+  /// JANGAN TERTUKAR dengan FirstPuzzleEvent (B-17):
+  /// - Event ini = momen COLLECT pertama, hanya dari CollectibleManager;
+  ///   dipakai SanityTimerSystem untuk memulai timer drain.
+  /// - FirstPuzzleEvent = trigger reaksi dunia (ghost spawn, lighting,
+  ///   endgame door) dan punya beberapa publisher lain.
   /// </summary>
   public struct FirstPuzzleCollectedEvent { }
 

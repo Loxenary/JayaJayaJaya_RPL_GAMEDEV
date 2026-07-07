@@ -946,7 +946,8 @@ namespace EnemyAI
       Log("Entering Chase state");
       aiPath.canMove = true;
       // Apply chase speed multiplier for faster pursuit
-      aiPath.maxSpeed = stats.maxSpeed * stats.chaseSpeedMultiplier * stats.chaseSpeedMultiplier;
+      // (multiplier hanya SEKALI — sebelumnya terkuadrat, bug B-05)
+      aiPath.maxSpeed = stats.maxSpeed * stats.chaseSpeedMultiplier;
       targetLostTime = 0f;
 
       Log($"Chase speed: {aiPath.maxSpeed:F1} (base: {stats.maxSpeed}, multiplier: {stats.chaseSpeedMultiplier}x)");

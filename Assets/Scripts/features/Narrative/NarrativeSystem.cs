@@ -18,7 +18,6 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
     [SerializeField] private JournalDatabaseConfig journalDatabaseConfig;
 
     private int currentTrackedCollectible = 0;
-    private Coroutine currentTimerCoroutine;
     private readonly HashSet<string> interactedPuzzle = new();
     private readonly HashSet<GuideData> interactedGuides = new();
 
@@ -53,14 +52,18 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
         {
             interactedPuzzle.Add(evt.puzzleId);
 
-            mapping.Add(evt.puzzleId, currentTrackedCollectible);
+            // Indexer, bukan Add — puzzleId lama tidak boleh melempar ArgumentException
+            mapping[evt.puzzleId] = currentTrackedCollectible;
             currentTrackedCollectible++;
             EventBus.Publish(new InteractedPuzzleCount()
             {
                 puzzleCount = currentTrackedCollectible
             });
+
+            // Journal hanya terbuka pada interaksi pertama puzzle ini,
+            // bukan setiap kali pemain menekan interact ulang.
+            HandleJournal(mapping[evt.puzzleId]);
         }
-        HandleJournal(mapping[evt.puzzleId]);
     }
 
     // Called when player interacts with a guide interactable
@@ -75,18 +78,12 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
 
         // Check if this guide has already been interacted wit    
         interactedGuides.Add(evt.guideData);
-        GuideTimerCoroutine(evt.guideData);
+        ShowGuideDialog(evt.guideData);
     }
 
-    private void GuideTimerCoroutine(GuideData guideData)
+    private void ShowGuideDialog(GuideData guideData)
     {
-        // Stop any existing timer
-        if (currentTimerCoroutine != null)
-        {
-            StopCoroutine(currentTimerCoroutine);
-        }
-
-        // Show the dialog immediately for the new nteraction
+        // Show the dialog immediately for the new interaction
         EventBus.Publish(new DialogNarrativeUI.OpenDialogNarrtiveUI
         {
             content = guideData.Content
@@ -95,37 +92,34 @@ public class NarrativeSystem : ServiceBase<NarrativeSystem>, IRestartable
 
     private void HandleJournal(int key)
     {
+        // Journals menghasilkan array baru tiap akses — cache sekali
+        var journals = journalDatabaseConfig != null ? journalDatabaseConfig.Journals : null;
+
+        if (journals == null || key < 0 || key >= journals.Length)
+        {
+            Debug.LogError($"[NarrativeSystem] Journal index {key} di luar batas (jumlah journal: {journals?.Length ?? 0}). Tambah entri di JournalDatabaseConfig atau periksa alur puzzle.", this);
+            return;
+        }
+
         EventBus.Publish(new JournalUI.OpenJournalUI()
         {
-            content = journalDatabaseConfig.Journals[key]
-            //content = journalDatabaseConfig.Journals[currentTrackedCollectible]
+            content = journals[key]
         });
     }
 
 
     private void ResetPuzzleTimer(ResetNarrativeTimer evt)
     {
-        // Stop any running timer
-        if (currentTimerCoroutine != null)
-        {
-            StopCoroutine(currentTimerCoroutine);
-            currentTimerCoroutine = null;
-        }
-
         currentTrackedCollectible = 0;
         interactedPuzzle.Clear();
+        // mapping WAJIB ikut di-reset — kalau tidak, interaksi puzzle yang sama
+        // setelah restart menulis ulang key lama dan alur narasi rusak (B-02).
+        mapping.Clear();
     }
 
     public void Restart()
     {
         ResetPuzzleTimer(new());
-        currentTrackedCollectible = 0;
-        if (currentTimerCoroutine != null)
-        {
-            StopCoroutine(currentTimerCoroutine);
-            currentTimerCoroutine = null;
-        }
-        interactedPuzzle.Clear();
         interactedGuides.Clear();
     }
 }

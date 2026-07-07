@@ -78,6 +78,8 @@ crashlytics-build.properties
 
 # TestRunner generated files
 InitTestScene*.unity*
+# Artefak performance test framework — jangan pernah masuk Resources/ (ikut ter-build)
+**/Resources/PerformanceTestRun*.json*
 
 # Addressables default ignores, before user customizations
 /ServerData

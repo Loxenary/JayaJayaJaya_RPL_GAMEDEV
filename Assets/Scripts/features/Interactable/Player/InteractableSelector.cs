@@ -55,6 +55,13 @@ public class InteractableSelector : MonoBehaviour
     input.Disable();
   }
 
+  private void OnDestroy()
+  {
+    // InputSystem_Actions adalah IDisposable — tanpa Dispose instance-nya bocor (B-18)
+    input.Player.Interact.performed -= OnPressInteract;
+    input.Dispose();
+  }
+
   private void Update()
   {
     CheckForInteractable();
@@ -137,8 +144,9 @@ public class InteractableSelector : MonoBehaviour
       currentObject.InteractObject();
       EventBus.Publish(InteractEventState.OnInteract);
 
-      // Clear after interaction (object might be destroyed/disabled)
-      currentObject = null;
+      // Clear via jalur resmi supaya highlight ikut padam —
+      // clear langsung meninggalkan outline menyala (B-22)
+      ClearCurrentObject();
     }
   }
 

@@ -1,10 +1,6 @@
 using DG.Tweening;
-using System.Collections;
-using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Experimental.GlobalIllumination;
 
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerAttributes : MonoBehaviour, IDamageable
@@ -55,11 +51,21 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   PlayerInputHandler input;
   private Sequence batteryDrainSequence;
   private float sanityDrainAccumulator = 0f;
+  // Laju drain per detik yang diminta sistem luar (SanityTimerSystem, dsb).
+  private float externalDrainPerSecond = 0f;
 
   private void Awake()
   {
     input = GetComponent<PlayerInputHandler>();
-    flashlight.enabled = initialTogle;
+
+    if (flashlight == null)
+    {
+      Debug.LogError($"[PlayerAttributes] Field 'flashlight' belum di-assign di Inspector pada '{gameObject.name}' — flashlight & battery tidak akan berfungsi.", this);
+    }
+    else
+    {
+      flashlight.enabled = initialTogle;
+    }
     toggleFlashlight = initialTogle;
 
     currentBattery = initalBatteryValue;
@@ -77,16 +83,28 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
 
   private void Update()
   {
-    // Drain sanity when flashlight is off/dead
-    if (!flashlight.enabled || currentBattery <= 0)
+    // Satu-satunya akumulator drain sanity: kegelapan + laju eksternal
+    // (mis. SanityTimerSystem) dijumlahkan di sini, bukan dikurangkan terpisah.
+    bool inDarkness = flashlight == null || !flashlight.enabled || currentBattery <= 0;
+    float ratePerSecond = (inDarkness ? sanityDrainRate : 0f) + externalDrainPerSecond;
+
+    if (ratePerSecond > 0f)
     {
-      DrainSanityOverTime();
+      DrainSanityOverTime(ratePerSecond);
     }
     else
     {
-      // Reset accumulator when flashlight is on
       sanityDrainAccumulator = 0f;
     }
+  }
+
+  /// <summary>
+  /// Laju drain tambahan dari sistem luar (per detik). Set 0 untuk berhenti.
+  /// Dipakai SanityTimerSystem agar hanya ada satu mutator sanity.
+  /// </summary>
+  public void SetExternalDrain(float perSecond)
+  {
+    externalDrainPerSecond = Mathf.Max(0f, perSecond);
   }
 
   private void OnDestroy()
@@ -142,15 +160,14 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
 
 
   /// <summary>
-  /// Drains sanity over time when flashlight is off/dead (called per frame)
+  /// Drains sanity over time at the given rate per second (called per frame)
   /// </summary>
-  private void DrainSanityOverTime()
+  private void DrainSanityOverTime(float ratePerSecond)
   {
     if (isDead)
       return;
 
-    // Accumulate drain over time (sanityDrainRate is per second)
-    sanityDrainAccumulator += sanityDrainRate * Time.deltaTime;
+    sanityDrainAccumulator += ratePerSecond * Time.deltaTime;
 
     // Only apply drain when accumulated value is >= 1
     if (sanityDrainAccumulator >= 1f)
@@ -195,6 +212,10 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
     if (currentSanity <= 0)
     {
       isDead = true;
+
+      // HUD/vignette harus melihat sanity 0 sebelum event kematian
+      onSanityUpdate?.Invoke(0f);
+      OnValueSanityUpdate?.Invoke();
 
       // Freeze player immediately
       FreezePlayer();
@@ -253,6 +274,30 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
   }
 
   /// <summary>
+  /// Restore sanity penuh + hapus status mati (dipakai checkpoint respawn).
+  /// </summary>
+  public void ResetToFull()
+  {
+    RestoreSanity(maxSanity);
+  }
+
+  /// <summary>
+  /// Restore sanity ke nilai tertentu + hapus status mati (dipakai checkpoint respawn).
+  /// </summary>
+  public void RestoreSanity(int value)
+  {
+    isDead = false;
+    currentSanity = Mathf.Clamp(value, 0, maxSanity);
+    sanityDrainAccumulator = 0f;
+    externalDrainPerSecond = 0f;
+
+    UnfreezePlayer();
+
+    onSanityUpdate?.Invoke((float)currentSanity / maxSanity);
+    OnValueSanityUpdate?.Invoke();
+  }
+
+  /// <summary>
   /// IDamageable implementation - receives damage
   /// </summary>
   public void TakeDamage(AttributesType type, int value)
@@ -299,5 +344,25 @@ public class PlayerAttributes : MonoBehaviour, IDamageable
     // Lock and show cursor for death UI
     Cursor.lockState = CursorLockMode.None;
     Cursor.visible = true;
+  }
+
+  /// <summary>
+  /// Kebalikan FreezePlayer — dipanggil saat respawn dari checkpoint.
+  /// </summary>
+  private void UnfreezePlayer()
+  {
+    if (input != null)
+    {
+      input.SetFrozen(false);
+    }
+
+    var playerController = GetComponent<PlayerController>();
+    if (playerController != null)
+    {
+      playerController.SetFrozen(false);
+    }
+
+    Cursor.lockState = CursorLockMode.Locked;
+    Cursor.visible = false;
   }
 }

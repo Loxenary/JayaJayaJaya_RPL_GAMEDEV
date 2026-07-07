@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using System.Threading.Tasks;
+using CustomLogger;
 
 /// <summary>
 /// UI controller for Game Over screen with death animation sequence.
@@ -340,7 +342,9 @@ public class GameOverUI : MonoBehaviour
     /// <summary>
     /// Restart button callback
     /// </summary>
-    private async void OnRestartClicked()
+    private void OnRestartClicked() => RestartClickedAsync().Forget(nameof(OnRestartClicked));
+
+    private async Task RestartClickedAsync()
     {
         // Disable buttons to prevent double-click
         if (restartButton != null)
@@ -350,26 +354,28 @@ public class GameOverUI : MonoBehaviour
 
         // Get SceneService to reload current scene
         var sceneService = ServiceLocator.Get<SceneService>();
-        if (sceneService != null)
+        if (sceneService == null)
         {
-            RestartManager.Restart();
-            await sceneService.ReloadScene(addTransition: true);
-            ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
+            // SceneService hilang = bug bootstrap. Jangan "sukses diam-diam"
+            // lewat SceneManager.LoadScene — jalur itu melewati RestartManager
+            // sehingga state IRestartable tidak ter-reset (B-09).
+            BetterLogger.LogError("[GameOverUI] SceneService tidak ditemukan — restart dibatalkan. Periksa bootstrap (Bootstrap.unity harus dimuat lebih dulu).", BetterLogger.LogCategory.System);
+            if (restartButton != null) restartButton.interactable = true;
+            if (quitButton != null) quitButton.interactable = true;
+            return;
         }
-        else
-        {
-            // Fallback: Reload using Unity SceneManager
-            Time.timeScale = 1f;
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-            );
-        }
+
+        RestartManager.Restart();
+        await sceneService.ReloadScene(addTransition: true);
+        ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
     }
 
     /// <summary>
     /// Quit button callback
     /// </summary>
-    private async void OnQuitClicked()
+    private void OnQuitClicked() => QuitClickedAsync().Forget(nameof(OnQuitClicked));
+
+    private async Task QuitClickedAsync()
     {
         // Disable buttons to prevent double-click
         if (restartButton != null)

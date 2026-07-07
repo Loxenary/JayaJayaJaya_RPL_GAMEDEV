@@ -15,20 +15,16 @@ public class Ghost : Damage
     [SerializeField] private bool damageOncePerContact = true;
     private bool currentlyTouchingPlayer = false;
     private bool hasHitPlayer = false;
-    private float lastDamageTimeGhost = -999f;
 
     /// <summary>
-    /// Override SendDamage to check if ghost is active
+    /// Override SendDamage to check if ghost is active.
+    /// Cooldown waktu SUDAH ditegakkan parent (Damage.damageCooldown, serialized)
+    /// — cooldown kedua yang hardcoded di sini dihapus agar hanya ada satu
+    /// sumber kebenaran yang bisa di-tune designer (B-20).
     /// </summary>
     protected override void SendDamage(IDamageable target)
     {
         if (!isActive)
-        {
-            return;
-        }
-
-        // ABSOLUTE PROTECTION: Time-based check at Ghost level
-        if (Time.time - lastDamageTimeGhost < 0.5f)
         {
             return;
         }
@@ -39,8 +35,6 @@ public class Ghost : Damage
             return;
         }
 
-        // Set time IMMEDIATELY to block any simultaneous calls
-        lastDamageTimeGhost = Time.time;
         currentlyTouchingPlayer = true;
 
         base.SendDamage(target);

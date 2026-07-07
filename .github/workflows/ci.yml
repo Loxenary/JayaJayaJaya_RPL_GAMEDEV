@@ -1,0 +1,69 @@
+# CI Lakshana — test EditMode + build Win64.
+#
+# STATUS: SENGAJA DIMATIKAN dari auto-trigger (workflow_dispatch = manual saja)
+# supaya tidak makan menit GitHub Actions / bandwidth Git LFS sebelum siap.
+# Untuk MENGAKTIFKAN kembali otomatis di PR/push, uncomment blok `pull_request`
+# dan `push` di bawah ini (dan boleh hapus/pertahankan workflow_dispatch).
+#
+# SETUP SEKALI (admin repo) SEBELUM diaktifkan:
+# 1. Aktivasi lisensi Unity Personal → ikuti https://game.ci/docs/github/activation
+#    lalu isi Secrets repo: UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD
+# 2. Cek kuota Git LFS bandwidth (Settings → Billing) — repo ini 8+GB LFS;
+#    kuota gratis 1GB/bulan TIDAK cukup untuk CI aktif. Opsi: data pack (~$5/50GB)
+#    atau self-hosted runner dengan cache lokal.
+# 3. Job test membutuhkan minimal satu test EditMode (T-P3.1) — sebelum ada,
+#    job test bisa dinonaktifkan sementara dengan menghapus `needs: test` di build.
+name: CI
+
+on:
+  workflow_dispatch: {}   # trigger manual lewat tab Actions — tidak makan resource otomatis
+  # pull_request:
+  #   branches: [main, dev]
+  # push:
+  #   branches: [main, dev]
+
+jobs:
+  test:
+    name: EditMode tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-test-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: Library-test-
+      - uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          testMode: EditMode   # + PlayMode setelah smoke test stabil (T-P3.5)
+
+  build:
+    name: Build StandaloneWindows64
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-build-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: Library-build-
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-win64
+          path: build/StandaloneWindows64

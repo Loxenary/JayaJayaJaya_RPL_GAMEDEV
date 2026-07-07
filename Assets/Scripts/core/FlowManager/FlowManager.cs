@@ -7,8 +7,11 @@ using UnityEngine;
 
 public class FlowManager : ServiceBase<FlowManager>
 {
+    // Entry point tetap void agar kompatibel UnityEvent/button;
+    // exception async tertangkap via Forget (B-15).
+    public void PlayGame() => PlayGameAsync().Forget(nameof(PlayGame));
 
-    public async void PlayGame()
+    private async Task PlayGameAsync()
     {
         ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
         await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.IN_GAME, true);

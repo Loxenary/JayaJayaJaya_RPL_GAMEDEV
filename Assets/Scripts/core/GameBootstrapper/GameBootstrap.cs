@@ -128,17 +128,23 @@ public class GameBootstrap : MonoBehaviour
     /// <summary>
     /// Deletes player save data asynchronously for testing purposes.
     /// The callback is invoked with 'true' for success and 'false' for failure.
-    /// Using 'async void' is acceptable here as it's a top-level "fire-and-forget" call from a UI event.
     /// </summary>
-    public async void ResetData(Action<(bool success, string message)> onCompleted)
+    public void ResetData(Action<(bool success, string message)> onCompleted) =>
+        ResetDataAsync(onCompleted).Forget(nameof(ResetData));
+
+    private async Task ResetDataAsync(Action<(bool success, string message)> onCompleted)
     {
         var result = await SaveLoadManager.ResetResettableDataAsync();
         onCompleted?.Invoke(result);
     }
+
     /// <summary>
     /// Deletes specific player save data asynchronously based on a list of script references.
     /// </summary>
-    public async void ResetSelectedData(List<MonoScript> scriptsToReset, Action<(bool success, string message)> onCompleted)
+    public void ResetSelectedData(List<MonoScript> scriptsToReset, Action<(bool success, string message)> onCompleted) =>
+        ResetSelectedDataAsync(scriptsToReset, onCompleted).Forget(nameof(ResetSelectedData));
+
+    private async Task ResetSelectedDataAsync(List<MonoScript> scriptsToReset, Action<(bool success, string message)> onCompleted)
     {
         var typesToReset = scriptsToReset
             .Select(script => script.GetClass())

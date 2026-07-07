@@ -1,9 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// System that tracks time and reduces player sanity after a threshold.
+/// System that tracks time and starts a sanity drain after a threshold.
 /// Timer starts when first puzzle collectible is picked up.
-/// After 30 seconds from first collectible, sanity decreases.
+///
+/// PENTING (B-04): sistem ini TIDAK mengurangi sanity sendiri — ia hanya
+/// menyetel laju drain eksternal via PlayerAttributes.SetExternalDrain().
+/// PlayerAttributes adalah satu-satunya mutator sanity, sehingga laju total
+/// selalu deterministik dan bisa di-tune dari satu tempat.
 /// </summary>
 public class SanityTimerSystem : MonoBehaviour
 {
@@ -18,7 +22,6 @@ public class SanityTimerSystem : MonoBehaviour
   private bool hasFirstCollectible = false;
 
   private PlayerAttributes playerAttributes;
-  private float lastDrainTime = 0f;
 
   // Events
   public delegate void OnTimerTick(float time);
@@ -45,6 +48,8 @@ public class SanityTimerSystem : MonoBehaviour
   private void OnDisable()
   {
     EventBus.Unsubscribe<CollectibleManager.FirstPuzzleCollectedEvent>(OnFirstPuzzleCollected);
+    // Jangan tinggalkan drain menyala kalau sistem ini mati/di-destroy
+    SetDrainActive(false);
   }
 
   private void Start()
@@ -75,22 +80,25 @@ public class SanityTimerSystem : MonoBehaviour
     currentTime += Time.deltaTime;
     onTimerTick?.Invoke(currentTime);
 
-    // Start sanity drain after threshold
+    // Start sanity drain after threshold — delegasikan ke PlayerAttributes
+    // sebagai modifier, bukan menguras sendiri (B-04)
     if (currentTime >= sanityThreshold && !isDrainingStarted)
     {
       isDrainingStarted = true;
+      SetDrainActive(true);
       onSanityDrainStart?.Invoke();
       Debug.Log($"[SanityTimer] Threshold reached! Starting sanity drain at {sanityDrainRate}/sec");
     }
+  }
 
-    // Drain sanity after threshold
-    if (isDrainingStarted && playerAttributes != null)
+  /// <summary>
+  /// Nyalakan/matikan kontribusi drain sistem ini di PlayerAttributes.
+  /// </summary>
+  private void SetDrainActive(bool active)
+  {
+    if (playerAttributes != null)
     {
-      if (Time.time - lastDrainTime >= 1f)
-      {
-        playerAttributes.TakeDamage(AttributesType.Sanity, (int)sanityDrainRate);
-        lastDrainTime = Time.time;
-      }
+      playerAttributes.SetExternalDrain(active ? sanityDrainRate : 0f);
     }
   }
 
@@ -102,7 +110,7 @@ public class SanityTimerSystem : MonoBehaviour
     isRunning = true;
     currentTime = 0f;
     isDrainingStarted = false;
-    lastDrainTime = Time.time;
+    SetDrainActive(false);
     Debug.Log("[SanityTimer] Timer started");
   }
 
@@ -112,6 +120,7 @@ public class SanityTimerSystem : MonoBehaviour
   public void StopTimer()
   {
     isRunning = false;
+    SetDrainActive(false);
     Debug.Log("[SanityTimer] Timer stopped");
   }
 
@@ -121,6 +130,7 @@ public class SanityTimerSystem : MonoBehaviour
   public void PauseTimer()
   {
     isRunning = false;
+    SetDrainActive(false);
   }
 
   /// <summary>
@@ -129,6 +139,8 @@ public class SanityTimerSystem : MonoBehaviour
   public void ResumeTimer()
   {
     isRunning = true;
+    // Kalau threshold sudah lewat sebelum pause, drain lanjut lagi
+    SetDrainActive(isDrainingStarted);
   }
 
   /// <summary>
@@ -138,7 +150,7 @@ public class SanityTimerSystem : MonoBehaviour
   {
     currentTime = 0f;
     isDrainingStarted = false;
-    lastDrainTime = Time.time;
+    SetDrainActive(false);
     Debug.Log("[SanityTimer] Timer reset");
   }
 

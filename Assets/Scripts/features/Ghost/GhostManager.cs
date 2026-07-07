@@ -86,11 +86,7 @@ public class GhostManager : MonoBehaviour
 
   private void OnFirstPuzzleEvent(FirstPuzzleEvent eventData)
   {
-    var ghost = SpawnGhost();
-    if (ghost.TryGetComponent<BaseEnemyAI>(out var enemyAI))
-    {
-      enemyAI.Initialize(patrolPoint);
-    }
+    SpawnAndInitialize();
   }
 
   private void Start()
@@ -98,8 +94,22 @@ public class GhostManager : MonoBehaviour
     // Auto spawn if in testing mode
     if (spawnType == GhostSpawnType.AutoSpawn)
     {
-      SpawnGhost();
+      // Jalur AutoSpawn harus identik dengan jalur event — termasuk Initialize,
+      // kalau tidak ghost hasil AutoSpawn tidak akan patrol (B-16).
+      SpawnAndInitialize();
       Debug.Log("[GhostManager] Auto-spawned ghost for testing mode");
+    }
+  }
+
+  /// <summary>
+  /// Satu-satunya jalur spawn + inisialisasi AI. Dipakai jalur event maupun AutoSpawn.
+  /// </summary>
+  private void SpawnAndInitialize()
+  {
+    var ghost = SpawnGhost();
+    if (ghost != null && ghost.TryGetComponent<BaseEnemyAI>(out var enemyAI))
+    {
+      enemyAI.Initialize(patrolPoint);
     }
   }
 

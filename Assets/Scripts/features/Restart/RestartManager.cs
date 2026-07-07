@@ -23,10 +23,16 @@ public static class RestartManager
 
     public static void Restart()
     {
-        foreach (IRestartable restartable in restartables)
+        // Iterasi atas salinan — Restart() sebuah IRestartable boleh memicu
+        // Register/Unregister tanpa melempar InvalidOperationException (B-13).
+        foreach (IRestartable restartable in restartables.ToArray())
         {
             restartable.Restart();
         }
+
+        // Pastikan pause counter tidak nyangkut melewati restart (B-08):
+        // timeScale kembali 1 apa pun kondisi antrean stopper sebelumnya.
+        ServiceLocator.Get<TimeService>()?.RequestResumeWhileClearingQueue();
     }
-    
+
 }

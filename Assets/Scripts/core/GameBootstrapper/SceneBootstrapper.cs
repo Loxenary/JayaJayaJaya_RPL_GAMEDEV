@@ -7,7 +7,7 @@ public class SceneBootstrapper : MonoBehaviour
 {
 
 
-    private async void Awake()
+    private void Awake()
     {
         if (GameBootstrap.FLAG_STARTUP_BOOTSTRAP)
         {
@@ -19,7 +19,8 @@ public class SceneBootstrapper : MonoBehaviour
 
         ServiceAutoLoader.LoadAllServices(transform);
 
-        await InitializeServicesAsync();
+        // Kegagalan bootstrap harus berisik, bukan hilang di async void (B-15)
+        InitializeServicesAsync().Forget(nameof(SceneBootstrapper));
     }
 
     private async Task InitializeServicesAsync()
