@@ -127,7 +127,7 @@ public class SceneService : MonoBehaviour, IInitializableService
             SceneGroup groupToLoad = record.SceneGroupAsset;
 
             // Load new scenes first, then unload old ones
-            await LoadSceneGroup(groupToLoad, forceReload: false);
+            await LoadGroupScenes(groupToLoad, forceReload: false);
             await UnloadUnusedScenes(groupToLoad);
 
             _currentSceneGroup = groupToLoad;
@@ -137,11 +137,45 @@ public class SceneService : MonoBehaviour, IInitializableService
         }, addTransition);
     }
 
+    /// <summary>
+    /// Loads an arbitrary SceneGroup that is not registered in SceneRecords
+    /// (used by data-driven flows, e.g. a story's gameplay group from StoryDefinition)
+    /// and unloads any scenes not in that group.
+    /// CurrentScene is tagged as IN_GAME since these groups are always gameplay content.
+    /// </summary>
+    public async Task LoadSceneGroup(SceneGroup group, bool addTransition = true)
+    {
+        if (group == null)
+        {
+            Debug.LogError("[SceneService] LoadSceneGroup called with a null SceneGroup.");
+            return;
+        }
+
+        await _transitionCoordinator.ExecuteWithTransition(async () =>
+        {
+            await LoadGroupScenes(group, forceReload: false);
+            await UnloadUnusedScenes(group);
+
+            _currentSceneGroup = group;
+            CurrentScene = SceneEnum.IN_GAME;
+
+            OnSceneChanging?.Invoke(CurrentScene);
+        }, addTransition);
+    }
+
+    /// <summary>
+    /// Returns true if a SceneGroup is registered for the given SceneEnum.
+    /// </summary>
+    public bool HasRecord(SceneEnum sceneId)
+    {
+        SceneRecord record = SceneRecords.Find(r => r.SceneId == sceneId);
+        return record != null && record.SceneGroupAsset != null;
+    }
 
     /// <summary>
     /// Loads all scenes within a SceneGroup additively.
     /// </summary>
-    private async Task LoadSceneGroup(SceneGroup group, bool forceReload = false)
+    private async Task LoadGroupScenes(SceneGroup group, bool forceReload = false)
     {
         _loadedScenes.Clear();
 
@@ -254,6 +288,13 @@ public class SceneService : MonoBehaviour, IInitializableService
 
             var scenesToUnload = GetAllGameScenes();
 
+<<<<<<< Updated upstream
+=======
+            // Load new scenes
+            await LoadGroupScenes(_currentSceneGroup, forceReload: true);
+
+            // Now unload the old scenes (the ones we captured before)
+>>>>>>> Stashed changes
             await UnloadScenes(scenesToUnload);
 
             await Resources.UnloadUnusedAssets();

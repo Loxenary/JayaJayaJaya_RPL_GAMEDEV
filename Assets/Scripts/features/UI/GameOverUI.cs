@@ -352,6 +352,7 @@ public class GameOverUI : MonoBehaviour
         if (quitButton != null)
             quitButton.interactable = false;
 
+<<<<<<< Updated upstream
         // Get SceneService to reload current scene
         var sceneService = ServiceLocator.Get<SceneService>();
         if (sceneService == null)
@@ -363,6 +364,22 @@ public class GameOverUI : MonoBehaviour
             if (restartButton != null) restartButton.interactable = true;
             if (quitButton != null) quitButton.interactable = true;
             return;
+=======
+        // Reload the current story's scenes (keeps checkpoints for respawn-like restart)
+        var flowManager = ServiceLocator.Get<FlowManager>();
+        if (flowManager != null)
+        {
+            await flowManager.RestartCurrentStory();
+            ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
+        }
+        else
+        {
+            // Fallback: Reload using Unity SceneManager
+            Time.timeScale = 1f;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+            );
+>>>>>>> Stashed changes
         }
 
         RestartManager.Restart();
@@ -392,7 +409,18 @@ public class GameOverUI : MonoBehaviour
             }
             else
             {
-                await sceneService.LoadScene(SceneEnum.MAIN_MENU, true);
+                // Death does NOT count as completing the story; just go back to the map.
+                var flowManager = ServiceLocator.Get<FlowManager>();
+                if (flowManager != null)
+                {
+                    Time.timeScale = 1f;
+                    await flowManager.ReturnToSelection();
+                    ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
+                }
+                else
+                {
+                    await sceneService.LoadScene(SceneEnum.MAIN_MENU, true);
+                }
             }
             ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
             return;

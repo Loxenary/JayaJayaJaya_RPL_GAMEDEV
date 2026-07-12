@@ -6,7 +6,7 @@ public class PlayGameTrigger : BaseTrigger
 {
 
     protected override void Trigger()
-    {    
-        ServiceLocator.Get<FlowManager>().PlayGame();
+    {
+        _ = ServiceLocator.Get<FlowManager>().OpenSelection();
     }
 }

@@ -11,6 +11,12 @@ public class EndGameConfig : ScriptableObject
         [TextArea(3, 10)]
         public string Area;
         public int collectibleCount;
+
+        [Tooltip("Short display name for this ending, recorded in story progress and shown on the world map. Optional.")]
+        public string endingTitle;
+
+        /// <summary>Stable id for save data; falls back to the collectible count when no title is set.</summary>
+        public string EndingId => string.IsNullOrEmpty(endingTitle) ? $"Ending {collectibleCount}" : endingTitle;
     }
 
     [SerializeField] private EndGameRecord[] endGames;

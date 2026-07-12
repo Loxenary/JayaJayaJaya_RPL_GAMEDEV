@@ -36,6 +36,7 @@ namespace Ambience
         Victory = 61,
         Pause = 62,
         MainMenu = 63,
+        SelectionMap = 64,
 
         // Custom events
         Custom1 = 100,

@@ -30,6 +30,13 @@ public class EndGameListener : MonoBehaviour, IRestartable
         if (other.gameObject.CompareTag("Player"))
         {
             var nearestEndGame = endGameConfig.GetNearestEndGame(_currentPuzzleCount);
+
+            // Any ending counts as completing the current story (recorded by FlowManager).
+            EventBus.Publish(new StoryCompletedEvent()
+            {
+                endingId = nearestEndGame.EndingId
+            });
+
             EventBus.Publish(new EndGame.OpenEndGameUI()
             {
                 content = nearestEndGame.Area

@@ -8,11 +8,19 @@ public class PlayGameTriggerModified : PlayGameTrigger
     [SerializeField] PlayNarrative playNarrative;
     protected override void Trigger()
     {
-        currentCg.DOFade(0, .5f).OnComplete(() => {
-            targetCg.gameObject.SetActive(true);
-            targetCg.DOFade(1, .35f).OnComplete(() => { 
-                playNarrative.TryNarrative();
+        // The old menu-opening narrative now lives as Story 1's first-visit intro
+        // (StoryIntroController); Play goes straight to the world selection map.
+        if (currentCg != null)
+        {
+            currentCg.interactable = false;
+            currentCg.DOFade(0, .5f).OnComplete(() =>
+            {
+                _ = ServiceLocator.Get<FlowManager>().OpenSelection();
             });
-        });
+        }
+        else
+        {
+            _ = ServiceLocator.Get<FlowManager>().OpenSelection();
+        }
     }
 }

@@ -16,6 +16,9 @@ public class InteractableEndGameDoor : InteractableLockedDoor, IRestartable
 
   public UnityEvent OnDoorClosedAndLocked;
 
+  /// <summary>True once the door has been closed and permanently locked (story started).</summary>
+  public bool IsLocked => isPermanentlyLocked;
+
   // Event system for triggering door lock
   public delegate void EndGameDoorLockTrigger();
   public static event EndGameDoorLockTrigger onDoorLockTriggered;
