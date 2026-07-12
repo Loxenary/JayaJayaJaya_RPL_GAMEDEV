@@ -288,18 +288,12 @@ public class SceneService : MonoBehaviour, IInitializableService
 
             var scenesToUnload = GetAllGameScenes();
 
-<<<<<<< Updated upstream
-=======
-            // Load new scenes
-            await LoadGroupScenes(_currentSceneGroup, forceReload: true);
-
-            // Now unload the old scenes (the ones we captured before)
->>>>>>> Stashed changes
+            // Unload the old scenes first, then load fresh copies of the group.
             await UnloadScenes(scenesToUnload);
 
             await Resources.UnloadUnusedAssets();
 
-            await LoadSceneGroup(_currentSceneGroup, forceReload: true);
+            await LoadGroupScenes(_currentSceneGroup, forceReload: true);
 
             Scene newActiveScene = SceneManager.GetSceneByName(_currentSceneGroup.ActiveScene.SceneName);
 

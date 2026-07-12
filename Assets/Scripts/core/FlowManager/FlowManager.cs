@@ -7,16 +7,6 @@ using UnityEngine;
 /// </summary>
 public class FlowManager : ServiceBase<FlowManager>, IInitializableService
 {
-<<<<<<< Updated upstream
-    // Entry point tetap void agar kompatibel UnityEvent/button;
-    // exception async tertangkap via Forget (B-15).
-    public void PlayGame() => PlayGameAsync().Forget(nameof(PlayGame));
-
-    private async Task PlayGameAsync()
-    {
-        ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
-        await ServiceLocator.Get<SceneService>().LoadScene(SceneEnum.IN_GAME, true);
-=======
     [Tooltip("Ordered list of all stories. Assign on the Services/FlowManager prefab.")]
     [SerializeField] private StoryDatabase storyDatabase;
 
@@ -70,13 +60,17 @@ public class FlowManager : ServiceBase<FlowManager>, IInitializableService
     }
 
     /// <summary>
-    /// Legacy entry point (old main-menu narrative flow). Plays the first story directly.
-    /// New code should go through OpenSelection/PlayStory instead.
+    /// Legacy entry point (old main-menu narrative flow, still wired to some
+    /// UnityEvent/buttons). Plays the first story directly. New code should go
+    /// through OpenSelection/PlayStory instead. Void entry point stays compatible
+    /// with UnityEvent while surfacing async exceptions via Forget (B-15).
     /// </summary>
-    public async void PlayGame()
+    public void PlayGame() => PlayGameAsync().Forget(nameof(PlayGame));
+
+    private async Task PlayGameAsync()
     {
+        ServiceLocator.Get<TimeService>().RequestResumeWhileClearingQueue();
         await PlayStory(CurrentStory);
->>>>>>> Stashed changes
     }
 
     /// <summary>Opens the world selection map.</summary>
@@ -203,10 +197,8 @@ public class FlowManager : ServiceBase<FlowManager>, IInitializableService
 
     // ---------------------------------------------------------------------
 
-    private async void OnStoryCompleted(StoryCompletedEvent evt)
-    {
-        await MarkCompleted(CurrentStory, evt.endingId);
-    }
+    private void OnStoryCompleted(StoryCompletedEvent evt)
+        => MarkCompleted(CurrentStory, evt.endingId).Forget(nameof(OnStoryCompleted));
 
     private async Task OpenSelectionOrMenu()
     {

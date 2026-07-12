@@ -44,16 +44,12 @@ public class EndGame : FadeShowHideProcedural, IRestartable
         ShowUI();
     }
 
-<<<<<<< Updated upstream
-    public void ExitToMainMenu() => ExitToMainMenuAsync().Forget(nameof(ExitToMainMenu));
-
-    private async Task ExitToMainMenuAsync()
-=======
     // Name kept as ExitToMainMenu so existing serialized button bindings keep working,
     // but finishing a story now returns to the world selection map (FlowManager decides
     // and falls back to the main menu when no selection scene is registered).
-    public async void ExitToMainMenu()
->>>>>>> Stashed changes
+    public void ExitToMainMenu() => ExitToMainMenuAsync().Forget(nameof(ExitToMainMenu));
+
+    private async Task ExitToMainMenuAsync()
     {
         await ServiceLocator.Get<FlowManager>().ReturnToSelection();
         HideUI();
